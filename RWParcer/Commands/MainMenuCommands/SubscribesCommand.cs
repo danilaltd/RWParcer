@@ -1,9 +1,9 @@
 ﻿using RWParcer.Interfaces;
-using RWParcer.MenuStates;
+using RWParcer.MenuStates.MainMenuStates;
 
 namespace RWParcer.Commands.MainMenuCommands
 {
-    public class Subscribes : IMenuCommand
+    public class SubscribesCommand : IMenuCommand
     {
         public string Name => "Показать все подписки";
 

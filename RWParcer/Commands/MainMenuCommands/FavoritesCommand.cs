@@ -2,13 +2,13 @@
 
 namespace RWParcer.Commands.MainMenuCommands
 {
-    public class Feedback : IMenuCommand
+    public class FavoritesCommand : IMenuCommand
     {
-        public string Name => "Показать все подписки";
+        public string Name => "Избранное";
 
         public void Execute(MenuContext context)
         {
-            Console.WriteLine("меню подписок");
+            Console.WriteLine("избр");
             //context.SetState(new HelpMenuState());
         }
     }

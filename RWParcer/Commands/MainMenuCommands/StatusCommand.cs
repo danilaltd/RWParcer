@@ -2,7 +2,7 @@
 
 namespace RWParcer.Commands.MainMenuCommands
 {
-    public class Status : IMenuCommand
+    public class StatusCommand : IMenuCommand
     {
         public string Name => "Статус";
 

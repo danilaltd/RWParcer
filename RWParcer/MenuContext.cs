@@ -1,9 +1,4 @@
 ﻿using RWParcer.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RWParcer
 {
@@ -21,14 +16,19 @@ namespace RWParcer
             _currentState = newState;
         }
 
-        public void DisplayOptions()
+        public MenuView GetMenu()
         {
-            _currentState.DisplayOptions();
+            return _currentState.GetMenu();
         }
 
-        public void HandleInput(string input)
+        public MenuView GetMenu(string s)
         {
-            _currentState.HandleInput(input, this);
+            return _currentState.GetMenu(s);
+        }
+
+        public MenuView HandleInput(string input)
+        {
+            return _currentState.HandleInput(input, this);
         }
     }
 }

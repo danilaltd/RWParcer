@@ -2,7 +2,7 @@
 {
     public interface IMenuCommand
     {
-        string Name { get; } // Имя команды, отображаемое в меню
-        void Execute(MenuContext context); // Логика выполнения команды
+        string Name { get; }
+        void Execute(MenuContext context);
     }
 }

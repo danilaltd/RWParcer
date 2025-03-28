@@ -2,13 +2,13 @@
 
 namespace RWParcer.Commands.MainMenuCommands
 {
-    public class Search : IMenuCommand
+    public class ModeratorMenuCommand : IMenuCommand
     {
-        public string Name => "Поиск";
+        public string Name => "Меню Модератора";
 
         public void Execute(MenuContext context)
         {
-            Console.WriteLine("поиск");
+            Console.WriteLine("модер");
             //context.SetState(new HelpMenuState());
         }
     }

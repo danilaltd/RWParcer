@@ -2,7 +2,8 @@
 {
     public interface IMenuState
     {
-        void DisplayOptions();
-        void HandleInput(string input, MenuContext context);
+        MenuView HandleInput(string input, MenuContext context);
+        MenuView GetMenu();
+        MenuView GetMenu(string s);
     }
 }

@@ -9,7 +9,6 @@ namespace RWParcer.Commands
 
         public void Execute(MenuContext context)
         {
-            Console.WriteLine("гл");
             context.SetState(new MainMenuState());
         }
     }

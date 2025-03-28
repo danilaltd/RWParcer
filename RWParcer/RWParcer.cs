@@ -1,8 +1,4 @@
 ﻿using RWParcer.MenuStates;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace RWParcer
 {
@@ -14,11 +10,20 @@ namespace RWParcer
             menu = new(new MainMenuState());
         }
         public void Start() {
+            TempOutput(menu.HandleInput(""));
             while (true)
             {
-                menu.DisplayOptions();
                 string input = Console.ReadLine() ?? "";
-                menu.HandleInput(input);
+                TempOutput(menu.HandleInput(input));
+            }
+        }
+
+        private void TempOutput(MenuView a)
+        {
+            Console.WriteLine(a.header);
+            foreach (var item in a.buttons)
+            {
+                Console.WriteLine($"\t{item}");
             }
         }
     }
