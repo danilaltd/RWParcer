@@ -5,15 +5,15 @@ namespace RWParcerCore.Infrastructure.Repositories
 {
     internal class InMemoryUserRepository : IUserRepository
     {
-        private readonly List<User> _users = new();
+        private readonly List<User> _users = [];
         private readonly SemaphoreSlim _semaphore = new(1, 1); // Потокобезопасный механизм блокировки
 
-        public async Task<User?> GetUserByIdAsync(string id)
+        public async Task<bool> IsUserRegistredAsync(string userId)
         {
             await _semaphore.WaitAsync();
             try
             {
-                return _users.FirstOrDefault(u => u.Id == id);
+                return _users.FirstOrDefault(u => u.Id == userId) != null;
             }
             finally
             {
@@ -34,12 +34,125 @@ namespace RWParcerCore.Infrastructure.Repositories
             }
         }
 
-        public async Task<uint> GetUserMinIntervalAsync(string id)
+        public async Task<uint> GetUserMinIntervalAsync(string userId)
         {
             await _semaphore.WaitAsync();
             try
             {
-                return _users.FirstOrDefault(u => u.Id == id)?.MinSubscriptionsInterval ?? throw new Exception("No such user");
+                var user = _users.FirstOrDefault(u => u.Id == userId);
+                return user is null ? throw new KeyNotFoundException($"User with ID {userId} not found") : user.MinSubscriptionsInterval;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task<bool> GetUserIsModeratorAsync(string userId)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                var user = _users.FirstOrDefault(u => u.Id == userId);
+                return user is null ? throw new KeyNotFoundException($"User with ID {userId} not found") : user.IsModerator;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task<uint> GetUserMaxSubscriptionsAsync(string userId)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                var user = _users.FirstOrDefault(u => u.Id == userId);
+                return user is null ? throw new KeyNotFoundException($"User with ID {userId} not found") : user.MaxSubscriptions;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task SetUsersMinIntervalAsync(string userId, uint minInterval)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                var targetUser = _users.FirstOrDefault(u => u.Id == userId) ?? throw new KeyNotFoundException($"User with ID {userId} not found");
+                targetUser.ChangeIntervalLimits(minInterval);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task SetUsersMaxSubscriptionsAsync(string userId, uint MaxSubscriptions)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                var targetUser = _users.FirstOrDefault(u => u.Id == userId) ?? throw new KeyNotFoundException($"User with ID {userId} not found");
+                targetUser.ChangeSubscriptionsLimits(MaxSubscriptions);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task BanUserAsync(string userId)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                var targetUser = _users.FirstOrDefault(u => u.Id == userId) ?? throw new KeyNotFoundException($"User with ID {userId} not found");
+                targetUser.Block();
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task UnbanUserAsync(string userId)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                var targetUser = _users.FirstOrDefault(u => u.Id == userId) ?? throw new KeyNotFoundException($"User with ID {userId} not found");
+                targetUser.Unblock();
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task PromoteUserAsync(string userId)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                var targetUser = _users.FirstOrDefault(u => u.Id == userId) ?? throw new KeyNotFoundException($"User with ID {userId} not found");
+                targetUser.Promote();
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task DemoteUserAsync(string userId)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                var targetUser = _users.FirstOrDefault(u => u.Id == userId) ?? throw new KeyNotFoundException($"User with ID {userId} not found");
+                targetUser.Demote();
             }
             finally
             {

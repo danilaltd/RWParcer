@@ -5,12 +5,9 @@ using RWParcerCore.Domain.IRepositories;
 namespace RWParcerCore.Application.UseCases.NotificationService
 {
 
-    internal class PopNotificationsUseCase : IPopNotifications
+    internal class PopNotificationsUseCase(INotificationRepository notificationRepository) : IPopNotifications
     {
-        private readonly INotificationRepository _notificationRepository;
-
-        public PopNotificationsUseCase(INotificationRepository notificationRepository) => _notificationRepository = notificationRepository;
-
+        private readonly INotificationRepository _notificationRepository = notificationRepository;
         public async Task<List<NotificationItem>> PopNotifications()
         {
             return [.. await _notificationRepository.PopNotificationsAsync()];

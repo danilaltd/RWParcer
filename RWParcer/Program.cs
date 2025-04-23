@@ -1,45 +1,70 @@
-﻿using RWParcerCore.Domain.ValueObjects;
+﻿//StationVO fromStation = new("ст. Речица, г. Речица, Гомельская обл., Беларусь", "Речица", "2100195");
+//StationVO toStation = new("г. Минск, Беларусь", "Минск", "2100000");
+
 using RWParcerCore.InterfaceAdapters.Facades;
+using RWParcerCore.Domain.ValueObjects;
 
 class Program
 {
     static async Task Main()
     {
-        string user1 = "12345";
-        string user2 = "12346";
+        Facade facade = new();
+        string userId = "12345";
+        facade.AuthenticateUser(userId);
 
-        Facade facade = await Facade.CreateAsync();
-        facade.AuthenticateUser(user1);
-        facade.AuthenticateUser(user2);
+        Console.WriteLine("RWParcer Tester started!");
+
         while (true)
         {
             try
             {
-                await CheckNotificationsLoopAsync(facade);
+                Console.WriteLine(@"
+1. Get stations
+2. Get trains between stations
+3. Favorites
+4. Subscriptions
+5. Pop notifications
+6. Manage Users
+0. Exit
+Choose an option:");
 
-                //StationVO fromStation = await SelectStationAsync(facade, "Введите название станции отправления:");
-                //StationVO toStation = await SelectStationAsync(facade, "Введите название станции прибытия:");
-                StationVO fromStation = new("ст. Речица, г. Речица, Гомельская обл., Беларусь", "Речица", "2100195");
-                StationVO toStation = new("г. Минск, Беларусь", "Минск", "2100000");
-                RouteVO route = new(fromStation, toStation);
-                List<TrainVO> availableRoutes = await facade.GetTimesForRouteAsync(route);
-
-                PrintRoutes(availableRoutes);
-
-                Console.WriteLine("1 - Избранное\n2 - Подписки");
-                int mainChoice = ParseUserChoice();
-
-                if (mainChoice == 1)
+                switch (Console.ReadLine())
                 {
-                    await ManageFavoritesAsync(facade, user1, availableRoutes);
-                }
-                else if (mainChoice == 2)
-                {
-                    await ManageSubscriptionsAsync(facade, user1, availableRoutes);
+                    case "1":
+                        await GetStationsAsync(facade);
+                        break;
+
+                    case "2":
+                        await GetTrainsAsync(facade);
+                        break;
+
+                    case "3":
+                        await ManageFavoritesAsync(facade, userId);
+                        break;
+
+                    case "4":
+                        await ManageSubscriptionsAsync(facade, userId);
+                        break;
+
+                    case "5":
+                        await PrintNotificationsAsync(facade);
+                        break;
+
+                    case "6":
+                        await ManageUsersAsync(facade);
+                        break;
+
+                    case "0":
+                        await facade.StopAsync();
+                        return;
+
+                    default:
+                        Console.WriteLine("Invalid choice!");
+                        break;
                 }
 
-                await PrintNotificationsAsync(facade);
-                Console.WriteLine("----------------------------");
+                Console.WriteLine("Press Enter to continue...");
+                Console.ReadLine();
             }
             catch (Exception ex)
             {
@@ -48,128 +73,217 @@ class Program
         }
     }
 
-    private static async Task CheckNotificationsLoopAsync(Facade facade)
+    static async Task GetStationsAsync(Facade facade)
     {
-        while (true)
-        {
-            Console.WriteLine("Введите 'n' для проверки уведомлений или любую клавишу для продолжения:");
-            if (Console.ReadLine()?.ToLower() == "n")
-            {
-                await PrintNotificationsAsync(facade);
-            }
-            else
-            {
-                break;
-            }
-        }
-    }
+        Console.Write("Enter station prefix: ");
+        var stations = await facade.GetStationAsync(Console.ReadLine() ?? "");
 
-    private static async Task<StationVO> SelectStationAsync(Facade facade, string prompt)
-    {
-        Console.WriteLine(prompt);
-        List<StationVO> stations = await facade.GetStationAsync(Console.ReadLine() ?? "");
         for (int i = 0; i < stations.Count; i++)
         {
             Console.WriteLine($"{i}: {stations[i].Label}");
         }
-        Console.Write("Выберите номер станции: ");
-        int index = ParseUserChoice();
-        return stations[Math.Clamp(index, 0, stations.Count - 1)];
     }
 
-    private static void PrintRoutes(List<TrainVO> routes)
+    static async Task GetTrainsAsync(Facade facade)
     {
-        Console.WriteLine("Маршруты:----------------------------");
-        for (int i = 0; i < routes.Count; i++)
-        {
-            Console.WriteLine($"{i}: {routes[i].FromTime} --- {routes[i].ToTime}");
-        }
+        Console.Write("From station prefix: ");
+        var fromList = await facade.GetStationAsync(Console.ReadLine() ?? "");
+        PrintStations(fromList);
+        var from = fromList[ReadIndex(fromList.Count)];
+
+        Console.Write("To station prefix: ");
+        var toList = await facade.GetStationAsync(Console.ReadLine() ?? "");
+        PrintStations(toList);
+        var to = toList[ReadIndex(toList.Count)];
+
+        var trains = await facade.GetTimesForRouteAsync(new RouteVO(from, to));
+        PrintTrains(trains);
     }
 
-    private static int ParseUserChoice()
-    {
-        return int.TryParse(Console.ReadLine(), out int result) ? result : 0;
-    }
-
-    private static async Task ManageFavoritesAsync(Facade facade, string userId, List<TrainVO> routes)
-    {
-        await PrintFavoritesAsync(facade, userId);
-
-        Console.WriteLine("1 - Добавить в избранное\n2 - Удалить из избранного");
-        int action = ParseUserChoice();
-
-        if (action == 1)
-        {
-            Console.Write("Введите номер маршрута для добавления: ");
-            int index = ParseUserChoice();
-            await facade.AddToFavoritesAsync(userId, routes[Math.Clamp(index, 0, routes.Count - 1)]);
-        }
-        else if (action == 2)
-        {
-            Console.Write("Введите номер маршрута для удаления: ");
-            int index = ParseUserChoice();
-            await facade.RemoveFromFavoritesAsync(userId, routes[Math.Clamp(index, 0, routes.Count - 1)]);
-        }
-
-        await PrintFavoritesAsync(facade, userId);
-    }
-
-    private static async Task ManageSubscriptionsAsync(Facade facade, string userId, List<TrainVO> routes)
-    {
-        await PrintSubscriptionsAsync(facade, userId);
-
-        Console.WriteLine("1 - Подписаться\n2 - Отписаться");
-        int action = ParseUserChoice();
-
-        Console.Write("Введите дату (например, 30.04.2025): ");
-        string dateInput = Console.ReadLine() ?? "01.01.2000";
-        DateOnly date = DateOnly.Parse(dateInput);
-
-        Console.Write("Введите номер маршрута: ");
-        int routeIndex = ParseUserChoice();
-        var selectedRoute = routes[Math.Clamp(routeIndex, 0, routes.Count - 1)];
-        SubscriptionVO subscription = new(selectedRoute, date);
-
-        if (action == 1)
-        {
-            await facade.SubscribeAsync(userId, subscription);
-        }
-        else if (action == 2)
-        {
-            await facade.UnSubscribeAsync(userId, subscription);
-        }
-
-        await PrintSubscriptionsAsync(facade, userId);
-    }
-
-    private static async Task PrintNotificationsAsync(Facade facade)
-    {
-        var notifications = await facade.PopNotifications();
-        Console.WriteLine("Уведомления:----------------------------");
-        foreach (var notification in notifications)
-        {
-            Console.WriteLine($"{notification.UserId}: {notification.Message}");
-        }
-    }
-
-    private static async Task PrintFavoritesAsync(Facade facade, string userId)
+    static async Task ManageFavoritesAsync(Facade facade, string userId)
     {
         var favorites = await facade.GetFavoritesAsync(userId);
-        Console.WriteLine("Избранное:----------------------------");
-        foreach (var item in favorites)
+        Console.WriteLine("Favorites:");
+        PrintTrains(favorites);
+
+        Console.WriteLine("1. Add\n2. Remove");
+        var choice = Console.ReadLine();
+        if (choice is "1" or "2")
         {
-            Console.WriteLine($"{item.FromTime} --- {item.ToTime}");
+            await GetTrainsAsync(facade);
+            Console.Write("Choose train index: ");
+            StationVO fromStation = new("ст. Речица, г. Речица, Гомельская обл., Беларусь", "Речица", "2100195");
+            StationVO toStation = new("г. Минск, Беларусь", "Минск", "2100000");
+            var route = await facade.GetTimesForRouteAsync(new(fromStation, toStation)); // Example route
+            var train = route[ReadIndex(route.Count)];
+
+            if (choice == "1")
+                await facade.AddToFavoritesAsync(userId, train);
+            else
+                await facade.RemoveFromFavoritesAsync(userId, train);
         }
     }
 
-    private static async Task PrintSubscriptionsAsync(Facade facade, string userId)
+    static async Task ManageSubscriptionsAsync(Facade facade, string userId)
     {
-        var subscriptions = await facade.GetSubscritionsAsync(userId);
-        Console.WriteLine("Подписки:----------------------------");
-        foreach (var subscription in subscriptions)
+        var subs = await facade.GetSubscritionsAsync(userId);
+        Console.WriteLine("Subscriptions:");
+        foreach (var sub in subs)
         {
-            Console.WriteLine($"Дата: {subscription.Date}");
-            Console.WriteLine($"{subscription.Train.FromTime} --- {subscription.Train.ToTime}\n");
+            Console.WriteLine($"{sub.Date}: {sub.Train.FromTime} - {sub.Train.ToTime}");
+        }
+
+        Console.WriteLine("1. Subscribe\n2. Unsubscribe");
+        var choice = Console.ReadLine();
+        if (choice is "1" or "2")
+        {
+            await GetTrainsAsync(facade);
+            Console.Write("Choose train index: ");
+            StationVO fromStation = new("ст. Речица, г. Речица, Гомельская обл., Беларусь", "Речица", "2100195");
+            StationVO toStation = new("г. Минск, Беларусь", "Минск", "2100000");
+            var route = await facade.GetTimesForRouteAsync(new(fromStation, toStation)); // Example route
+            var train = route[ReadIndex(route.Count)];
+
+            Console.Write("Enter date (yyyy-MM-dd): ");
+            var date = DateOnly.Parse(Console.ReadLine() ?? "2000-01-01");
+
+            var subscription = new SubscriptionVO(train, date);
+
+            if (choice == "1")
+                await facade.SubscribeAsync(userId, subscription);
+            else
+                await facade.UnSubscribeAsync(userId, subscription);
         }
     }
+
+    static async Task PrintNotificationsAsync(Facade facade)
+    {
+        var notifications = await facade.PopNotifications();
+        foreach (var notif in notifications)
+        {
+            Console.WriteLine($"{notif.UserId}: {notif.Message}");
+        }
+    }
+
+    static void PrintStations(List<StationVO> stations)
+    {
+        for (int i = 0; i < stations.Count; i++)
+        {
+            Console.WriteLine($"{i}: {stations[i].Label}");
+        }
+    }
+
+    static void PrintTrains(List<TrainVO> trains)
+    {
+        for (int i = 0; i < trains.Count; i++)
+        {
+            Console.WriteLine($"{i}: {trains[i].FromTime} -> {trains[i].ToTime}");
+        }
+    }
+
+    static int ReadIndex(int max)
+    {
+        while (true)
+        {
+            if (int.TryParse(Console.ReadLine(), out int index) && index >= 0 && index < max)
+                return index;
+            Console.Write("Invalid index, try again: ");
+        }
+    }
+
+    static async Task ManageUsersAsync(Facade facade)
+    {
+        Console.WriteLine(@"
+User Management:
+1. Authenticate new user
+2. Get user status
+3. Ban user
+4. Unban user
+5. Set max subscriptions
+6. Set min interval
+7. Promote
+8. Demote
+Choose option:");
+
+        string? choice = Console.ReadLine();
+
+        Console.Write("Enter current user ID: ");
+        string curUserId = Console.ReadLine() ?? "user";
+        string targetUserId;
+        switch (choice)
+        {
+            case "1":
+                facade.AuthenticateUser(curUserId);
+                Console.WriteLine("User authenticated.");
+                break;
+
+            case "2":
+                string status = await facade.GetUserStatusAsync(curUserId);
+                Console.WriteLine($"Status of {curUserId}: {status}");
+                break;
+
+            case "3":
+                Console.Write("Enter target user ID: ");
+                targetUserId = Console.ReadLine() ?? "user";
+                await facade.BanUserAsync(curUserId, targetUserId);
+                Console.WriteLine("User banned.");
+                break;
+
+            case "4":
+                Console.Write("Enter target user ID: ");
+                targetUserId = Console.ReadLine() ?? "user";
+                await facade.UnbanUserAsync(curUserId, targetUserId);
+                Console.WriteLine("User unbanned.");
+                break;
+
+            case "5":
+                Console.Write("Enter max subscriptions (uint): ");
+                if (uint.TryParse(Console.ReadLine(), out uint maxSub))
+                {
+                    Console.Write("Enter target user ID: ");
+                    targetUserId = Console.ReadLine() ?? "user";
+                    await facade.SetUsersMaxSubscriptionsAsync(curUserId, targetUserId, maxSub);
+                    Console.WriteLine("Max subscriptions updated.");
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input.");
+                }
+                break;
+
+            case "6":
+                Console.Write("Enter min interval (uint): ");
+                if (uint.TryParse(Console.ReadLine(), out uint minInt))
+                {
+                    Console.Write("Enter target user ID: ");
+                    targetUserId = Console.ReadLine() ?? "user";
+                    await facade.SetUsersMinIntervalAsync(curUserId, targetUserId, minInt);
+                    Console.WriteLine("Min interval updated.");
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input.");
+                }
+                break;
+
+            case "7":
+                Console.Write("Enter target user ID: ");
+                targetUserId = Console.ReadLine() ?? "user";
+                await facade.PromoteUserAsync(curUserId, targetUserId);
+                Console.WriteLine("User promoted.");
+                break;
+
+            case "8":
+                Console.Write("Enter target user ID: ");
+                targetUserId = Console.ReadLine() ?? "user";
+                await facade.DemoteUserAsync(curUserId, targetUserId);
+                Console.WriteLine("User demoted.");
+                break;
+
+            default:
+                Console.WriteLine("Unknown command.");
+                break;
+        }
+    }
+
 }

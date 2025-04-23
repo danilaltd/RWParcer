@@ -5,7 +5,7 @@ namespace RWParcerCore.Infrastructure.Repositories
 {
     internal class InMemoryNotificationRepository : INotificationRepository
     {
-        private readonly List<NotificationItem> _notifications = new();
+        private readonly List<NotificationItem> _notifications = [];
         private readonly SemaphoreSlim _semaphore = new(1, 1);
 
         public async Task<IEnumerable<NotificationItem>> PopNotificationsAsync()
@@ -25,8 +25,7 @@ namespace RWParcerCore.Infrastructure.Repositories
 
         public async Task AddNotificationAsync(NotificationItem notificationItem)
         {
-            if (notificationItem == null)
-                throw new ArgumentNullException(nameof(notificationItem));
+            ArgumentNullException.ThrowIfNull(notificationItem);
 
             await _semaphore.WaitAsync();
             try

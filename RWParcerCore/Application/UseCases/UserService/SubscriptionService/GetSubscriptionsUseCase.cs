@@ -4,23 +4,16 @@ using RWParcerCore.Domain.ValueObjects;
 
 namespace RWParcerCore.Application.UseCases.UserService.SubscriptionService
 {
-    internal class GetSubscriptionsUseCase : IGetSubscriptions
+    internal class GetSubscriptionsUseCase(IUserRepository userRepository, ISubscriptionRepository subscriptionRepository) : IGetSubscriptions
     {
-        private readonly IUserRepository _userRepository;
-        private readonly ISubscriptionRepository _subscriptionRepository;
-        public GetSubscriptionsUseCase(IUserRepository userRepository, ISubscriptionRepository subscriptionRepository)
-        {
-            _userRepository = userRepository;
-            _subscriptionRepository = subscriptionRepository;
-        }
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly ISubscriptionRepository _subscriptionRepository = subscriptionRepository;
 
         public async Task<List<SubscriptionVO>> GetSubscriptionsAsync(string userId)
         {
-            if (await _userRepository.GetUserByIdAsync(userId) == null) return [];
+            if (!await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} not found");
 
-            var favorites = await _subscriptionRepository.GetSubscriptionsAsync(userId);
-
-            return favorites.Select(favorite => favorite.Subscription).ToList();
+            return [.. (await _subscriptionRepository.GetSubscriptionsAsync(userId)).Select(favorite => favorite.Subscription)];
         }
     }
 }

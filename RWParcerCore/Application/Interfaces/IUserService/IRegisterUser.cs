@@ -2,6 +2,6 @@
 {
     internal interface IRegisterUser
     {
-        Task RegisterUser(string id);
+        Task RegisterUserAsync(string UserId);
     }
 }

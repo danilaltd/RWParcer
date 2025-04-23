@@ -7,7 +7,7 @@ namespace RWParcerCore.Infrastructure.Repositories
 {
     internal class InMemorySubscriptionRepository : ISubscriptionRepository
     {
-        private readonly List<SubscriptionItem> _subscriptions = new();
+        private readonly List<SubscriptionItem> _subscriptions = [];
         private readonly SemaphoreSlim _semaphore = new(1, 1); // Потокобезопасный механизм блокировки
 
         public async Task<IEnumerable<SubscriptionItem>> GetSubscriptionsAsync(string userId)
@@ -15,9 +15,7 @@ namespace RWParcerCore.Infrastructure.Repositories
             await _semaphore.WaitAsync();
             try
             {
-                return _subscriptions
-                    .Where(f => f.UserId == userId)
-                    .ToList();
+                return [.. _subscriptions.Where(f => f.UserId == userId)];
             }
             finally
             {
@@ -89,8 +87,7 @@ namespace RWParcerCore.Infrastructure.Repositories
             await _semaphore.WaitAsync();
             try
             {
-                return _subscriptions
-                    .ToList();
+                return [.. _subscriptions];
             }
             finally
             {

@@ -4,23 +4,16 @@ using RWParcerCore.Domain.ValueObjects;
 
 namespace RWParcerCore.Application.UseCases.UserService.FavoritesService
 {
-    internal class RemoveFromFavoritesUseCase : IRemoveFromFavorites
+    internal class RemoveFromFavoritesUseCase(IUserRepository userRepository, IFavoritesRepository favoriteRepository) : IRemoveFromFavorites
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IFavoritesRepository _favoriteRepository;
-        public RemoveFromFavoritesUseCase(IUserRepository userRepository, IFavoritesRepository favoriteRepository)
-        {
-            _userRepository = userRepository;
-            _favoriteRepository = favoriteRepository;
-        }
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IFavoritesRepository _favoriteRepository = favoriteRepository;
+
         public async Task RemoveFromFavoritesAsync(string userId, TrainVO train)
         {
-            if (await _userRepository.GetUserByIdAsync(userId) == null) return;
-            var favorites = await _favoriteRepository.GetFavoritesAsync(userId);
+            if (!await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} not found");
 
-            var favoriteToRemove = favorites.FirstOrDefault(f => f.Train.Equals(train));
-
-            if (favoriteToRemove == null) return;
+            var favoriteToRemove = (await _favoriteRepository.GetFavoritesAsync(userId)).FirstOrDefault(f => f.Train.Equals(train)) ?? throw new KeyNotFoundException("Favorite item not found");
 
             await _favoriteRepository.RemoveFavoriteAsync(favoriteToRemove);
         }

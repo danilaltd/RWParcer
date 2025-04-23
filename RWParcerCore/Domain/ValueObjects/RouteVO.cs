@@ -1,16 +1,10 @@
 ﻿
 namespace RWParcerCore.Domain.ValueObjects
 {
-    public class RouteVO : ValueObject
+    public class RouteVO(StationVO from, StationVO to) : ValueObject
     {
-        public StationVO From { get; private set; }
-        public StationVO To { get; private set; }
-
-        public RouteVO(StationVO from, StationVO to)
-        {
-            From = from;
-            To = to;
-        }
+        public StationVO From { get; private set; } = from;
+        public StationVO To { get; private set; } = to;
 
         protected override IEnumerable<object> GetEqualityComponents()
         {

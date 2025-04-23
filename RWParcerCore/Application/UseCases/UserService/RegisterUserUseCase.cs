@@ -4,19 +4,15 @@ using RWParcerCore.Domain.IRepositories;
 
 namespace RWParcerCore.Application.UseCases.UserService
 {
-    internal class RegisterUserUseCase : IRegisterUser
+    internal class RegisterUserUseCase(IUserRepository userRepository) : IRegisterUser
     {
-        private readonly IUserRepository _userRepository;
-        public RegisterUserUseCase(IUserRepository userRepository)
-        {
-            _userRepository = userRepository;
-        }
-        public async Task RegisterUser(string id)
-        {
-            User? existingUser = await _userRepository.GetUserByIdAsync(id);
-            if (existingUser != null) return;
+        private readonly IUserRepository _userRepository = userRepository;
 
-            var newUser = new User(id);
+        public async Task RegisterUserAsync(string userId)
+        {
+            if (await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} already exists");
+
+            var newUser = new User(userId);
             await _userRepository.AddUserAsync(newUser);
         }
     }

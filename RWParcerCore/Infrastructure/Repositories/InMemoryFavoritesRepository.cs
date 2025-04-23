@@ -8,7 +8,7 @@ namespace RWParcerCore.Infrastructure.Repositories
 {
     internal class InMemoryFavoritesRepository : IFavoritesRepository
     {
-        private readonly List<FavoriteItem> _favorites = new List<FavoriteItem>();
+        private readonly List<FavoriteItem> _favorites = [];
         private readonly SemaphoreSlim _semaphore = new(1, 1);
 
         private readonly object _lock = new();
@@ -18,9 +18,7 @@ namespace RWParcerCore.Infrastructure.Repositories
             await _semaphore.WaitAsync();
             try
             {
-                return _favorites
-                    .Where(f => f.UserId == userId)
-                    .ToList();
+                return [.. _favorites.Where(f => f.UserId == userId)];
             }
             finally
             {

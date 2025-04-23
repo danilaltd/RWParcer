@@ -2,24 +2,18 @@
 using RWParcerCore.Domain.Entities;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.ValueObjects;
-using System.Threading.Tasks;
 
 namespace RWParcerCore.Application.UseCases.UserService.FavoritesService
 {
-    internal class AddToFavoritesUseCase : IAddToFavorites
+    internal class AddToFavoritesUseCase(IUserRepository userRepository, IFavoritesRepository favoriteRepository) : IAddToFavorites
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IFavoritesRepository _favoriteRepository;
-        public AddToFavoritesUseCase(IUserRepository userRepository, IFavoritesRepository favoriteRepository)
-        {
-            _userRepository = userRepository;
-            _favoriteRepository = favoriteRepository;
-        }
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IFavoritesRepository _favoriteRepository = favoriteRepository;
+
         public async Task AddToFavoritesAsync(string userId, TrainVO train)
         {
-            User? existingUser = await _userRepository.GetUserByIdAsync(userId);
-            if (existingUser == null) return;
-            if (await _favoriteRepository.ExistsAsync(userId, train)) return;
+            if (!await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} not found");
+            if (!await _favoriteRepository.ExistsAsync(userId, train)) throw new InvalidOperationException($"Train {train} already in favorites");
 
             await _favoriteRepository.AddFavoriteAsync(new FavoriteItem(userId, train));
         }

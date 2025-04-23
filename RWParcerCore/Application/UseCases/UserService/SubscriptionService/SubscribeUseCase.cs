@@ -5,21 +5,15 @@ using RWParcerCore.Domain.ValueObjects;
 
 namespace RWParcerCore.Application.UseCases.UserService.SubscriptionService
 {
-    internal class SubscribeUseCase : ISubscribe
+    internal class SubscribeUseCase(IUserRepository userRepository, ISubscriptionRepository subscriptionRepository) : ISubscribe
     {
-        private readonly IUserRepository _userRepository;
-        private readonly ISubscriptionRepository _subscriptionRepository;
-        public SubscribeUseCase(IUserRepository userRepository, ISubscriptionRepository subscriptionRepository)
-        {
-            _userRepository = userRepository;
-            _subscriptionRepository = subscriptionRepository;
-        }
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly ISubscriptionRepository _subscriptionRepository = subscriptionRepository;
 
         public async Task SubscribeAsync(string userId, SubscriptionVO subscription)
         {
-            User? existingUser = await _userRepository.GetUserByIdAsync(userId);
-            if (existingUser == null) return;
-            if (await _subscriptionRepository.ExistsAsync(userId, subscription)) return;
+            if (!await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} not found");
+            if (await _subscriptionRepository.ExistsAsync(userId, subscription)) throw new InvalidOperationException("User already has this subscription");
 
             await _subscriptionRepository.AddSubscriptionAsync(new SubscriptionItem(userId, subscription, await _userRepository.GetUserMinIntervalAsync(userId)));
         }

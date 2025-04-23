@@ -19,10 +19,19 @@ namespace RWParcerCore.InterfaceAdapters.Facades
 {
     public class Facade
     {
-        private CancellationTokenSource _cts;
+        private readonly CancellationTokenSource _cts;
         private readonly INotificationBackgroundService _notificationBackgroundService;
 
         private readonly IRegisterUser _registerUser;
+        private readonly IBanUser _banUser;
+        private readonly IUnbanUser _unbanUser;
+        private readonly IPromoteUser _promoteUser;
+        private readonly IDemoteUser _demoteUser;
+        private readonly IGetUserStatus _getUserStatus;
+        private readonly ISetUsersMaxSubscriptions _setUsersMaxSubscriptions;
+        private readonly ISetUsersMinInterval _setUsersMinInterval;
+
+
         private readonly IGetStations _getStations;
         private readonly IGetTrains _getTrains;
 
@@ -35,8 +44,9 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         private readonly IGetSubscriptions _getSubscriptions;
 
         private readonly IPopNotifications _popNotifications;
+        
 
-        private Facade()
+        public Facade()
         {
             HttpClient httpClient = new();
             
@@ -46,10 +56,18 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             INotificationRepository notificationRepository = new InMemoryNotificationRepository(); 
             IRWRepository rwRepository = new RWParcer(httpClient);
             
-            _notificationBackgroundService = new NotificationBackgroundService(subscriptionRepository, notificationRepository, rwRepository, httpClient, 5, 15); ;
+            _notificationBackgroundService = new NotificationBackgroundService(subscriptionRepository, notificationRepository, rwRepository, 5, 15); ;
             _cts = new CancellationTokenSource();
 
             _registerUser = new RegisterUserUseCase(userRepository);
+            _banUser = new BanUserUseCase(userRepository);
+            _unbanUser = new UnbanUserUseCase(userRepository);
+            _promoteUser = new PromoteUserUseCase(userRepository);
+            _demoteUser = new DemoteUserUseCase(userRepository);
+            _getUserStatus = new GetUserStatusUseCase(userRepository);
+            _setUsersMaxSubscriptions = new SetUsersMaxSubscriptionsUseCase(userRepository);
+            _setUsersMinInterval = new SetUsersMinIntervalUseCase(userRepository);
+
             _getStations = new GetStationsUseCase(rwRepository);
             _getTrains = new GetTrainsUseCase(rwRepository);
             
@@ -62,22 +80,16 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             _getSubscriptions = new GetSubscriptionsUseCase(userRepository, subscriptionRepository);
 
             _popNotifications = new PopNotificationsUseCase(notificationRepository);
-        }
 
-        public async static Task<Facade> CreateAsync()
-        {
-            Facade facade = new Facade();
-            _ = Task.Run(() => facade.StartAsync());
-            return facade;
+            _ = Task.Run(() => StartAsync());
         }
-
         public Task StartAsync() => _notificationBackgroundService.StartAsync(_cts.Token);
 
         public Task StopAsync() => _cts.CancelAsync();
 
         public void AuthenticateUser(string userId)
         {
-            _registerUser.RegisterUser(userId);
+            _registerUser.RegisterUserAsync(userId);
         }
 
         public async Task<List<StationVO>> GetStationAsync(string prefix)
@@ -124,17 +136,39 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             return await _popNotifications.PopNotifications();
         }
 
+        public async Task<string> GetUserStatusAsync(string userId)
+        {
+            return await _getUserStatus.GetUserStatusAsync(userId);
+        }
+        public async Task BanUserAsync(string userId, string targetId)
+        {
+            await _banUser.BanUserAsync(userId, targetId);
+        }
 
+        public async Task UnbanUserAsync(string userId, string targetId)
+        {
+            await _unbanUser.UnbanUserAsync(userId, targetId);
+        }
 
+        public async Task PromoteUserAsync(string userId, string targetId)
+        {
+            await _promoteUser.PromoteUserAsync(userId, targetId);
+        }
 
+        public async Task DemoteUserAsync(string userId, string targetId)
+        {
+            await _demoteUser.DemoteUserAsync(userId, targetId);
+        }
 
+        public async Task SetUsersMaxSubscriptionsAsync(string userId, string targetId, uint maxSubscriptions)
+        {
+            await _setUsersMaxSubscriptions.SetUsersMaxSubscriptionsAsync(userId, targetId, maxSubscriptions);
+        }
 
-        //public void SendFeedback(Message message)
-        //{
-        //    _feedbackService.SendFeedback(message);
-        //}
+        public async Task SetUsersMinIntervalAsync(string userId, string targetId, uint maxSubscriptions)
+        {
+            await _setUsersMinInterval.SetUsersMinIntervalAsync(userId, targetId, maxSubscriptions);
+        }
 
-        // Можно добавить и другие методы, объединяющие функциональность сервисов
     }
-
 }

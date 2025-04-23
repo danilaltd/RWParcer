@@ -1,9 +1,8 @@
 ﻿using Newtonsoft.Json;
-using System.Text.Json.Serialization;
 
 namespace RWParcerCore.Domain.DTOs
 {
-    public class RepoTrain
+    internal class RepoTrain
     {
         [JsonProperty("index")]
         public int? Index { get; set; }

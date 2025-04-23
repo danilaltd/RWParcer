@@ -5,32 +5,22 @@ using System.Diagnostics;
 
 namespace RWParcerCore.Infrastructure.Services
 {
-    internal class NotificationBackgroundService : INotificationBackgroundService
+    internal class NotificationBackgroundService(ISubscriptionRepository subscriptionRepository, INotificationRepository notificationRepository, IRWRepository rwRepository, int maxRetries, int threadingMax) : INotificationBackgroundService
     {
-        private readonly ISubscriptionRepository _subscriptionRepository;
-        private readonly INotificationRepository _notificationRepository;
-        private readonly IRWRepository _rwRepository;
-        private readonly SemaphoreSlim _semaphore;
-        private readonly int _maxRetries;
-
-        public NotificationBackgroundService(ISubscriptionRepository subscriptionRepository, INotificationRepository notificationRepository, IRWRepository rwRepository, HttpClient httpClient, int maxRetries, int threadingMax)
-        {
-            _subscriptionRepository = subscriptionRepository;
-            _notificationRepository = notificationRepository;
-            _rwRepository = rwRepository;
-            _maxRetries = maxRetries;
-            _semaphore = new SemaphoreSlim(threadingMax);
-        }
-        
+        private readonly ISubscriptionRepository _subscriptionRepository = subscriptionRepository;
+        private readonly INotificationRepository _notificationRepository = notificationRepository;
+        private readonly IRWRepository _rwRepository = rwRepository;
+        private readonly SemaphoreSlim _semaphore = new(threadingMax);
+        private readonly int _maxRetries = maxRetries;
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            Debug.Write("Waiting...");
             while (!cancellationToken.IsCancellationRequested)
             {
                 var subscriptions = await _subscriptionRepository.GetAllSubscriptionsAsync();
                 if (!subscriptions.Any())
                 {
-                    Debug.Write(".");
                     continue;
                 }
 
@@ -103,8 +93,8 @@ namespace RWParcerCore.Infrastructure.Services
         {
             var changes = new List<string>();
 
-            var oldStateSafe = oldState ?? new Dictionary<int, List<int>>();
-            var newStateSafe = newState ?? new Dictionary<int, List<int>>();
+            var oldStateSafe = oldState ?? [];
+            var newStateSafe = newState ?? [];
 
             foreach (var carNumber in oldStateSafe.Keys.OrderBy(x => x))
             {
@@ -113,10 +103,10 @@ namespace RWParcerCore.Infrastructure.Services
                     var removedSeats = oldStateSafe[carNumber].Except(newSeats).ToList();
                     var addedSeats = newSeats.Except(oldStateSafe[carNumber]).ToList();
 
-                    if (removedSeats.Any())
+                    if (removedSeats.Count != 0)
                         changes.Add($"Вагон {carNumber}: Удалены {string.Join(", ", removedSeats)}");
 
-                    if (addedSeats.Any())
+                    if (addedSeats.Count != 0)
                         changes.Add($"Вагон {carNumber}: Добавлены {string.Join(", ", addedSeats)}");
                 }
                 else

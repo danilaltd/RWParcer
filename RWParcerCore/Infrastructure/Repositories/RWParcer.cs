@@ -9,17 +9,12 @@ using System.Web;
 
 namespace RWParcerCore.Infrastructure.Repositories
 {
-    internal class RWParcer : IRWRepository
+    internal class RWParcer(HttpClient httpClient) : IRWRepository
     {
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClient = httpClient;
         private readonly string GetStationsUrl = "https://pass.rw.by/ru/ajax/autocomplete/search/?term=";
         private readonly string GetTrainsBaseUrl = "https://apicast.rw.by/v1/rasp/ru/index/route";
         private readonly string GetSeatsBaseUrl = "https://pass.rw.by/ru/ajax/route/car_places";
-
-        public RWParcer(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
 
         public async Task<List<RepoStation>> GetStationsAsync(string pref)
         {

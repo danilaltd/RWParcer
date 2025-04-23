@@ -5,7 +5,7 @@ namespace RWParcerCore.Infrastructure.Repositories
 {
     internal class InMemoryMessageRepository : IMessageRepository
     {
-        private readonly List<Message> _messages = new List<Message>();
+        private readonly List<Message> _messages = [];
 
         public void Add(Message message)
         {
