@@ -1,20 +1,23 @@
-﻿using RWParcer.MenuStates;
+﻿using RWParcer.NotNow;
 
 namespace RWParcer
 {
     public class RWParcer
     {
-        private readonly MenuContext menu;
+        //private readonly MenuContext menu;
         public RWParcer()
         {
-            menu = new(new MainMenuState());
+            //menu = new(new MainMenuState());
         }
         public void Start() {
-            TempOutput(menu.HandleInput(""));
+            //TempOutput(menu.HandleInput(""));
+            //TempOutput(menu.HandleInput("поиск"));
+            //TempOutput(menu.HandleInput("ст. Марьина Горка, г. Марьина Горка, Минская обл., Беларусь"));
+            //TempOutput(menu.HandleInput("ст. Марьина Горка, г. Марьина Горка, Минская обл., Беларусь"));
             while (true)
             {
                 string input = Console.ReadLine() ?? "";
-                TempOutput(menu.HandleInput(input));
+                //TempOutput(menu.HandleInput(input));
             }
         }
 
