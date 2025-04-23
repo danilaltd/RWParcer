@@ -12,6 +12,7 @@ namespace RWParcerCore.Application.UseCases.UserService.FavoritesService
         public async Task RemoveFromFavoritesAsync(string userId, TrainVO train)
         {
             if (await _userRepository.IsUserBannedAsync(userId)) throw new UnauthorizedAccessException($"User {userId} is banned");
+            await _userRepository.UpdateActivityAsync(userId);
             if (!await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} not found");
 
             var favoriteToRemove = (await _favoriteRepository.GetFavoritesAsync(userId)).FirstOrDefault(f => f.Train.Equals(train)) ?? throw new KeyNotFoundException($"Favorite item not found {userId}");

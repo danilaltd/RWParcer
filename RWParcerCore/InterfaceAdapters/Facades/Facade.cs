@@ -2,12 +2,14 @@
 using RWParcerCore.Application.Interfaces.IRWService;
 using RWParcerCore.Application.Interfaces.IUserService;
 using RWParcerCore.Application.Interfaces.IUserService.IFavoritesService;
+using RWParcerCore.Application.Interfaces.IUserService.IModerator;
 using RWParcerCore.Application.Interfaces.IUserService.ISubscriptionService;
 using RWParcerCore.Application.UseCases.NotificationService;
 using RWParcerCore.Application.UseCases.RWService;
 using RWParcerCore.Application.UseCases.UserService;
 using RWParcerCore.Application.UseCases.UserService.FavoritesService;
 using RWParcerCore.Application.UseCases.UserService.FeedbackService;
+using RWParcerCore.Application.UseCases.UserService.ModeratorUseCases;
 using RWParcerCore.Application.UseCases.UserService.SubscriptionService;
 using RWParcerCore.Domain.Entities;
 using RWParcerCore.Domain.IRepositories;
@@ -31,6 +33,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         private readonly IGetUserStatus _getUserStatus;
         private readonly ISetUsersMaxSubscriptions _setUsersMaxSubscriptions;
         private readonly ISetUsersMinInterval _setUsersMinInterval;
+        private readonly IGetUsers _getUsers;
 
         private readonly ISendFeedback _sendFeedback;
         private readonly ISendMessage _sendMessage;
@@ -72,6 +75,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             _getUserStatus = new GetUserStatusUseCase(userRepository);
             _setUsersMaxSubscriptions = new SetUsersMaxSubscriptionsUseCase(userRepository);
             _setUsersMinInterval = new SetUsersMinIntervalUseCase(userRepository);
+            _getUsers = new GetUsersUseCase(userRepository);
 
             _sendFeedback = new SendFeedbackUseCase(userRepository, messageRepository);
             _sendMessage = new SendMessageUseCase(userRepository, messageRepository, notificationRepository);
@@ -191,6 +195,10 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         public async Task<List<Message>> GetMessagesAsync(string userId)
         {
             return await _getMessages.GetMessages(userId);
+        }
+        public async Task<List<UserVO>> GetUsersAsync(string userId, TimeSpan timeSpan)
+        {
+            return await _getUsers.GetUsersAsync(userId, timeSpan);
         }
 
     }

@@ -28,6 +28,7 @@ class Program
 7. SendFeedback
 8. SendMessage
 9. GetMessages
+10. GetUsers
 0. Exit
 Choose an option:");
 
@@ -69,6 +70,10 @@ Choose an option:");
                         await GetMessagesAsync(facade);
                         break;
 
+                    case "10":
+                        await GetUsersAsync(facade);
+                        break;
+
                     case "0":
                         await facade.StopAsync();
                         return;
@@ -105,7 +110,7 @@ Choose an option:");
         string curUserId = Console.ReadLine() ?? "user";
         Console.Write("Enter target user ID: ");
         string targetUserId = Console.ReadLine() ?? "user";
-        Console.Write("Enter message");
+        Console.Write("Enter message: ");
         string msg = Console.ReadLine() ?? "hello";
         await facade.SendMessageAsync(curUserId, targetUserId, msg);
     }
@@ -114,11 +119,23 @@ Choose an option:");
     {
         Console.Write("Enter current user ID: ");
         string curUserId = Console.ReadLine() ?? "user";
-        Console.Write("Enter message");
+        Console.Write("Enter message: ");
         string msg = Console.ReadLine() ?? "hello";
         await facade.SendFeedbackAsync(curUserId, msg);
     }
 
+    private static async Task GetUsersAsync(Facade facade)
+    {
+        Console.Write("Enter current user ID: ");
+        string curUserId = Console.ReadLine() ?? "user";
+        Console.Write("Enter timespan d*.hh:mm:ss\n");
+        TimeSpan ts = TimeSpan.Parse(Console.ReadLine() ?? "00:00:01");
+        var users = await facade.GetUsersAsync(curUserId, ts);
+        foreach (var item in users)
+        {
+            Console.WriteLine($"IsBlocked: {item.IsBlocked}\nIsModerator: {item.IsModerator}\nMinSubscriptionsInterval: {item.MinSubscriptionsInterval}\nMaxSubscriptions: {item.MaxSubscriptions}\nLastActivity: {item.LastActivity}\nId: {item.Id}\n\n");
+        }
+    }
     static async Task GetStationsAsync(Facade facade)
     {
         Console.Write("Enter station prefix: ");

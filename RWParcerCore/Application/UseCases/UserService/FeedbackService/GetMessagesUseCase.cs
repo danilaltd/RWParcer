@@ -12,6 +12,7 @@ namespace RWParcerCore.Application.UseCases.UserService.FeedbackService
         public async Task<List<Message>> GetMessages(string userId)
         {
             if (!await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} not found");
+            await _userRepository.UpdateActivityAsync(userId);
             if (await _userRepository.IsUserBannedAsync(userId)) throw new UnauthorizedAccessException($"User {userId} is banned");
             if (await _userRepository.IsUserModeratorAsync(userId))
             {

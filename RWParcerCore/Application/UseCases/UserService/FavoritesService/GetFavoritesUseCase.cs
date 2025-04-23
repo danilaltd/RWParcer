@@ -13,6 +13,7 @@ namespace RWParcerCore.Application.UseCases.UserService.FavoritesService
         public async Task<List<TrainVO>> GetFavoritesAsync(string userId)
         {
             if (!await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} not found");
+            await _userRepository.UpdateActivityAsync(userId);
             if (await _userRepository.IsUserBannedAsync(userId)) throw new UnauthorizedAccessException($"User {userId} is banned");
 
             return [.. (await _favoriteRepository.GetFavoritesAsync(userId)).Select(favorite => favorite.Train)];

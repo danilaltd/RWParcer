@@ -2,7 +2,6 @@
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.ValueObjects;
 using System.Diagnostics;
-using System.Threading;
 
 namespace RWParcerCore.Infrastructure.Repositories
 {

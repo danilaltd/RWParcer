@@ -7,6 +7,7 @@
         public uint MaxSubscriptions { get; private set; }
         public uint MinSubscriptionsInterval { get; private set; } = 5;
         public bool IsBlocked { get; private set; }
+        public DateTime LastActivity { get; set; } = DateTime.Now;
 
         public void Block()
         {

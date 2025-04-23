@@ -1,5 +1,6 @@
 ﻿using RWParcerCore.Domain.Entities;
 using RWParcerCore.Domain.IRepositories;
+using RWParcerCore.Domain.ValueObjects;
 
 namespace RWParcerCore.Infrastructure.Repositories
 {
@@ -167,6 +168,34 @@ namespace RWParcerCore.Infrastructure.Repositories
             {
                 var user = _users.FirstOrDefault(u => u.Id == userId);
                 return user is null ? throw new KeyNotFoundException($"User with ID {userId} not found") : user.IsBlocked;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task UpdateActivityAsync(string userId)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                var user = _users.FirstOrDefault(u => u.Id == userId) ?? throw new KeyNotFoundException($"User with ID {userId} not found");
+                user.LastActivity = DateTime.Now;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task<List<User>> GetUsersAsync(TimeSpan timeSpan)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                var now = DateTime.Now;
+                return [.. _users.Where(u => now - u.LastActivity <= timeSpan)];
             }
             finally
             {

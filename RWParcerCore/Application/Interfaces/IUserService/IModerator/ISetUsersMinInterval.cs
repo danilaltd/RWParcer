@@ -1,4 +1,4 @@
-﻿namespace RWParcerCore.Application.Interfaces.IUserService
+﻿namespace RWParcerCore.Application.Interfaces.IUserService.IModerator
 {
     internal interface ISetUsersMinInterval
     {
