@@ -1,5 +1,4 @@
-﻿
-namespace RWParcerCore.Domain.ValueObjects
+﻿namespace RWParcerCore.Domain.ValueObjects
 {
     public class RouteVO(StationVO from, StationVO to) : ValueObject
     {

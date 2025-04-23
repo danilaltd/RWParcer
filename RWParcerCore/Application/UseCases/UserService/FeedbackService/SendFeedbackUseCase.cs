@@ -1,4 +1,5 @@
-﻿using RWParcerCore.Domain.IRepositories;
+﻿using RWParcerCore.Application.Interfaces.IUserService.IFeedbackService;
+using RWParcerCore.Domain.IRepositories;
 
 namespace RWParcerCore.Application.UseCases.UserService.FeedbackService
 {

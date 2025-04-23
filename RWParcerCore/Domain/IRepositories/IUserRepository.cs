@@ -17,6 +17,6 @@ namespace RWParcerCore.Domain.IRepositories
         Task DemoteUserAsync(string userId);
         Task<bool> IsUserBannedAsync(string userId);
         Task UpdateActivityAsync(string userId);
-        Task<List<User>> GetUsersAsync(TimeSpan timeSpan);
+        Task<List<User>> GetLastUsersAsync(TimeSpan timeSpan);
     }
 }

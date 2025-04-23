@@ -14,7 +14,7 @@ namespace RWParcerCore.Application.UseCases.UserService.SubscriptionService
             if (!await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} not found");
             if (await _userRepository.IsUserBannedAsync(userId)) throw new UnauthorizedAccessException($"User {userId} is banned");
 
-            return [.. (await _subscriptionRepository.GetSubscriptionsAsync(userId)).Select(favorite => favorite.Subscription)];
+            return [.. (await _subscriptionRepository.GetUserSubscriptionsAsync(userId)).Select(favorite => favorite.Details)];
         }
     }
 }

@@ -29,7 +29,7 @@ namespace RWParcerCore.Infrastructure.Services
             }
         }
 
-        private async Task ProcessSubscriptionAsync(SubscriptionItem subscription, CancellationToken cancellationToken)
+        private async Task ProcessSubscriptionAsync(Subscription subscription, CancellationToken cancellationToken)
         {
             await _semaphore.WaitAsync(cancellationToken);
             try
@@ -40,7 +40,7 @@ namespace RWParcerCore.Infrastructure.Services
                     {
                         if (DateTime.Now - subscription.LastUpdate < TimeSpan.FromSeconds(subscription.Interval)) break;
                         Debug.WriteLine($"Попытка {attempt}: Запрос {subscription.Id}");
-                        var response = await _rwRepository.GetSeatsAsync(subscription.Subscription);
+                        var response = await _rwRepository.GetSeatsAsync(subscription.Details);
                         if (!AreDictionariesEqual(response, subscription.LastState))
                         {
                             Debug.WriteLine($"Изменение данных для {subscription.Id}\n");

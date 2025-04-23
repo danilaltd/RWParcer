@@ -12,9 +12,9 @@ namespace RWParcerCore.Application.UseCases.UserService.SubscriptionService
         {
             if (!await _userRepository.IsUserRegistredAsync(userId)) return;
             if (await _userRepository.IsUserBannedAsync(userId)) throw new UnauthorizedAccessException($"User {userId} is banned");
-            var favorites = await _subscriptionRepository.GetSubscriptionsAsync(userId);
+            var favorites = await _subscriptionRepository.GetUserSubscriptionsAsync(userId);
 
-            var favoriteToRemove = favorites.FirstOrDefault(f => f.Subscription.Equals(subscription));
+            var favoriteToRemove = favorites.FirstOrDefault(f => f.Details.Equals(subscription));
 
             if (favoriteToRemove == null) return;
 

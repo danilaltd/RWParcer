@@ -1,5 +1,4 @@
-﻿
-namespace RWParcerCore.Domain.ValueObjects
+﻿namespace RWParcerCore.Domain.ValueObjects
 {
     public class UserVO(string id, bool isModerator, uint maxSubscriptions, uint minSubscriptionsInterval, bool isBlocked, DateTime lastActivity) : ValueObject
     {

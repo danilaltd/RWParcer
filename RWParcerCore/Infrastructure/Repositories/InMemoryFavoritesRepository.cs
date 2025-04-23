@@ -7,12 +7,12 @@ namespace RWParcerCore.Infrastructure.Repositories
 {
     internal class InMemoryFavoritesRepository : IFavoritesRepository
     {
-        private readonly List<FavoriteItem> _favorites = [];
+        private readonly List<Favorite> _favorites = [];
         private readonly SemaphoreSlim _semaphore = new(1, 1);
 
         private readonly object _lock = new();
 
-        public async Task<IEnumerable<FavoriteItem>> GetFavoritesAsync(string userId)
+        public async Task<IEnumerable<Favorite>> GetFavoritesAsync(string userId)
         {
             await _semaphore.WaitAsync();
             try
@@ -25,7 +25,7 @@ namespace RWParcerCore.Infrastructure.Repositories
             }
         }
 
-        public async Task AddFavoriteAsync(FavoriteItem favoriteItem)
+        public async Task AddFavoriteAsync(Favorite favoriteItem)
         {
             if (favoriteItem == null)
             {
@@ -44,7 +44,7 @@ namespace RWParcerCore.Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> ExistsAsync(string userId, TrainVO train)
+        public async Task<bool> FavoriteExistsAsync(string userId, TrainVO train)
         {
             if (train is null)
             {
@@ -55,7 +55,7 @@ namespace RWParcerCore.Infrastructure.Repositories
             await _semaphore.WaitAsync();
             try
             {
-                return _favorites.Any(f => f.UserId == userId && f.Train.Equals(train));
+                return _favorites.Any(f => f.UserId == userId && f.TrainInfo.Equals(train));
             }
             finally
             {
@@ -63,7 +63,7 @@ namespace RWParcerCore.Infrastructure.Repositories
             }
         }
 
-        public async Task RemoveFavoriteAsync(FavoriteItem favoriteItem)
+        public async Task RemoveFavoriteAsync(Favorite favoriteItem)
         {
             if (favoriteItem == null)
             {

@@ -189,7 +189,7 @@ namespace RWParcerCore.Infrastructure.Repositories
             }
         }
 
-        public async Task<List<User>> GetUsersAsync(TimeSpan timeSpan)
+        public async Task<List<User>> GetLastUsersAsync(TimeSpan timeSpan)
         {
             await _semaphore.WaitAsync();
             try

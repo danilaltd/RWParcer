@@ -7,10 +7,10 @@ namespace RWParcerCore.Infrastructure.Repositories
 {
     internal class InMemorySubscriptionRepository : ISubscriptionRepository
     {
-        private readonly List<SubscriptionItem> _subscriptions = [];
+        private readonly List<Subscription> _subscriptions = [];
         private readonly SemaphoreSlim _semaphore = new(1, 1); // Потокобезопасный механизм блокировки
 
-        public async Task<IEnumerable<SubscriptionItem>> GetSubscriptionsAsync(string userId)
+        public async Task<IEnumerable<Subscription>> GetUserSubscriptionsAsync(string userId)
         {
             await _semaphore.WaitAsync();
             try
@@ -23,7 +23,7 @@ namespace RWParcerCore.Infrastructure.Repositories
             }
         }
 
-        public async Task AddSubscriptionAsync(SubscriptionItem subscriptionItem)
+        public async Task AddSubscriptionAsync(Subscription subscriptionItem)
         {
             if (subscriptionItem == null)
             {
@@ -42,7 +42,7 @@ namespace RWParcerCore.Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> ExistsAsync(string userId, SubscriptionVO subscription)
+        public async Task<bool> SubscriptionExistsAsync(string userId, SubscriptionVO subscription)
         {
             if (subscription is null)
             {
@@ -55,7 +55,7 @@ namespace RWParcerCore.Infrastructure.Repositories
             {
                 return _subscriptions.Any(f =>
                     f.UserId.ToString() == userId &&
-                    f.Subscription.Equals(subscription));
+                    f.Details.Equals(subscription));
             }
             finally
             {
@@ -63,7 +63,7 @@ namespace RWParcerCore.Infrastructure.Repositories
             }
         }
 
-        public async Task RemoveSubscriptionAsync(SubscriptionItem subscriptionItem)
+        public async Task RemoveSubscriptionAsync(Subscription subscriptionItem)
         {
             if (subscriptionItem == null)
             {
@@ -82,7 +82,7 @@ namespace RWParcerCore.Infrastructure.Repositories
             }
         }
 
-        public async Task<IEnumerable<SubscriptionItem>> GetAllSubscriptionsAsync()
+        public async Task<IEnumerable<Subscription>> GetAllSubscriptionsAsync()
         {
             await _semaphore.WaitAsync();
             try

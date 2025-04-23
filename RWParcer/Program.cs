@@ -100,7 +100,7 @@ Choose an option:");
         var messages = await facade.GetMessagesAsync(curUserId);
         foreach (var item in messages)
         {
-            Console.WriteLine($"from: {item.SenderId}\nto: {item.ReceiverId}\nDate: {item.SentDate}\nContent: {item.Text}\n\n");
+            Console.WriteLine($"from: {item.SenderId}\nto: {item.ReceiverId}\nDate: {item.SentDate}\nContent: {item.Content}\n\n");
         }
     }
 
@@ -224,7 +224,7 @@ Choose an option:");
         var notifications = await facade.PopNotifications();
         foreach (var notif in notifications)
         {
-            Console.WriteLine($"{notif.UserId}: {notif.Message}");
+            Console.WriteLine($"{notif.UserId}: {notif.Content}");
         }
     }
 

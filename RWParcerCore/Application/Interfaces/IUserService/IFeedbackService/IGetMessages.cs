@@ -1,9 +1,9 @@
-﻿using RWParcerCore.Domain.Entities;
+﻿using RWParcerCore.Domain.ValueObjects;
 
-namespace RWParcerCore.Application.UseCases.UserService.FeedbackService
+namespace RWParcerCore.Application.Interfaces.IUserService.IFeedbackService
 {
     internal interface IGetMessages
     {
-        Task<List<Message>> GetMessages(string userId);
+        Task<List<MessageVO>> GetMessages(string userId);
     }
 }

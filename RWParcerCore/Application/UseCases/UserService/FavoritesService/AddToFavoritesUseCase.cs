@@ -15,9 +15,9 @@ namespace RWParcerCore.Application.UseCases.UserService.FavoritesService
             if (!await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} not found");
             await _userRepository.UpdateActivityAsync(userId);
             if (await _userRepository.IsUserBannedAsync(userId)) throw new UnauthorizedAccessException($"User {userId} is banned");
-            if (!await _favoriteRepository.ExistsAsync(userId, train)) throw new InvalidOperationException($"Train {train} already in favorites");
+            if (!await _favoriteRepository.FavoriteExistsAsync(userId, train)) throw new InvalidOperationException($"Train {train} already in favorites");
 
-            await _favoriteRepository.AddFavoriteAsync(new FavoriteItem(userId, train));
+            await _favoriteRepository.AddFavoriteAsync(new Favorite(userId, train));
         }
     }
 }

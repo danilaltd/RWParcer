@@ -5,10 +5,10 @@ namespace RWParcerCore.Domain.IRepositories
 {
     internal interface IFavoritesRepository
     {
-        Task<IEnumerable<FavoriteItem>> GetFavoritesAsync(string userId);
-        Task AddFavoriteAsync(FavoriteItem favoriteItem);
-        Task RemoveFavoriteAsync(FavoriteItem favoriteItem);
-        Task<bool> ExistsAsync(string userId, TrainVO train);
+        Task<IEnumerable<Favorite>> GetFavoritesAsync(string userId);
+        Task AddFavoriteAsync(Favorite favoriteItem);
+        Task RemoveFavoriteAsync(Favorite favoriteItem);
+        Task<bool> FavoriteExistsAsync(string userId, TrainVO train);
     }
 
 }

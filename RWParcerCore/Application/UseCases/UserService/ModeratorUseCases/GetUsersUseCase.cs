@@ -15,7 +15,7 @@ namespace RWParcerCore.Application.UseCases.UserService.ModeratorUseCases
             await _userRepository.UpdateActivityAsync(userId);
             if (await _userRepository.IsUserBannedAsync(userId)) throw new UnauthorizedAccessException($"User {userId} is banned");
             if (!await _userRepository.IsUserModeratorAsync(userId)) throw new UnauthorizedAccessException($"Only moderators can get users {userId}");
-            return [.. (await _userRepository.GetUsersAsync(timeSpan)).Select(item => UserMapper.FromEntity(item))];
+            return [.. (await _userRepository.GetLastUsersAsync(timeSpan)).Select(item => UserMapper.FromEntity(item))];
         }
     }
 }

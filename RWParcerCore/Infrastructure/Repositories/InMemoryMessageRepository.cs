@@ -42,7 +42,7 @@ namespace RWParcerCore.Infrastructure.Repositories
             }
         }
 
-        public async Task<IEnumerable<Message>> GetMessagesAsync(string userId)
+        public async Task<IEnumerable<Message>> GetUserMessagesAsync(string userId)
         {
             await _semaphore.WaitAsync();
             try

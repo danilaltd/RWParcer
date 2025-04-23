@@ -5,15 +5,15 @@ namespace RWParcerCore.Infrastructure.Repositories
 {
     internal class InMemoryNotificationRepository : INotificationRepository
     {
-        private readonly List<NotificationItem> _notifications = [];
+        private readonly List<Notification> _notifications = [];
         private readonly SemaphoreSlim _semaphore = new(1, 1);
 
-        public async Task<IEnumerable<NotificationItem>> PopNotificationsAsync()
+        public async Task<IEnumerable<Notification>> PopNotificationsAsync()
         {
             await _semaphore.WaitAsync();
             try
             {
-                var userNotifications = new List<NotificationItem>(_notifications);
+                var userNotifications = new List<Notification>(_notifications);
                 _notifications.Clear();
                 return userNotifications;
             }
@@ -23,7 +23,7 @@ namespace RWParcerCore.Infrastructure.Repositories
             }
         }
 
-        public async Task AddNotificationAsync(NotificationItem notificationItem)
+        public async Task AddNotificationAsync(Notification notificationItem)
         {
             ArgumentNullException.ThrowIfNull(notificationItem);
 

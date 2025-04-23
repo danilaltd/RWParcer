@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace RWParcerCore.Domain.ValueObjects
+﻿namespace RWParcerCore.Domain.ValueObjects
 {
     public class SubscriptionVO(
         TrainVO train,

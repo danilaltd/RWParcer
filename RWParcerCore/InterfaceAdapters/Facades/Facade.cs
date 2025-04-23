@@ -2,6 +2,7 @@
 using RWParcerCore.Application.Interfaces.IRWService;
 using RWParcerCore.Application.Interfaces.IUserService;
 using RWParcerCore.Application.Interfaces.IUserService.IFavoritesService;
+using RWParcerCore.Application.Interfaces.IUserService.IFeedbackService;
 using RWParcerCore.Application.Interfaces.IUserService.IModerator;
 using RWParcerCore.Application.Interfaces.IUserService.ISubscriptionService;
 using RWParcerCore.Application.UseCases.NotificationService;
@@ -11,7 +12,6 @@ using RWParcerCore.Application.UseCases.UserService.FavoritesService;
 using RWParcerCore.Application.UseCases.UserService.FeedbackService;
 using RWParcerCore.Application.UseCases.UserService.ModeratorUseCases;
 using RWParcerCore.Application.UseCases.UserService.SubscriptionService;
-using RWParcerCore.Domain.Entities;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.IServices;
 using RWParcerCore.Domain.ValueObjects;
@@ -144,7 +144,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         {
             return await _getSubscriptions.GetSubscriptionsAsync(userId);
         }
-        public async Task<List<NotificationItem>> PopNotifications()
+        public async Task<List<NotificationVO>> PopNotifications()
         {
             return await _popNotifications.PopNotifications();
         }
@@ -192,7 +192,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         {
             await _sendMessage.SendMessageAsync(userId, targetId, message);
         }
-        public async Task<List<Message>> GetMessagesAsync(string userId)
+        public async Task<List<MessageVO>> GetMessagesAsync(string userId)
         {
             return await _getMessages.GetMessages(userId);
         }

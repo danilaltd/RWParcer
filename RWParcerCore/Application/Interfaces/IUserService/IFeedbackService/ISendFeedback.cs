@@ -1,4 +1,4 @@
-﻿namespace RWParcerCore.Application.UseCases.UserService.FeedbackService
+﻿namespace RWParcerCore.Application.Interfaces.IUserService.IFeedbackService
 {
     internal interface ISendFeedback
     {

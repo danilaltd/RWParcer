@@ -1,9 +1,9 @@
-﻿using RWParcerCore.Domain.Entities;
+﻿using RWParcerCore.Domain.ValueObjects;
 
 namespace RWParcerCore.Application.Interfaces.INotificationService
 {
     internal interface IPopNotifications
     {
-        Task<List<NotificationItem>> PopNotifications();
+        Task<List<NotificationVO>> PopNotifications();
     }
 }
