@@ -1,24 +1,17 @@
 ﻿namespace RWParcerCore.Domain.Entities
 {
-    internal class Message
+    public class Message(string senderId, string receiverId, string text)
     {
         public Guid Id { get; } = Guid.NewGuid();
-        public User Sender { get; set; }
-        public User Receiver { get; set; }
-        public string Text { get; set; }
-        public DateTime SentDate { get; set; }
-        public bool IsRead { get; private set; }
+        public string SenderId { get; set; } = senderId;
+        public string ReceiverId { get; set; } = receiverId;
+        public string Text { get; set; } = text;
+        public DateTime SentDate { get; set; } = DateTime.Now;
+        public List<string> ReadBy { get; private set; } = [];
 
-        public Message(User sender, User receiver, string text)
+        public void MarkAsRead(string userId)
         {
-            Sender = sender;
-            Receiver = receiver;
-            Text = text;
-        }
-
-        public void MarkAsRead()
-        {
-            IsRead = true;
+            ReadBy.Add(userId);
         }
     }
 

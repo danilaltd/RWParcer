@@ -7,6 +7,7 @@ using RWParcerCore.Application.UseCases.NotificationService;
 using RWParcerCore.Application.UseCases.RWService;
 using RWParcerCore.Application.UseCases.UserService;
 using RWParcerCore.Application.UseCases.UserService.FavoritesService;
+using RWParcerCore.Application.UseCases.UserService.FeedbackService;
 using RWParcerCore.Application.UseCases.UserService.SubscriptionService;
 using RWParcerCore.Domain.Entities;
 using RWParcerCore.Domain.IRepositories;
@@ -31,6 +32,9 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         private readonly ISetUsersMaxSubscriptions _setUsersMaxSubscriptions;
         private readonly ISetUsersMinInterval _setUsersMinInterval;
 
+        private readonly ISendFeedback _sendFeedback;
+        private readonly ISendMessage _sendMessage;
+        private readonly IGetMessages _getMessages;
 
         private readonly IGetStations _getStations;
         private readonly IGetTrains _getTrains;
@@ -55,7 +59,8 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             ISubscriptionRepository subscriptionRepository = new InMemorySubscriptionRepository();
             INotificationRepository notificationRepository = new InMemoryNotificationRepository(); 
             IRWRepository rwRepository = new RWParcer(httpClient);
-            
+            IMessageRepository messageRepository = new InMemoryMessageRepository();
+
             _notificationBackgroundService = new NotificationBackgroundService(subscriptionRepository, notificationRepository, rwRepository, 5, 15); ;
             _cts = new CancellationTokenSource();
 
@@ -67,6 +72,10 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             _getUserStatus = new GetUserStatusUseCase(userRepository);
             _setUsersMaxSubscriptions = new SetUsersMaxSubscriptionsUseCase(userRepository);
             _setUsersMinInterval = new SetUsersMinIntervalUseCase(userRepository);
+
+            _sendFeedback = new SendFeedbackUseCase(userRepository, messageRepository);
+            _sendMessage = new SendMessageUseCase(userRepository, messageRepository, notificationRepository);
+            _getMessages = new GetMessagesUseCase(userRepository, messageRepository, notificationRepository);
 
             _getStations = new GetStationsUseCase(rwRepository);
             _getTrains = new GetTrainsUseCase(rwRepository);
@@ -168,6 +177,20 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         public async Task SetUsersMinIntervalAsync(string userId, string targetId, uint maxSubscriptions)
         {
             await _setUsersMinInterval.SetUsersMinIntervalAsync(userId, targetId, maxSubscriptions);
+        }
+
+        public async Task SendFeedbackAsync(string userId, string message)
+        {
+            await _sendFeedback.SendFeedbackAsync(userId, message);
+        }
+
+        public async Task SendMessageAsync(string userId, string targetId, string message)
+        {
+            await _sendMessage.SendMessageAsync(userId, targetId, message);
+        }
+        public async Task<List<Message>> GetMessagesAsync(string userId)
+        {
+            return await _getMessages.GetMessages(userId);
         }
 
     }

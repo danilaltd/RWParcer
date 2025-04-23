@@ -11,6 +11,7 @@ namespace RWParcerCore.Application.UseCases.UserService.SubscriptionService
         public async Task UnSubscribeAsync(string userId, SubscriptionVO subscription)
         {
             if (!await _userRepository.IsUserRegistredAsync(userId)) return;
+            if (await _userRepository.IsUserBannedAsync(userId)) throw new UnauthorizedAccessException($"User {userId} is banned");
             var favorites = await _subscriptionRepository.GetSubscriptionsAsync(userId);
 
             var favoriteToRemove = favorites.FirstOrDefault(f => f.Subscription.Equals(subscription));

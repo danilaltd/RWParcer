@@ -13,7 +13,8 @@ namespace RWParcerCore.Application.UseCases.UserService.SubscriptionService
         public async Task SubscribeAsync(string userId, SubscriptionVO subscription)
         {
             if (!await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} not found");
-            if (await _subscriptionRepository.ExistsAsync(userId, subscription)) throw new InvalidOperationException("User already has this subscription");
+            if (await _userRepository.IsUserBannedAsync(userId)) throw new UnauthorizedAccessException($"User {userId} is banned");
+            if (await _subscriptionRepository.ExistsAsync(userId, subscription)) throw new InvalidOperationException($"User {userId} already has this subscription");
 
             await _subscriptionRepository.AddSubscriptionAsync(new SubscriptionItem(userId, subscription, await _userRepository.GetUserMinIntervalAsync(userId)));
         }

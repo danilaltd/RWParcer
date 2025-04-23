@@ -6,27 +6,54 @@ namespace RWParcerCore.Infrastructure.Repositories
     internal class InMemoryMessageRepository : IMessageRepository
     {
         private readonly List<Message> _messages = [];
+        private readonly SemaphoreSlim _semaphore = new(1, 1);
 
         public void Add(Message message)
         {
             _messages.Add(message);
         }
 
-        public Message GetById(Guid messageId)
+        public async Task AddMessageAsync(Message message)
         {
-            return _messages.FirstOrDefault(m => m.Id == messageId);
+            ArgumentNullException.ThrowIfNull(message);
+
+            await _semaphore.WaitAsync();
+            try
+            {
+                _messages.Add(message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
-        //public IList<Message> GetUnreadMessagesByReceiver(Guid receiverId)
-        //{
-            //return _messages.Where(m => m.Receiver.Id == receiverId && !m.IsRead).ToList();
-        //}
+        public async Task<IEnumerable<Message>> GetAllMessagesAsync()
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                var messages = new List<Message>(_messages);
+                return messages;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
 
-        //public IList<Message> GetMessagesByModerator(Guid moderatorId)
-        //{
-            // Предположим, что сообщения для модератора — это сообщения, полученные модераторами,
-            // либо с дополнительной логикой фильтрации
-            //return _messages.Where(m => m.Receiver.Id == moderatorId).ToList();
-        //}
+        public async Task<IEnumerable<Message>> GetMessagesAsync(string userId)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                var messages = _messages.Where(msg => msg.ReceiverId == userId);
+                return messages;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
     }
 }

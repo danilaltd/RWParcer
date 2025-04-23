@@ -25,6 +25,9 @@ class Program
 4. Subscriptions
 5. Pop notifications
 6. Manage Users
+7. SendFeedback
+8. SendMessage
+9. GetMessages
 0. Exit
 Choose an option:");
 
@@ -54,6 +57,18 @@ Choose an option:");
                         await ManageUsersAsync(facade);
                         break;
 
+                    case "7":
+                        await SendFeedbackAsync(facade, userId);
+                        break;
+
+                    case "8":
+                        await SendMessageAsync(facade);
+                        break;
+
+                    case "9":
+                        await GetMessagesAsync(facade);
+                        break;
+
                     case "0":
                         await facade.StopAsync();
                         return;
@@ -71,6 +86,37 @@ Choose an option:");
                 Console.WriteLine($"Ошибка: {ex.Message}");
             }
         }
+    }
+
+    private static async Task GetMessagesAsync(Facade facade)
+    {
+        Console.Write("Enter current user ID: ");
+        string curUserId = Console.ReadLine() ?? "user";
+        var messages = await facade.GetMessagesAsync(curUserId);
+        foreach (var item in messages)
+        {
+            Console.WriteLine($"from: {item.SenderId}\nto: {item.ReceiverId}\nDate: {item.SentDate}\nContent: {item.Text}\n\n");
+        }
+    }
+
+    private static async Task SendMessageAsync(Facade facade)
+    {
+        Console.Write("Enter current user ID: ");
+        string curUserId = Console.ReadLine() ?? "user";
+        Console.Write("Enter target user ID: ");
+        string targetUserId = Console.ReadLine() ?? "user";
+        Console.Write("Enter message");
+        string msg = Console.ReadLine() ?? "hello";
+        await facade.SendMessageAsync(curUserId, targetUserId, msg);
+    }
+
+    private static async Task SendFeedbackAsync(Facade facade, string userId)
+    {
+        Console.Write("Enter current user ID: ");
+        string curUserId = Console.ReadLine() ?? "user";
+        Console.Write("Enter message");
+        string msg = Console.ReadLine() ?? "hello";
+        await facade.SendFeedbackAsync(curUserId, msg);
     }
 
     static async Task GetStationsAsync(Facade facade)

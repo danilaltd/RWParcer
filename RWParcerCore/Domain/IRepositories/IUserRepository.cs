@@ -7,7 +7,7 @@ namespace RWParcerCore.Domain.IRepositories
         Task<bool> IsUserRegistredAsync(string userId);
         Task AddUserAsync(User newUser);
         Task<uint> GetUserMinIntervalAsync(string userId);
-        Task<bool> GetUserIsModeratorAsync(string userId);
+        Task<bool> IsUserModeratorAsync(string userId);
         Task<uint> GetUserMaxSubscriptionsAsync(string userId);
         Task SetUsersMinIntervalAsync(string userId, uint minInterval);
         Task SetUsersMaxSubscriptionsAsync(string userId, uint MaxSubscriptions);
@@ -15,5 +15,6 @@ namespace RWParcerCore.Domain.IRepositories
         Task UnbanUserAsync(string userId);
         Task PromoteUserAsync(string userId);
         Task DemoteUserAsync(string userId);
+        Task<bool> IsUserBannedAsync(string userId);
     }
 }

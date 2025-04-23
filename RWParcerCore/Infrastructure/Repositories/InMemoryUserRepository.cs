@@ -48,7 +48,7 @@ namespace RWParcerCore.Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> GetUserIsModeratorAsync(string userId)
+        public async Task<bool> IsUserModeratorAsync(string userId)
         {
             await _semaphore.WaitAsync();
             try
@@ -153,6 +153,20 @@ namespace RWParcerCore.Infrastructure.Repositories
             {
                 var targetUser = _users.FirstOrDefault(u => u.Id == userId) ?? throw new KeyNotFoundException($"User with ID {userId} not found");
                 targetUser.Demote();
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task<bool> IsUserBannedAsync(string userId)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                var user = _users.FirstOrDefault(u => u.Id == userId);
+                return user is null ? throw new KeyNotFoundException($"User with ID {userId} not found") : user.IsBlocked;
             }
             finally
             {

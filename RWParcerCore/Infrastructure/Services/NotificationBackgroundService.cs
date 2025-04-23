@@ -52,7 +52,7 @@ namespace RWParcerCore.Infrastructure.Services
                             }
                             else
                             {
-                                throw new Exception("unsupported changes");
+                                throw new Exception($"unsupported changes {subscription.Id}");
                             }
                             subscription.LastState = response;
 
