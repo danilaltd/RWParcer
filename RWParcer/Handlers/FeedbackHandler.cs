@@ -1,0 +1,32 @@
+﻿using RWParcer.Interfaces;
+using RWParcerCore.Domain.ValueObjects;
+using RWParcerCore.InterfaceAdapters.Facades;
+
+namespace RWParcer.Handlers.Moderator
+{
+    public class FeedbackHandler : ICommandHandler
+    {
+        private readonly IFacade _facade;
+        private readonly ICommandRouter _router;
+
+        public FeedbackHandler(IFacade facade, ICommandRouter router) { 
+            _facade = facade;
+            _router = router;
+        }
+
+        public async Task HandleAsync(CommandContext ctx)
+        {
+            if (ctx.Session.InitState)
+            {
+                await ctx.SendMessage("Введите сообщение");
+                return;
+            }
+
+            await _facade.SendFeedbackAsync(ctx.ChatId, ctx.Input);
+            await ctx.SendMessage("Сообщние отправлено");
+            ctx.Session.Data.Clear();
+            ctx.Session.SetCommand(CommandNames.MainMenuSelect);
+            await _router.RouteAsync(CommandNames.MainMenuSelect, ctx);
+        }
+    }
+}
