@@ -21,7 +21,7 @@ namespace RWParcerCore.Infrastructure.Services
                 var subscriptions = await _subscriptionRepository.GetAllSubscriptionsAsync();
                 if (!subscriptions.Any())
                 {
-                    continue;
+                    await Task.Delay(10);
                 }
 
                 var tasks = subscriptions.Select(subscription => ProcessSubscriptionAsync(subscription, cancellationToken)).ToArray();
@@ -48,9 +48,9 @@ namespace RWParcerCore.Infrastructure.Services
                             if (changes.Count > 0)
                             {
                                 string changeMessage = $"{(subscription.LastState is not null ? "Изменены места" : "Свободные места")}: \n{string.Join("\n", changes)}";
-                                await _notificationRepository.AddNotificationAsync(new(subscription.UserId, changeMessage));
+                                await _notificationRepository.AddAsync(new(Guid.NewGuid(), subscription.UserId, changeMessage));
                             }
-                            else
+                            else if (response.Count != 0)
                             {
                                 throw new Exception($"unsupported changes {subscription.Id}");
                             }

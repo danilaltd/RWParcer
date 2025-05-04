@@ -5,7 +5,7 @@
         public string Id { get; } = id;
         public bool IsModerator { get; private set; } = isModerator;
         public uint MaxSubscriptions { get; private set; } = maxSubscriptions;
-        public uint MinSubscriptionsInterval { get; private set; } = minSubscriptionsInterval;
+        public uint MinUpdateInterval { get; private set; } = minSubscriptionsInterval;
         public bool IsBlocked { get; private set; } = isBlocked;
         public DateTime LastActivity { get; set; } = lastActivity;
 
@@ -14,7 +14,7 @@
             yield return Id;
             yield return IsModerator;
             yield return MaxSubscriptions;
-            yield return MinSubscriptionsInterval;
+            yield return MinUpdateInterval;
             yield return IsBlocked;
             yield return LastActivity;
         }

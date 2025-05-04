@@ -86,32 +86,11 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="RWParcer.MenuContext" Collapsed="true">
-    <Position X="13.5" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAABACAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
-      <FileName>MenuContext.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="RWParcer.RWParcer" Collapsed="true">
-    <Position X="13.5" Y="1.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAEAAAACAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>RWParcer.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="RWParcer.MenuView" Collapsed="true">
     <Position X="8.25" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAQAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>MenuView.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="RWParcer.Parcer" Collapsed="true">
-    <Position X="11.75" Y="1.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAEAAAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
-      <FileName>Parcer.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcer.MenuStates.Search.EnterStationFromState" Collapsed="true">

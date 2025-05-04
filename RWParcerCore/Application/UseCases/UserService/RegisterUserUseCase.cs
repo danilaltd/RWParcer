@@ -10,10 +10,10 @@ namespace RWParcerCore.Application.UseCases.UserService
 
         public async Task RegisterUserAsync(string userId)
         {
-            if (await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} already exists");
+            if (await _userRepository.IsUserRegistredAsync(userId)) return;// throw new KeyNotFoundException($"User with ID {userId} already exists");
 
             var newUser = new User(userId);
-            await _userRepository.AddUserAsync(newUser);
+            await _userRepository.AddAsync(newUser);
         }
     }
 }

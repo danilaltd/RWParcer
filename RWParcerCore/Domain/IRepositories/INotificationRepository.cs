@@ -5,6 +5,6 @@ namespace RWParcerCore.Domain.IRepositories
     internal interface INotificationRepository
     {
         Task<IEnumerable<Notification>> PopNotificationsAsync();
-        Task AddNotificationAsync(Notification notificationItem);
+        Task AddAsync(Notification notificationItem);
     }
 }

@@ -1,26 +1,28 @@
-﻿using RWParcerCore.Application.Interfaces.INotificationService;
+﻿using Microsoft.EntityFrameworkCore;
+using RWParcerCore.Application.Interfaces.IFavoritesService;
+using RWParcerCore.Application.Interfaces.IFeedbackService;
+using RWParcerCore.Application.Interfaces.IModerator;
+using RWParcerCore.Application.Interfaces.INotificationService;
 using RWParcerCore.Application.Interfaces.IRWService;
+using RWParcerCore.Application.Interfaces.ISubscriptionService;
 using RWParcerCore.Application.Interfaces.IUserService;
-using RWParcerCore.Application.Interfaces.IUserService.IFavoritesService;
-using RWParcerCore.Application.Interfaces.IUserService.IFeedbackService;
-using RWParcerCore.Application.Interfaces.IUserService.IModerator;
-using RWParcerCore.Application.Interfaces.IUserService.ISubscriptionService;
+using RWParcerCore.Application.UseCases.FavoritesService;
+using RWParcerCore.Application.UseCases.FeedbackService;
+using RWParcerCore.Application.UseCases.ModeratorUseCases;
 using RWParcerCore.Application.UseCases.NotificationService;
 using RWParcerCore.Application.UseCases.RWService;
+using RWParcerCore.Application.UseCases.SubscriptionService;
 using RWParcerCore.Application.UseCases.UserService;
-using RWParcerCore.Application.UseCases.UserService.FavoritesService;
-using RWParcerCore.Application.UseCases.UserService.FeedbackService;
-using RWParcerCore.Application.UseCases.UserService.ModeratorUseCases;
-using RWParcerCore.Application.UseCases.UserService.SubscriptionService;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.IServices;
 using RWParcerCore.Domain.ValueObjects;
+using RWParcerCore.Infrastructure;
 using RWParcerCore.Infrastructure.Repositories;
 using RWParcerCore.Infrastructure.Services;
 
 namespace RWParcerCore.InterfaceAdapters.Facades
 {
-    public class Facade
+    public class Facade : IFacade
     {
         private readonly CancellationTokenSource _cts;
         private readonly INotificationBackgroundService _notificationBackgroundService;
@@ -30,10 +32,12 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         private readonly IUnbanUser _unbanUser;
         private readonly IPromoteUser _promoteUser;
         private readonly IDemoteUser _demoteUser;
-        private readonly IGetUserStatus _getUserStatus;
         private readonly ISetUsersMaxSubscriptions _setUsersMaxSubscriptions;
         private readonly ISetUsersMinInterval _setUsersMinInterval;
         private readonly IGetUsers _getUsers;
+        private readonly IGetUserById _getUserById;
+        private readonly IIsUserModerator _isUserModerator;
+        private readonly IIsUserBanned _isUserBanned;
 
         private readonly ISendFeedback _sendFeedback;
         private readonly ISendMessage _sendMessage;
@@ -43,6 +47,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         private readonly IGetTrains _getTrains;
 
         private readonly IAddToFavorites _addToFavorites;
+        private readonly IIsInFavorites _isInFavorites;
         private readonly IRemoveFromFavorites _removeFromFavorites;
         private readonly IGetFavorites _getFavorites;
 
@@ -51,18 +56,41 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         private readonly IGetSubscriptions _getSubscriptions;
 
         private readonly IPopNotifications _popNotifications;
-        
+
 
         public Facade()
         {
             HttpClient httpClient = new();
-            
-            IUserRepository userRepository = new InMemoryUserRepository();
-            IFavoritesRepository favoritesRepository = new InMemoryFavoritesRepository();
-            ISubscriptionRepository subscriptionRepository = new InMemorySubscriptionRepository();
-            INotificationRepository notificationRepository = new InMemoryNotificationRepository(); 
+            httpClient.DefaultRequestHeaders.Add("Cookie", "hg-client-security=2wYWCwYjyj7EbcjAw98T7DTE4GQ; hg-security=jSvnyAzRO13rHxzxDQofaNhudTzZhdMLWREbC5iPNPrQbWMqaYq3EQPi1vGNz_rCZZ5FJBk9B9T1V401kT7hxaNLwppBih0=");
+            //IUserRepository userRepository = new InMemoryUserRepository();
+            //IFavoritesRepository favoritesRepository = new InMemoryFavoritesRepository();
+            //ISubscriptionRepository subscriptionRepository = new InMemorySubscriptionRepository();
+            //INotificationRepository notificationRepository = new InMemoryNotificationRepository();
+            //IRWRepository rwRepository = new RWParcer(httpClient);
+            //IMessageRepository messageRepository = new InMemoryMessageRepository();
+            if (File.Exists("app.db"))
+            {
+                File.Delete("app.db");
+            }
+            if (File.Exists("app.db-shm"))
+            {
+                File.Delete("app.db-shm");
+            }
+            if (File.Exists("app.db-wal"))
+            {
+                File.Delete("app.db-wal");
+            }
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                            .UseSqlite("Data Source=app.db")
+                            .Options;
+            IAppDbContextFactory appDbContextFactory = new AppDbContextFactory(options);
+
+            IUserRepository userRepository = new UserRepository(appDbContextFactory);
+            IFavoritesRepository favoritesRepository = new FavoritesRepository(appDbContextFactory);
+            ISubscriptionRepository subscriptionRepository = new SubscriptionRepository(appDbContextFactory);
+            INotificationRepository notificationRepository = new NotificationRepository(appDbContextFactory);
+            IMessageRepository messageRepository = new MessageRepository(appDbContextFactory);
             IRWRepository rwRepository = new RWParcer(httpClient);
-            IMessageRepository messageRepository = new InMemoryMessageRepository();
 
             _notificationBackgroundService = new NotificationBackgroundService(subscriptionRepository, notificationRepository, rwRepository, 5, 15); ;
             _cts = new CancellationTokenSource();
@@ -72,19 +100,22 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             _unbanUser = new UnbanUserUseCase(userRepository);
             _promoteUser = new PromoteUserUseCase(userRepository);
             _demoteUser = new DemoteUserUseCase(userRepository);
-            _getUserStatus = new GetUserStatusUseCase(userRepository);
             _setUsersMaxSubscriptions = new SetUsersMaxSubscriptionsUseCase(userRepository);
             _setUsersMinInterval = new SetUsersMinIntervalUseCase(userRepository);
             _getUsers = new GetUsersUseCase(userRepository);
+            _isUserModerator = new IsUserModeratorUseCase(userRepository);
+            _isUserBanned = new IsUserBannedUseCase(userRepository);
+            _getUserById = new GetUserByIdUseCase(userRepository);
 
             _sendFeedback = new SendFeedbackUseCase(userRepository, messageRepository);
             _sendMessage = new SendMessageUseCase(userRepository, messageRepository, notificationRepository);
             _getMessages = new GetMessagesUseCase(userRepository, messageRepository, notificationRepository);
 
-            _getStations = new GetStationsUseCase(rwRepository);
-            _getTrains = new GetTrainsUseCase(rwRepository);
-            
+            _getStations = new GetStationsUseCase(rwRepository, userRepository);
+            _getTrains = new GetTrainsUseCase(rwRepository, userRepository);
+
             _addToFavorites = new AddToFavoritesUseCase(userRepository, favoritesRepository);
+            _isInFavorites = new IsInFavoritesUseCase(userRepository, favoritesRepository);
             _removeFromFavorites = new RemoveFromFavoritesUseCase(userRepository, favoritesRepository);
             _getFavorites = new GetFavoritesUseCase(userRepository, favoritesRepository);
 
@@ -96,28 +127,33 @@ namespace RWParcerCore.InterfaceAdapters.Facades
 
             _ = Task.Run(() => StartAsync());
         }
-        public Task StartAsync() => _notificationBackgroundService.StartAsync(_cts.Token);
+        private Task StartAsync() => _notificationBackgroundService.StartAsync(_cts.Token);
 
         public Task StopAsync() => _cts.CancelAsync();
 
-        public void AuthenticateUser(string userId)
+        public async Task AuthenticateUser(string userId)
         {
-            _registerUser.RegisterUserAsync(userId);
+            await _registerUser.RegisterUserAsync(userId);
         }
 
-        public async Task<List<StationVO>> GetStationAsync(string prefix)
+        public async Task<List<StationVO>> GetStationAsync(string userId, string prefix)
         {
-            return await _getStations.GetStationsAsync(prefix);
+            return await _getStations.GetStationsAsync(userId, prefix);
         }
 
-        public async Task<List<TrainVO>> GetTimesForRouteAsync(RouteVO route)
+        public async Task<List<TrainVO>> GetTimesForRouteAsync(string userId, RouteVO route)
         {
-            return await _getTrains.GetTrainsForRouteAsync(route);
+            return await _getTrains.GetTrainsForRouteAsync(userId, route);
         }
 
         public async Task AddToFavoritesAsync(string userId, TrainVO train)
         {
             await _addToFavorites.AddToFavoritesAsync(userId, train);
+        }
+
+        public async Task<bool> IsInFavoritesAsync(string userId, TrainVO train)
+        {
+            return await _isInFavorites.IsInFavoritesAsync(userId, train);
         }
 
         public async Task RemoveFromFavoritesAsync(string userId, TrainVO train)
@@ -139,19 +175,9 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         {
             await _unSubscribe.UnSubscribeAsync(userId, subscription);
         }
-
-        public async Task<List<SubscriptionVO>> GetSubscritionsAsync(string userId)
-        {
-            return await _getSubscriptions.GetSubscriptionsAsync(userId);
-        }
         public async Task<List<NotificationVO>> PopNotifications()
         {
             return await _popNotifications.PopNotifications();
-        }
-
-        public async Task<string> GetUserStatusAsync(string userId)
-        {
-            return await _getUserStatus.GetUserStatusAsync(userId);
         }
         public async Task BanUserAsync(string userId, string targetId)
         {
@@ -201,5 +227,24 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             return await _getUsers.GetUsersAsync(userId, timeSpan);
         }
 
+        public async Task<List<SubscriptionVO>> GetSubscritionsAsync(string userId, string targetId)
+        {
+            return await _getSubscriptions.GetSubscriptionsAsync(userId, targetId);
+        }
+
+        public async Task<bool> IsUserModeratorAsync(string userId, string targetId)
+        {
+            return await _isUserModerator.IsUserModeratorAsync(userId, targetId);
+        }
+
+        public async Task<bool> IsUserBannedAsync(string userId, string targetId)
+        {
+            return await _isUserBanned.IsUserBannedAsync(userId, targetId);
+        }
+
+        public async Task<UserVO> GetUserByIdAsync(string userId, string targetId)
+        {
+            return await _getUserById.GetUserByIdAsync(userId, targetId);
+        }
     }
 }

@@ -2,10 +2,18 @@
 
 namespace RWParcerCore.Domain.Entities
 {
-    internal class Favorite(string id, TrainVO train)
+    internal class Favorite
     {
-        public Guid Id { get; private set; } = Guid.NewGuid();
-        public string UserId { get; private set; } = id;
-        public TrainVO TrainInfo { get; private set; } = train;
+        public Favorite(Guid id, string userId, TrainVO train)
+        {
+            Id = id;
+            UserId = userId;
+            TrainInfo = train;
+        }
+
+        private Favorite() { }
+        public Guid Id { get; private set; }
+        public string UserId { get; private set; }
+        public TrainVO TrainInfo { get; private set; }
     }
 }
