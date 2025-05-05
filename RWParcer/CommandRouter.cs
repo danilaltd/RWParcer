@@ -72,12 +72,20 @@ namespace RWParcer
                 { CommandNames.UnsubscribeSubscription,  s => s.GetRequiredService<UnsubscribeSubscriptionHandler>() },
                 { CommandNames.Unknown,                s => s.GetRequiredService<UnknownHandler>() },
                 { CommandNames.ModeratorEnterSpan,                s => s.GetRequiredService<ModeratorEnterSpanHandler>() },
-                { CommandNames.ManageUsers,                s => s.GetRequiredService<ManageUsersHandler>() },
+                { CommandNames.SelectUser,                s => s.GetRequiredService<SelectUserHandler>() },
+                { CommandNames.        ModeratorMenuSelect,      s => {
+                                                                var router = s.GetRequiredService<ICommandRouter>();
+                                                                var menu = s.GetRequiredService<ModeratorChoiceProvider>();
+                                                                return new MenuSelectHandler(router, menu, "Выберите команду модератора");
+                                                                } },
                 { CommandNames.ManageUserMenuSelect,      s => {
                                                                 var router = s.GetRequiredService<ICommandRouter>();
                                                                 var menu = s.GetRequiredService<ManageUsersChoiceProvider>();
                                                                 return new MenuSelectHandler(router, menu, "Выберите команду модератора");
                                                                 } },
+                { CommandNames.ViewMessages,                s => s.GetRequiredService<ViewMessagesHandler>() },
+                { CommandNames.ViewAllMessages,                s => s.GetRequiredService<ViewAllMessagesHandler>() },
+                { CommandNames.SendMessageEnterMessage,                s => s.GetRequiredService<SendMessageEnterMessageHandler>() },
                 { CommandNames.BanUser,                s => s.GetRequiredService<BanUserHandler>() },
                 { CommandNames.UnbanUser,                s => s.GetRequiredService<UnbanUserHandler>() },
                 { CommandNames.DemoteUser,                s => s.GetRequiredService<DemoteUserHandler>() },

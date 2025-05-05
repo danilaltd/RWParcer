@@ -12,9 +12,6 @@ using RWParcer.Handlers.TrainsMenu.Favorites;
 using RWParcer.Handlers.TrainsMenu.Subscribe;
 using RWParcer.Handlers.TrainsMenu.Unsubscribe;
 using RWParcer.Handlers.Subscriptions;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using System;
 using Microsoft.Extensions.Options;
 using RWParcer.Handlers.Moderator;
 
@@ -50,6 +47,7 @@ namespace RWParcer
                                 services.AddSingleton<SubscriptionActionsProvider>();
                                 services.AddSingleton<UnsubscribeDateChoiceProvider>();
                                 services.AddSingleton<ManageUsersChoiceProvider>();
+                                services.AddSingleton<ModeratorChoiceProvider>();
                                 
 
                                 var commandHandlers = new[]
@@ -68,7 +66,7 @@ namespace RWParcer
                                     typeof(SubscriptionsSelectHandler),
                                     typeof(UnsubscribeSubscriptionHandler),
                                     typeof(ModeratorEnterSpanHandler),
-                                    typeof(ManageUsersHandler),
+                                    typeof(SelectUserHandler),
                                     typeof(ChangeUserMinIntervalLimitHandler),
                                     typeof(ChangeUserMaxSubscribtionLimitHandler),
                                     typeof(PromoteUserHandler),
@@ -77,6 +75,9 @@ namespace RWParcer
                                     typeof(BanUserHandler),
                                     typeof(GetStatusHandler),
                                     typeof(FeedbackHandler),
+                                    typeof(SendMessageEnterMessageHandler),
+                                    typeof(ViewAllMessagesHandler),
+                                    typeof(ViewMessagesHandler),
                                 };
 
                                 foreach (var handler in commandHandlers)

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using RWParcerCore.Application.Interfaces.IFavoritesService;
 using RWParcerCore.Application.Interfaces.IFeedbackService;
 using RWParcerCore.Application.Interfaces.IModerator;
@@ -42,6 +43,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         private readonly ISendFeedback _sendFeedback;
         private readonly ISendMessage _sendMessage;
         private readonly IGetMessages _getMessages;
+        private readonly IGetAllMessages _getAllMessages;
 
         private readonly IGetStations _getStations;
         private readonly IGetTrains _getTrains;
@@ -68,21 +70,17 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             //INotificationRepository notificationRepository = new InMemoryNotificationRepository();
             //IRWRepository rwRepository = new RWParcer(httpClient);
             //IMessageRepository messageRepository = new InMemoryMessageRepository();
-            if (File.Exists("app.db"))
-            {
-                File.Delete("app.db");
-            }
-            if (File.Exists("app.db-shm"))
-            {
-                File.Delete("app.db-shm");
-            }
-            if (File.Exists("app.db-wal"))
-            {
-                File.Delete("app.db-wal");
-            }
             var options = new DbContextOptionsBuilder<AppDbContext>()
                             .UseSqlite("Data Source=app.db")
                             .Options;
+            if (File.Exists("app.db")) File.Delete("app.db");
+            if (File.Exists("app.db-shm")) File.Delete("app.db-shm");
+            if (File.Exists("app.db-wal")) File.Delete("app.db-wal");
+            using (var context = new AppDbContext(options))
+            {
+                context.Database.EnsureCreated();
+            }
+
             IAppDbContextFactory appDbContextFactory = new AppDbContextFactory(options);
 
             IUserRepository userRepository = new UserRepository(appDbContextFactory);
@@ -107,9 +105,10 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             _isUserBanned = new IsUserBannedUseCase(userRepository);
             _getUserById = new GetUserByIdUseCase(userRepository);
 
-            _sendFeedback = new SendFeedbackUseCase(userRepository, messageRepository);
+            _sendFeedback = new SendFeedbackUseCase(userRepository, messageRepository, notificationRepository);
             _sendMessage = new SendMessageUseCase(userRepository, messageRepository, notificationRepository);
-            _getMessages = new GetMessagesUseCase(userRepository, messageRepository, notificationRepository);
+            _getMessages = new GetMessagesUseCase(userRepository, messageRepository);
+            _getAllMessages = new GetAllMessagesUseCase(userRepository, messageRepository);
 
             _getStations = new GetStationsUseCase(rwRepository, userRepository);
             _getTrains = new GetTrainsUseCase(rwRepository, userRepository);
@@ -175,7 +174,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         {
             await _unSubscribe.UnSubscribeAsync(userId, subscription);
         }
-        public async Task<List<NotificationVO>> PopNotifications()
+        public async Task<List<NotificationVO>> PopNotificationsAsync()
         {
             return await _popNotifications.PopNotifications();
         }
@@ -221,6 +220,11 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         public async Task<List<MessageVO>> GetMessagesAsync(string userId)
         {
             return await _getMessages.GetMessages(userId);
+        }
+
+        public async Task<List<MessageVO>> GetAllMessagesAsync(string userId)
+        {
+            return await _getAllMessages.GetAllMessages(userId);
         }
         public async Task<List<UserVO>> GetUsersAsync(string userId, TimeSpan timeSpan)
         {

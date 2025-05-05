@@ -216,6 +216,21 @@ namespace RWParcerCore.Infrastructure.Repositories
                 _semaphore.Release();
             }
         }
+
+        public async Task<List<User>> GetAllModerators()
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                var users = await Task.WhenAll(_users.Select(async u => (User: u, IsModerator: await IsUserModeratorAsync(u.Id))));
+                return users.Where(u => u.IsModerator).Select(u => u.User).ToList();
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+
+        }
     }
 
 }

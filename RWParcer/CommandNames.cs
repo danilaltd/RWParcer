@@ -32,16 +32,20 @@
 
         UnsubscribeSubscription,
 
-        ManageUsers,
+        ModeratorMenuSelect,
+        SelectUser,
         ModeratorEnterSpan,
         ManageUserMenuSelect,
 
+        SendMessageEnterMessage,
         ChangeUserMinIntervalLimit,
         ChangeUserMaxSubscribtionLimit,
         BanUser,
         UnbanUser,
         PromoteUser,
         DemoteUser,
+        ViewAllMessages,
+        ViewMessages,
 
         GetStatus,
         Feedback,

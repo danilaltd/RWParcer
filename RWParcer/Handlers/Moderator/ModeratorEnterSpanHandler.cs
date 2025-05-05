@@ -26,8 +26,8 @@ namespace RWParcer.Handlers.Moderator
             }
 
             ctx.Session.Data.Add(ts);
-            ctx.Session.SetCommand(CommandNames.ManageUsers);
-            await _router.RouteAsync(CommandNames.ManageUsers, ctx);
+            ctx.Session.SetCommand(CommandNames.SelectUser);
+            await _router.RouteAsync(CommandNames.SelectUser, ctx);
         }
     }
 

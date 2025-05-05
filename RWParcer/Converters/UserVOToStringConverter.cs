@@ -1,11 +1,10 @@
 ﻿using RWParcerCore.Domain.ValueObjects;
-using RWParcerCore.InterfaceAdapters.Facades;
 
 namespace RWParcer.Converters
 {
     public static class UserVOToStringConverter
     {
-        public static string Convert(UserVO user, IFacade facade)
+        public static string Convert(UserVO user)
         {
             string name = user.IsModerator ? "Модератор" : "Пользователь";
             string id = "Id: " + user.Id;

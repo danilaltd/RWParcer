@@ -18,13 +18,15 @@ namespace RWParcer.MenuProviders
 
             bool isModerator = await _facade.IsUserModeratorAsync(ctx.ChatId, ctx.ChatId);
 
-            if (isModerator)
-                options["Меню модератора"] = CommandNames.ModeratorEnterSpan;
+            
 
             options["🔍 Поиск"] = CommandNames.FromSelect;
             options["⭐ Избранное"] = CommandNames.FavoritesSelect;
             options["⭐ Подписки"] = CommandNames.SubscriptionsSelect;
             options["Мой статус"] = CommandNames.GetStatus;
+            if (isModerator)
+                options["Меню модератора"] = CommandNames.ModeratorMenuSelect;
+            options["Просмотреть сообщения"] = CommandNames.ViewMessages;
             options["Обратная связь"] = CommandNames.Feedback;
 
             return options;

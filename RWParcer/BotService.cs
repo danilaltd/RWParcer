@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using RWParcer.Interfaces;
+using RWParcerCore.InterfaceAdapters.Facades;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -15,12 +17,14 @@ namespace RWParcer
         private readonly ISessionManager _sessions;
         private readonly BotSettings _settings;
         private readonly ISessionStore _store;
+        private readonly IFacade _facade;
 
         public BotService(
             ITelegramBotClient bot,
             ICommandRouter router,
             ISessionStore store,
-            IOptions<BotSettings> options)
+            IOptions<BotSettings> options,
+            IFacade facade)
         {
             _bot = bot;
             _router = router;
@@ -28,17 +32,21 @@ namespace RWParcer
             _sessions = new SessionManager();
             _store = store;
             _settings = options.Value;
+            _facade = facade;
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _bot.StartReceiving(
+            _ = Task.Run(() => _bot.StartReceiving(
                 OnUpdate,
                 OnError,
                 new ReceiverOptions { AllowedUpdates = _settings.AllowedUpdates },
-                cancellationToken: stoppingToken);
-
-            return Task.CompletedTask;
+                cancellationToken: stoppingToken));
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                await ProcessNotificationsAsync(stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken); // Проверяем уведомления каждые 5 секунд
+            }
         }
 
         private async Task OnUpdate(ITelegramBotClient client, Update update, CancellationToken token)
@@ -71,6 +79,18 @@ namespace RWParcer
             {
                 await _store.SaveAsync(_sessions);
 
+            }
+        }
+
+        private async Task ProcessNotificationsAsync(CancellationToken token)
+        {
+            var notifications = await _facade.PopNotificationsAsync();
+            if (notifications == null || notifications.Count == 0) return;
+            foreach (var notification in notifications)
+            {
+                var session = _sessions.GetSession(notification.UserId);
+                var ctx = new CommandContext(notification.UserId, "", session, _bot, token);
+                await ctx.SendMessage(notification.Content);
             }
         }
 

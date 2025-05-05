@@ -5,12 +5,12 @@ using RWParcerCore.InterfaceAdapters.Facades;
 
 namespace RWParcer.Handlers.Moderator
 {
-    public class ManageUsersHandler : ICommandHandler
+    public class SelectUserHandler : ICommandHandler
     {
         private readonly IFacade _facade;
         private readonly ICommandRouter _router;
 
-        public ManageUsersHandler(ICommandRouter router, IFacade facade)
+        public SelectUserHandler(ICommandRouter router, IFacade facade)
         {
             _router = router;
             _facade = facade;
@@ -47,7 +47,7 @@ namespace RWParcer.Handlers.Moderator
             ctx.Session.Data.Clear();
             ctx.Session.Data.Add(users);
             await ctx.SendKeyboard(
-                users.Select(t => UserVOToStringConverter.Convert(t, _facade)),
+                users.Select(t => UserVOToStringConverter.Convert(t)),
                 "Выберите пользователя:",
                 true);
         }
@@ -76,7 +76,7 @@ namespace RWParcer.Handlers.Moderator
             var selected = usersList[index - 1];
             ctx.Session.Data.Clear();
             ctx.Session.Data.Add(selected);
-            await ctx.SendMessage($"Вы выбрали пользователя: {UserVOToStringConverter.Convert(selected, _facade)}");
+            await ctx.SendMessage($"Вы выбрали пользователя: {UserVOToStringConverter.Convert(selected)}");
             ctx.Session.SetCommand(CommandNames.ManageUserMenuSelect);
             await _router.RouteAsync(CommandNames.ManageUserMenuSelect, ctx);
         }

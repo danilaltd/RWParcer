@@ -31,6 +31,7 @@ namespace RWParcer.MenuProviders
 
             options["Изменить максимальное количество подписок"] = CommandNames.ChangeUserMaxSubscribtionLimit;
             options["Изменить минимальный интервал проверки"] = CommandNames.ChangeUserMinIntervalLimit;
+            options["Отправить сообщение пользователю"] = CommandNames.SendMessageEnterMessage;
             options["В главное меню"] = CommandNames.MainMenuSelect;
 
             return options;

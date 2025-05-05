@@ -19,5 +19,6 @@ namespace RWParcerCore.Domain.IRepositories
         Task UpdateActivityAsync(string userId);
         Task<List<User>> GetLastUsersAsync(TimeSpan timeSpan);
         Task<User> GetUserByIdAsync(string userId);
+        Task<List<User>> GetAllModerators();
     }
 }

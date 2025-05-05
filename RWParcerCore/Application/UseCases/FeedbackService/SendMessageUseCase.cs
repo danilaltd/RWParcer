@@ -13,12 +13,12 @@ namespace RWParcerCore.Application.UseCases.FeedbackService
         {
             if (!await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} not found");
             await _userRepository.UpdateActivityAsync(userId);
-            if (!await _userRepository.IsUserRegistredAsync(targetUserId)) throw new KeyNotFoundException($"User with ID {userId} not found");
             if (await _userRepository.IsUserBannedAsync(userId)) throw new UnauthorizedAccessException($"User {userId} is banned");
             if (!await _userRepository.IsUserModeratorAsync(userId)) throw new UnauthorizedAccessException($"Only moderators can send messages {userId}");
+            if (!await _userRepository.IsUserRegistredAsync(targetUserId)) throw new KeyNotFoundException($"User with ID {userId} not found");
 
-            await _messageRepository.AddAsync(new(Guid.NewGuid(), userId, targetUserId, message));
-            await _notificationRepository.AddAsync(new(Guid.NewGuid(), targetUserId, message));
+            await _messageRepository.AddAsync(new(Guid.NewGuid(), "admin", targetUserId, message));
+            await _notificationRepository.AddAsync(new(Guid.NewGuid(), targetUserId, $"Новое сообщение! \n{message}"));
             
         }
     }

@@ -138,6 +138,15 @@ namespace RWParcerCore.Infrastructure.Repositories
             return user ?? throw new KeyNotFoundException($"User {userId} not found.");
         }
 
+        public async Task<List<User>> GetAllModerators()
+        {
+            var users = await QueryAsync(ctx => ctx.Users.ToListAsync());
+
+            var moderators = await Task.WhenAll(users.Select(async u =>
+                (User: u, IsModerator: await IsUserModeratorAsync(u.Id))));
+
+            return moderators.Where(u => u.IsModerator).Select(u => u.User).ToList();
+        }
 
 
     }
