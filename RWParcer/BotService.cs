@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using RWParcer.Interfaces;
 using RWParcerCore.InterfaceAdapters.Facades;
+using System.Diagnostics;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -74,6 +75,7 @@ namespace RWParcer
             catch (Exception ex)
             {
                 await ctx.ResetSessionAsync("Backend Error. Попробуйте снова.", _router);
+                Debug.WriteLine(ex.Message);
             }
             finally
             {

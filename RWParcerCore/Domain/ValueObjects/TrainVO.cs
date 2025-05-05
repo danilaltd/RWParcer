@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace RWParcerCore.Domain.ValueObjects
+﻿namespace RWParcerCore.Domain.ValueObjects
 {
     public class TrainVO : ValueObject
     {
@@ -18,11 +16,12 @@ namespace RWParcerCore.Domain.ValueObjects
             string trainDays,
             string trainDaysExcept,
             string fromStationExp,
-            string toStationExp
+            string toStationExp,
+            uint durationMinutes
         )
         {
-            StationFrom = new(fromStationDb, fromStationDb, fromStationExp);
-            StationTo = new(toStationDb, toStationDb, toStationExp);
+            StationFrom = new(fromStationDb, fromStationExp);
+            StationTo = new(toStationDb, toStationExp);
             TrainType = trainType;
             TrainNumber = trainNumber;
             TitleStationFrom = titleStationFrom;
@@ -31,6 +30,7 @@ namespace RWParcerCore.Domain.ValueObjects
             ToTime = UnixTimeToTimeOnly(toTime);
             TrainDays = trainDays;
             TrainDaysExcept = trainDaysExcept;
+            Duration = TimeSpan.FromMinutes(durationMinutes);
         }
         
         public string TrainType { get; private set; }
@@ -41,6 +41,7 @@ namespace RWParcerCore.Domain.ValueObjects
         public TimeOnly ToTime { get; private set; }
         public string TrainDays { get; private set; }
         public string TrainDaysExcept { get; private set; }
+        public TimeSpan Duration { get; private set; }
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
@@ -54,6 +55,7 @@ namespace RWParcerCore.Domain.ValueObjects
             yield return ToTime;
             yield return TrainDays;
             yield return TrainDaysExcept;
+            yield return Duration;
         }
 
         private static TimeOnly UnixTimeToTimeOnly(long unix) => TimeOnly.FromDateTime(

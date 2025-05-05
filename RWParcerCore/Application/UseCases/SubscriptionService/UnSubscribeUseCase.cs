@@ -11,14 +11,15 @@ namespace RWParcerCore.Application.UseCases.SubscriptionService
         public async Task UnSubscribeAsync(string userId, SubscriptionVO subscription)
         {
             if (!await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} not found");
+            await _userRepository.UpdateActivityAsync(userId);
             if (await _userRepository.IsUserBannedAsync(userId)) throw new UnauthorizedAccessException($"User {userId} is banned");
-            var favorites = await _subscriptionRepository.GetUserSubscriptionsAsync(userId);
+            var subscriptions = await _subscriptionRepository.GetUserSubscriptionsAsync(userId);
 
-            var favoriteToRemove = favorites.FirstOrDefault(f => f.Details.Equals(subscription));
+            var subscriptionToRemove = subscriptions.FirstOrDefault(f => f.Details.Equals(subscription));
 
-            if (favoriteToRemove == null) throw new InvalidOperationException($"{userId} No such subscription");
+            if (subscriptionToRemove == null) throw new InvalidOperationException($"{userId} No such subscription");
 
-            await _subscriptionRepository.RemoveAsync(favoriteToRemove);
+            await _subscriptionRepository.RemoveAsync(subscriptionToRemove);
         }
     }
 }

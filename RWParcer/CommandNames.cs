@@ -12,13 +12,13 @@
         
         SubscribeDateSelect,
             SubscribeEnterDate,
-            //SubscribeEnterRange,
-            //SubscribeUseLastDate,
+        SubscribeEnterDateRange,
+        SubscribeUseLastDate,
 
         UnsubscribeDateSelect,
             UnsubscribeEnterDate,
-            //UnsubscribeEnterRange,
-            //UnsubscribeUseLastDate,
+        UnsubscribeEnterDateRange,
+        UnsubscribeUseLastDate,
 
             AddToFavorites,
             RemoveFromFavorites,

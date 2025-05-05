@@ -1,6 +1,5 @@
 ﻿using RWParcerCore.Domain.Entities;
 using RWParcerCore.Domain.IRepositories;
-using RWParcerCore.Domain.ValueObjects;
 
 namespace RWParcerCore.Infrastructure.Repositories
 {

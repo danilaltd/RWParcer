@@ -22,7 +22,7 @@ namespace RWParcer
         }
 
         public Task SendMessage(string text)
-            => Bot.SendMessage(ChatId, text, cancellationToken: Token);
+            => Bot.SendMessage(ChatId, text, replyMarkup: null, cancellationToken: Token);
 
         public Task SendKeyboard(IEnumerable<string> options, string prompt, bool wrapping = false)
         {
@@ -30,7 +30,7 @@ namespace RWParcer
 
             if (wrapping)
             {
-                prompt += '\n' + string.Join("\n", options.Take(174).Select((label, index) => $"{index + 1} {label}"));
+                prompt += '\n' + string.Join("\n\n", options.Take(174).Select((label, index) => $"{index + 1} {label}"));
                 buttons = options.Select((label, index) => new KeyboardButton[] { new((index + 1).ToString()) }).ToArray();
             }
             else

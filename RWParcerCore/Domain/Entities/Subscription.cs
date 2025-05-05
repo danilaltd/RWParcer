@@ -8,17 +8,14 @@ namespace RWParcerCore.Domain.Entities
         public string UserId { get; private set; }
         public SubscriptionVO Details { get; private set; }
         public DateTime? LastUpdate { get; set; }
-        //public TicketFilterVO Filter { get; private set; } = new();
-        public uint Interval { get; private set; }
         public Dictionary<int, List<int>>? LastState { get; set; }
 
         private Subscription() { }
-        public Subscription(Guid id, string userId, SubscriptionVO details, uint interval)
+        public Subscription(Guid id, string userId, SubscriptionVO details)
         {
             Id = id;
             UserId = userId;
             Details = details;
-            Interval = interval;
         }
     }
 }

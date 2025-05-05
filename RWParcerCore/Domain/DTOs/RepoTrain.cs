@@ -68,7 +68,7 @@ namespace RWParcerCore.Domain.DTOs
         public string? Duration { get; set; }
 
         [JsonProperty("duration_minutes")]
-        public int? DurationMinutes { get; set; }
+        public uint? DurationMinutes { get; set; }
 
         [JsonProperty("car_category")]
         public string? CarCategory { get; set; }

@@ -4,78 +4,66 @@ using System.Text.Json.Serialization;
 
 namespace RWParcerCore.Infrastructure.Converters
 {
-    public class TrainVOConverter : JsonConverter<TrainVO>
+    internal class TrainVOConverter : JsonConverter<TrainVO>
     {
         public override TrainVO Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             using var jsonDoc = JsonDocument.ParseValue(ref reader);
             var root = jsonDoc.RootElement;
 
-            // Извлекаем поля из JSON (CamelCase)
-            if (!root.TryGetProperty("trainType", out var trainTypeElement))
-                throw new JsonException("Property 'trainType' not found.");
-            string trainType = trainTypeElement.GetString()!;
+            // Extract simple fields from JSON (CamelCase)
+            string trainType = GetStringProperty(root, "trainType");
+            string trainNumber = GetStringProperty(root, "trainNumber");
+            string titleStationFrom = GetStringProperty(root, "titleStationFrom");
+            string titleStationTo = GetStringProperty(root, "titleStationTo");
+            string trainDays = GetStringProperty(root, "trainDays");
+            string trainDaysExcept = GetStringProperty(root, "trainDaysExcept");
 
-            if (!root.TryGetProperty("trainNumber", out var trainNumberElement))
-                throw new JsonException("Property 'trainNumber' not found.");
-            string trainNumber = trainNumberElement.GetString()!;
+            // Extract StationFrom and StationTo
+            var stationFromJson = GetProperty(root, "stationFrom");
+            string fromStationLabel = GetStringProperty(stationFromJson, "label");
+            string fromStationExp = GetStringProperty(stationFromJson, "exp");
 
-            if (!root.TryGetProperty("titleStationFrom", out var titleStationFromElement))
-                throw new JsonException("Property 'titleStationFrom' not found.");
-            string titleStationFrom = titleStationFromElement.GetString()!;
+            var stationToJson = GetProperty(root, "stationTo");
+            string toStationLabel = GetStringProperty(stationToJson, "label");
+            string toStationExp = GetStringProperty(stationToJson, "exp");
 
-            if (!root.TryGetProperty("titleStationTo", out var titleStationToElement))
-                throw new JsonException("Property 'titleStationTo' not found.");
-            string titleStationTo = titleStationToElement.GetString()!;
-
-            if (!root.TryGetProperty("trainDays", out var trainDaysElement))
-                throw new JsonException("Property 'trainDays' not found.");
-            string trainDays = trainDaysElement.GetString()!;
-
-            if (!root.TryGetProperty("trainDaysExcept", out var trainDaysExceptElement))
-                throw new JsonException("Property 'trainDaysExcept' not found.");
-            string trainDaysExcept = trainDaysExceptElement.GetString()!;
-
-            // Извлекаем StationFrom и StationTo
-            if (!root.TryGetProperty("stationFrom", out var stationFromJson))
-                throw new JsonException("Property 'stationFrom' not found.");
-            string fromStationDb = stationFromJson.GetProperty("value").GetString()!;
-            string fromStationExp = stationFromJson.GetProperty("label").GetString()!;
-
-            if (!root.TryGetProperty("stationTo", out var stationToJson))
-                throw new JsonException("Property 'stationTo' not found.");
-            string toStationDb = stationToJson.GetProperty("value").GetString()!;
-            string toStationExp = stationToJson.GetProperty("label").GetString()!;
-
-            // Парсим время (fromTime и toTime)
-            if (!root.TryGetProperty("fromTime", out var fromTimeElement))
-                throw new JsonException("Property 'fromTime' not found.");
-            string fromTimeStr = fromTimeElement.GetString()!;
+            // Parse fromTime and toTime
+            string fromTimeStr = GetStringProperty(root, "fromTime");
             if (!TimeOnly.TryParse(fromTimeStr, out var fromTimeParsed))
                 throw new JsonException($"Invalid time format for fromTime: {fromTimeStr}");
-            long fromTime = DateTimeOffset.Parse($"1970-01-01 {fromTimeStr}").AddHours(-1).ToUnixTimeSeconds();
+            long fromTime = DateTimeOffset.Parse($"1970-01-01 {fromTimeStr}").ToUnixTimeSeconds();
 
-            if (!root.TryGetProperty("toTime", out var toTimeElement))
-                throw new JsonException("Property 'toTime' not found.");
-            string toTimeStr = toTimeElement.GetString()!;
+            string toTimeStr = GetStringProperty(root, "toTime");
             if (!TimeOnly.TryParse(toTimeStr, out var toTimeParsed))
                 throw new JsonException($"Invalid time format for toTime: {toTimeStr}");
-            long toTime = DateTimeOffset.Parse($"1970-01-01 {toTimeStr}").AddHours(-1).ToUnixTimeSeconds();
+            long toTime = DateTimeOffset.Parse($"1970-01-01 {toTimeStr}").ToUnixTimeSeconds();
 
-            // Создаём TrainVO через существующий конструктор
+            // Extract durationMinutes
+            if (!root.TryGetProperty("durationMinutes", out var durationMinutesElement))
+                throw new JsonException("Property 'durationMinutes' not found.");
+
+            if (durationMinutesElement.ValueKind != JsonValueKind.Number)
+                throw new JsonException($"Expected 'durationMinutes' to be a number, but got {durationMinutesElement.ValueKind}.");
+
+            if (!durationMinutesElement.TryGetUInt32(out uint durationMinutes))
+                throw new JsonException($"Invalid value for durationMinutes: {durationMinutesElement}");
+
+            // Create TrainVO using the constructor
             return new TrainVO(
                 trainType,
                 trainNumber,
                 titleStationFrom,
                 titleStationTo,
-                fromStationDb,
-                toStationDb,
+                fromStationLabel, // Label for StationFrom
+                toStationLabel,   // Label for StationTo
                 fromTime,
                 toTime,
                 trainDays,
                 trainDaysExcept,
                 fromStationExp,
-                toStationExp
+                toStationExp,
+                durationMinutes
             );
         }
 
@@ -83,7 +71,7 @@ namespace RWParcerCore.Infrastructure.Converters
         {
             writer.WriteStartObject();
 
-            // Сериализуем простые поля (CamelCase)
+            // Serialize simple fields (CamelCase)
             writer.WriteString("trainType", value.TrainType);
             writer.WriteString("trainNumber", value.TrainNumber);
             writer.WriteString("titleStationFrom", value.TitleStationFrom);
@@ -91,26 +79,42 @@ namespace RWParcerCore.Infrastructure.Converters
             writer.WriteString("trainDays", value.TrainDays);
             writer.WriteString("trainDaysExcept", value.TrainDaysExcept);
 
-            // Сериализуем FromTime и ToTime как строки
+            // Serialize FromTime and ToTime as strings
+            writer.WriteString("fromTime", value.FromTime.AddHours(-1).ToString("HH:mm:ss"));
+            writer.WriteString("toTime", value.ToTime.AddHours(-1).ToString("HH:mm:ss"));
 
-            writer.WriteString("fromTime", value.FromTime.ToString("HH:mm:ss"));
-            writer.WriteString("toTime", value.ToTime.ToString("HH:mm:ss"));
+            // Serialize Duration as durationMinutes
+            writer.WriteNumber("durationMinutes", (uint)value.Duration.TotalMinutes);
 
-            // Сериализуем StationFrom
+            // Serialize StationFrom
             writer.WritePropertyName("stationFrom");
             writer.WriteStartObject();
             writer.WriteString("label", value.StationFrom.Label);
-            writer.WriteString("value", value.StationFrom.Value);
+            writer.WriteString("exp", value.StationFrom.Exp);
             writer.WriteEndObject();
 
-            // Сериализуем StationTo
+            // Serialize StationTo
             writer.WritePropertyName("stationTo");
             writer.WriteStartObject();
             writer.WriteString("label", value.StationTo.Label);
-            writer.WriteString("value", value.StationTo.Value);
+            writer.WriteString("exp", value.StationTo.Exp);
             writer.WriteEndObject();
 
             writer.WriteEndObject();
+        }
+
+        private static string GetStringProperty(JsonElement element, string propertyName)
+        {
+            if (!element.TryGetProperty(propertyName, out var property))
+                throw new JsonException($"Property '{propertyName}' not found.");
+            return property.GetString()!;
+        }
+
+        private static JsonElement GetProperty(JsonElement element, string propertyName)
+        {
+            if (!element.TryGetProperty(propertyName, out var property))
+                throw new JsonException($"Property '{propertyName}' not found.");
+            return property;
         }
     }
 }

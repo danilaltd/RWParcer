@@ -30,6 +30,8 @@ namespace RWParcer.Handlers.TrainsMenu.Unsubscribe
             }
 
             var train = ctx.Session.Data.OfType<TrainVO>().First();
+            ctx.Session.Date = date;
+
             try
             {
                 await _facade.UnSubscribeAsync(ctx.ChatId, new SubscriptionVO(train, date));

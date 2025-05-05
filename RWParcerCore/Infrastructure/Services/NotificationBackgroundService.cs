@@ -1,14 +1,17 @@
 ﻿using RWParcerCore.Domain.Entities;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.IServices;
+using RWParcerCore.Domain.ValueObjects;
 using System.Diagnostics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RWParcerCore.Infrastructure.Services
 {
-    internal class NotificationBackgroundService(ISubscriptionRepository subscriptionRepository, INotificationRepository notificationRepository, IRWRepository rwRepository, int maxRetries, int threadingMax) : INotificationBackgroundService
+    internal class NotificationBackgroundService(ISubscriptionRepository subscriptionRepository, INotificationRepository notificationRepository, IUserRepository userRepository, IRWRepository rwRepository, int maxRetries, int threadingMax) : INotificationBackgroundService
     {
         private readonly ISubscriptionRepository _subscriptionRepository = subscriptionRepository;
         private readonly INotificationRepository _notificationRepository = notificationRepository;
+        private readonly IUserRepository _userRepository = userRepository;
         private readonly IRWRepository _rwRepository = rwRepository;
         private readonly SemaphoreSlim _semaphore = new(threadingMax);
         private readonly int _maxRetries = maxRetries;
@@ -18,15 +21,39 @@ namespace RWParcerCore.Infrastructure.Services
             Debug.Write("Waiting...");
             while (!cancellationToken.IsCancellationRequested)
             {
-                var subscriptions = await _subscriptionRepository.GetAllSubscriptionsAsync();
-                if (!subscriptions.Any())
+                try
                 {
-                    await Task.Delay(10);
-                }
+                    var subscriptions = await _subscriptionRepository.GetAllSubscriptionsAsync();
+                    if (await UnsubscribeExpiredAsync(subscriptions)) continue;
 
-                var tasks = subscriptions.Select(subscription => ProcessSubscriptionAsync(subscription, cancellationToken)).ToArray();
-                await Task.WhenAll(tasks);
+                    if (!subscriptions.Any())
+                    {
+                        await Task.Delay(10, cancellationToken);
+                    }
+
+                    var tasks = subscriptions.Select(subscription => ProcessSubscriptionAsync(subscription, cancellationToken)).ToArray();
+                    await Task.WhenAll(tasks);
+                } catch (Exception ex)
+                {
+                    Debug.WriteLine($"Неизвестная ошибка: {ex.Message}");
+                }
             }
+        }
+
+        private async Task<bool> UnsubscribeExpiredAsync(IEnumerable<Subscription> subscriptions)
+        {
+            DateOnly curDate = DateOnly.FromDateTime(DateTime.Now);
+            var expiredSubscriptions = subscriptions.Where(s => s.Details.Date < curDate).ToList();
+
+            if (expiredSubscriptions.Any())
+            {
+                foreach (var subscription in expiredSubscriptions)
+                {
+                    await _subscriptionRepository.RemoveAsync(subscription);
+                }
+                return true;
+            }
+            return false;
         }
 
         private async Task ProcessSubscriptionAsync(Subscription subscription, CancellationToken cancellationToken)
@@ -38,7 +65,7 @@ namespace RWParcerCore.Infrastructure.Services
                 {
                     try
                     {
-                        if (DateTime.Now - subscription.LastUpdate < TimeSpan.FromSeconds(subscription.Interval)) break;
+                        if (DateTime.Now - subscription.LastUpdate < TimeSpan.FromSeconds(await _userRepository.GetUserMinIntervalAsync(subscription.UserId))) break;
                         Debug.WriteLine($"Попытка {attempt}: Запрос {subscription.Id}");
                         var response = await _rwRepository.GetSeatsAsync(subscription.Details);
                         if (!AreDictionariesEqual(response, subscription.LastState))
@@ -47,7 +74,7 @@ namespace RWParcerCore.Infrastructure.Services
                             var changes = FindSeatChanges(subscription.LastState, response);
                             if (changes.Count > 0)
                             {
-                                string changeMessage = $"{(subscription.LastState is not null ? "Изменены места" : "Свободные места")}: \n{string.Join("\n", changes)}";
+                                string changeMessage = $"{subscription.Details.Date:dd.MM.yyyy}\n{Convert(subscription.Details.Train)}\n{(subscription.LastState is not null ? "Изменены места" : "Свободные места")}: \n{string.Join("\n", changes)}";
                                 await _notificationRepository.AddAsync(new(Guid.NewGuid(), subscription.UserId, changeMessage));
                             }
                             else if (response.Count != 0)
@@ -58,7 +85,7 @@ namespace RWParcerCore.Infrastructure.Services
 
                         }
                         subscription.LastUpdate = DateTime.Now;
-
+                        await _subscriptionRepository.UpdateAsync(subscription);
                         break;
                     }
                     catch (TaskCanceledException)
@@ -83,7 +110,7 @@ namespace RWParcerCore.Infrastructure.Services
 
         private static bool AreDictionariesEqual(Dictionary<int, List<int>>? dict1, Dictionary<int, List<int>>? dict2)
         {
-            return dict1 != null && dict2 != null && 
+            return dict1 != null && dict2 != null &&
                    dict1.Count == dict2.Count &&
                    dict1.Keys.All(dict2.ContainsKey) &&
                    dict1.All(pair => dict2[pair.Key].OrderBy(x => x).SequenceEqual(pair.Value.OrderBy(x => x)));
@@ -125,8 +152,16 @@ namespace RWParcerCore.Infrastructure.Services
 
             return changes;
         }
+        private static string Convert(TrainVO train)
+        {
+            string route = train.StationFrom.Label + " - " + train.StationTo.Label;
+            string times = $"{train.FromTime:HH:mm}→{train.ToTime:HH:mm}";
 
+            return string.Join("\n", route, times);
+        }
 
     }
+
+
 
 }

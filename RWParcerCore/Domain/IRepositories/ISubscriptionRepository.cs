@@ -10,5 +10,7 @@ namespace RWParcerCore.Domain.IRepositories
         Task AddAsync(Subscription subscriptionItem);
         Task RemoveAsync(Subscription subscription);
         Task<bool> SubscriptionExistsAsync(string userId, SubscriptionVO subscription);
+        Task<uint> GetSubscriptionCountAsync(string userId);
+        Task UpdateAsync(Subscription subscription);
     }
 }

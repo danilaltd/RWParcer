@@ -2,8 +2,8 @@
 {
     public class RouteVO(StationVO from, StationVO to) : ValueObject
     {
-        public StationVO From { get; private set; } = from;
-        public StationVO To { get; private set; } = to;
+        internal StationVO From { get; private set; } = from;
+        internal StationVO To { get; private set; } = to;
 
         protected override IEnumerable<object> GetEqualityComponents()
         {

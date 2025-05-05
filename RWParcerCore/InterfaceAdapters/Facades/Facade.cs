@@ -90,7 +90,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             IMessageRepository messageRepository = new MessageRepository(appDbContextFactory);
             IRWRepository rwRepository = new RWParcer(httpClient);
 
-            _notificationBackgroundService = new NotificationBackgroundService(subscriptionRepository, notificationRepository, rwRepository, 5, 15); ;
+            _notificationBackgroundService = new NotificationBackgroundService(subscriptionRepository, notificationRepository, userRepository, rwRepository, 5, 15); ;
             _cts = new CancellationTokenSource();
 
             _registerUser = new RegisterUserUseCase(userRepository);

@@ -27,6 +27,7 @@ namespace RWParcer
             private set => _initState = value;
         }
         public List<object> Data { get; } = [];
+        public DateOnly Date { get; set; } = DateOnly.FromDateTime(DateTime.Today);
         public void Reset() { 
             CurrentCommand = null; 
             Data.Clear(); 

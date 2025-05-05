@@ -94,6 +94,36 @@ namespace RWParcerCore.Infrastructure.Repositories
                 _semaphore.Release();
             }
         }
+
+        public async Task<uint> GetSubscriptionCountAsync(string userId)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                return (uint)_subscriptions.Count(s => s.UserId == userId);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task UpdateAsync(Subscription subscription)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                var index = _subscriptions.FindIndex(s => s.Id == subscription.Id);
+                if (index == -1)
+                    throw new KeyNotFoundException($"Subscription with ID {subscription.Id} not found");
+
+                _subscriptions[index] = subscription; // Полностью заменяем объект подписки
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
     }
 
 

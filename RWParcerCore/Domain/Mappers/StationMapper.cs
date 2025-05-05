@@ -7,7 +7,6 @@ namespace RWParcerCore.Domain.Mappers
     {
         public static StationVO FromDTO(RepoStation dto) => new (
             label: dto.Label ?? "",
-            value: dto.Value ?? "",
             exp: dto.Exp ?? ""
         );
     }

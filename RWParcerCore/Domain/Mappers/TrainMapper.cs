@@ -17,7 +17,8 @@ namespace RWParcerCore.Domain.Mappers
             trainDays: dto.TrainDays ?? "",
             trainDaysExcept: dto.TrainDaysExcept ?? "",
             fromStationExp: dto.FromStationExp ?? "",
-            toStationExp: dto.ToStationExp ?? ""
+            toStationExp: dto.ToStationExp ?? "",
+            durationMinutes: dto.DurationMinutes ?? 0
         );
     }
 }

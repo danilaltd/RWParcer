@@ -75,5 +75,29 @@ namespace RWParcerCore.Infrastructure.Repositories
                    .ContinueWith(t => (IEnumerable<Subscription>)t.Result)
             );
         }
+
+        public Task<uint> GetSubscriptionCountAsync(string userId)
+        {
+            return QueryAsync(ctx =>
+                ctx.Subscriptions
+                   .Where(s => s.UserId == userId)
+                   .CountAsync()
+                   .ContinueWith(t => (uint)t.Result)
+            );
+        }
+
+        public Task UpdateAsync(Subscription subscription)
+        {
+            return QueryAsync(ctx =>
+                ctx.Subscriptions
+                   .Where(s => s.Id == subscription.Id)
+                   .ExecuteUpdateAsync(setters => setters
+                       .SetProperty(s => s.UserId, subscription.UserId)
+                       .SetProperty(s => s.LastUpdate, subscription.LastUpdate)
+                       .SetProperty(s => s.LastState, subscription.LastState)
+                       .SetProperty(s => s.Details, subscription.Details)
+                   )
+    );
+        }
     }
 }

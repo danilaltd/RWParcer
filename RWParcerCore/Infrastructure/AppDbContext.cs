@@ -38,17 +38,27 @@ namespace RWParcerCore.Infrastructure
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 WriteIndented = false,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                Converters = { new TrainVOConverter(), new SubscriptionVOConverter() }
             };
 
+            // Конфигурация Subscription
             modelBuilder.Entity<Subscription>()
-                .Ignore(s => s.LastState)
                 .Property(s => s.Details)
                 .HasConversion(
                     v => JsonSerializer.Serialize(v, jsonOptions),
-                    v => DeserializeSubscriptionVO(v, jsonOptions)
+                    v => JsonSerializer.Deserialize<SubscriptionVO>(v, jsonOptions)
                 )
                 .HasColumnType("TEXT");
+
+            modelBuilder.Entity<Subscription>()
+                .Property(s => s.LastState)
+                .HasConversion(
+                    v => v == null ? null : JsonSerializer.Serialize(v, jsonOptions),
+                    v => v == null ? null : JsonSerializer.Deserialize<Dictionary<int, List<int>>>(v, jsonOptions)
+                )
+                .HasColumnType("TEXT");
+
             modelBuilder.Entity<Subscription>()
                 .HasIndex(s => s.UserId);
 
@@ -59,31 +69,24 @@ namespace RWParcerCore.Infrastructure
                     v => DeserializeTrainVO(v, jsonOptions)
                 )
                 .HasColumnType("TEXT");
+
+            // Add index on UserId for Favorite
             modelBuilder.Entity<Favorite>()
                 .HasIndex(f => f.UserId);
         }
 
+        // Helper methods for deserialization with error handling
         private static SubscriptionVO DeserializeSubscriptionVO(string json, JsonSerializerOptions jsonOptions)
         {
             try
             {
-                var deserializeOptions = new JsonSerializerOptions(jsonOptions)
-                {
-                    Converters = { new SubscriptionVOConverter() }
-                };
-                return JsonSerializer.Deserialize<SubscriptionVO>(json, deserializeOptions)
-                    ?? new SubscriptionVO(
-                        new TrainVO("default", "0", "", "", "", "", 0, 0, "", "", "", ""),
-                        DateOnly.FromDateTime(DateTime.Now)
-                    );
+                return JsonSerializer.Deserialize<SubscriptionVO>(json, jsonOptions)
+                    ?? new SubscriptionVO(new TrainVO("default", "0", "", "", "", "", 0, 0, "", "", "", "", 0), DateOnly.FromDateTime(DateTime.Now));
             }
             catch (JsonException ex)
             {
                 Debug.WriteLine($"Deserialization error for SubscriptionVO: {ex.Message}");
-                return new SubscriptionVO(
-                    new TrainVO("default", "0", "", "", "", "", 0, 0, "", "", "", ""),
-                    DateOnly.FromDateTime(DateTime.Now)
-                );
+                return new SubscriptionVO(new TrainVO("default", "0", "", "", "", "", 0, 0, "", "", "", "", 0), DateOnly.FromDateTime(DateTime.Now));
             }
         }
 
@@ -91,17 +94,13 @@ namespace RWParcerCore.Infrastructure
         {
             try
             {
-                var deserializeOptions = new JsonSerializerOptions(jsonOptions)
-                {
-                    Converters = { new TrainVOConverter() }
-                };
-                return JsonSerializer.Deserialize<TrainVO>(json, deserializeOptions)
-                    ?? new TrainVO("default", "0", "", "", "", "", 0, 0, "", "", "", "");
+                return JsonSerializer.Deserialize<TrainVO>(json, jsonOptions)
+                    ?? new TrainVO("default", "0", "", "", "", "", 0, 0, "", "", "", "", 0);
             }
             catch (JsonException ex)
             {
                 Debug.WriteLine($"Deserialization error for TrainVO: {ex.Message}");
-                return new TrainVO("default", "0", "", "", "", "", 0, 0, "", "", "", "");
+                return new TrainVO("default", "0", "", "", "", "", 0, 0, "", "", "", "", 0);
             }
         }
 

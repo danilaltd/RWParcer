@@ -47,7 +47,8 @@ namespace RWParcer
                                                                         return new MenuSelectHandler(router, menu, "Способ выбора даты? Выберите пункт меню");
                                                                     }  },
                         { CommandNames.SubscribeEnterDate,     s => s.GetRequiredService<SubscribeEnterDateHandler>() },
-                        //{ CommandNames.SubscribeUseLastDate,     s => s.GetRequiredService<SubscribeEnterDateHandler>() },
+                        { CommandNames.SubscribeUseLastDate,     s => s.GetRequiredService<SubscribeUseLastDateHandler>() },
+                        { CommandNames.SubscribeEnterDateRange,     s => s.GetRequiredService<SubscribeEnterDateRnageHandler>() },
                 
 
                         { CommandNames.UnsubscribeDateSelect,      s => {
@@ -57,7 +58,8 @@ namespace RWParcer
                                                                     }  },
 
                         { CommandNames.UnsubscribeEnterDate,   s => s.GetRequiredService<UnsubscribeEnterDateHandler>() },
-                        //{ CommandNames.UnsubscribeUseLastDate,     s => s.GetRequiredService<SubscribeEnterDateHandler>() },
+                        { CommandNames.UnsubscribeUseLastDate,     s => s.GetRequiredService<UnsubscribeUseLastDateHandler>() },
+                        { CommandNames.UnsubscribeEnterDateRange,     s => s.GetRequiredService<UnsubscribeEnterDateRangeHandler>() },
 
                 
                 
