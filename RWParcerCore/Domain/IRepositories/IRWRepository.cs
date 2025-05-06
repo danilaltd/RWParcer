@@ -7,6 +7,6 @@ namespace RWParcerCore.Domain.IRepositories
     {
         Task<List<RepoStation>> GetStationsAsync(string pref);
         Task<List<RepoTrain>> GetTrainsAsync(RouteVO route);
-        Task<Dictionary<int, List<int>>> GetSeatsAsync(SubscriptionVO subscription);
+        Task<List<CarVO>> GetSeatsAsync(SubscriptionVO subscription);
     } 
 }

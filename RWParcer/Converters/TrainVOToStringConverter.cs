@@ -10,9 +10,9 @@ namespace RWParcer.Converters
             string times = $"{train.FromTime:HH:mm}→{train.ToTime:HH:mm}";
             string formattedDuration = $"{train.Duration.Hours:D2}:{train.Duration.Minutes:D2}";
 
-            string number =  "№" + train.TrainNumber;
+            string number = "№" + train.TrainNumber;
             string name = train.TitleStationFrom + " - " + train.TitleStationTo;
-            string type = train.TrainType;
+            string type = ConvertType(train.TrainType);
 
             string trainDays = "Дни курсирования: " + train.TrainDays;
             if (train.TrainDaysExcept.Length != 0)
@@ -21,6 +21,19 @@ namespace RWParcer.Converters
             }
 
             return string.Join("\n", route, times, formattedDuration, number, name, type, trainDays);
+        }
+
+        private static string ConvertType(string type)
+        {
+            return type switch
+            {
+                "international" => "Международные линии",
+                "interregional_economy" => "Межрегиональные линии экономкласса",
+                "regional_economy" => "Региональные линии экономкласса",
+                "regional_business" => "Региональные линии бизнес-класса",
+                "interregional_business" => "Межрегиональные линии бизнес-класса",
+                _ => type
+            };
         }
     }
 }

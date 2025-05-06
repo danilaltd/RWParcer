@@ -19,13 +19,13 @@ namespace RWParcer.Handlers.TrainsMenu.Unsubscribe
         {
             if (ctx.Session.InitState)
             {
-                await ctx.SendMessage("Введите дату в формате DD.MM.YYYY.");
+                await ctx.SendMessage("Введите дату в формате DD.MM.YYYY");
                 return;
             }
 
             if (!DateOnly.TryParseExact(ctx.Input, "dd.MM.yyyy", out var date))
             {
-                await ctx.SendMessage("Неверный формат даты, используйте DD.MM.YYYY.");
+                await ctx.SendMessage("Неверный формат даты, используйте DD.MM.YYYY");
                 return;
             }
 

@@ -24,12 +24,12 @@ namespace RWParcerCore.Infrastructure.Services
                 try
                 {
                     var subscriptions = await _subscriptionRepository.GetAllSubscriptionsAsync();
-                    if (await UnsubscribeExpiredAsync(subscriptions)) continue;
-
                     if (!subscriptions.Any())
                     {
                         await Task.Delay(10, cancellationToken);
                     }
+
+                    if (await UnsubscribeExpiredAsync(subscriptions)) continue;
 
                     var tasks = subscriptions.Select(subscription => ProcessSubscriptionAsync(subscription, cancellationToken)).ToArray();
                     await Task.WhenAll(tasks);
@@ -68,7 +68,7 @@ namespace RWParcerCore.Infrastructure.Services
                         if (DateTime.Now - subscription.LastUpdate < TimeSpan.FromSeconds(await _userRepository.GetUserMinIntervalAsync(subscription.UserId))) break;
                         Debug.WriteLine($"Попытка {attempt}: Запрос {subscription.Id}");
                         var response = await _rwRepository.GetSeatsAsync(subscription.Details);
-                        if (!AreDictionariesEqual(response, subscription.LastState))
+                        if (!AreStatesEqual(response, subscription.LastState))
                         {
                             Debug.WriteLine($"Изменение данных для {subscription.Id}\n");
                             var changes = FindSeatChanges(subscription.LastState, response);
@@ -108,56 +108,73 @@ namespace RWParcerCore.Infrastructure.Services
             }
         }
 
-        private static bool AreDictionariesEqual(Dictionary<int, List<int>>? dict1, Dictionary<int, List<int>>? dict2)
+        private static bool AreStatesEqual(List<CarVO> l1, List<CarVO> l2)
         {
-            return dict1 != null && dict2 != null &&
-                   dict1.Count == dict2.Count &&
-                   dict1.Keys.All(dict2.ContainsKey) &&
-                   dict1.All(pair => dict2[pair.Key].OrderBy(x => x).SequenceEqual(pair.Value.OrderBy(x => x)));
+            return l1 is not null && l2 is not null &&
+                   l1.Count == l2.Count &&
+                   l1.OrderBy(x => x.Number).Zip(l2.OrderBy(x => x.Number)).All(pair => pair.First == pair.Second);
         }
 
-        private static List<string> FindSeatChanges(Dictionary<int, List<int>>? oldState, Dictionary<int, List<int>>? newState)
+        private static List<string> FindSeatChanges(List<CarVO>? oldState, List<CarVO>? newState)
         {
             var changes = new List<string>();
 
             var oldStateSafe = oldState ?? [];
             var newStateSafe = newState ?? [];
 
-            foreach (var carNumber in oldStateSafe.Keys.OrderBy(x => x))
+            foreach (var oldCar in oldStateSafe.OrderBy(c => c.Number))
             {
-                if (newStateSafe.TryGetValue(carNumber, out var newSeats))
+                var newCar = newStateSafe.FirstOrDefault(c => c.Number == oldCar.Number);
+
+                if (newCar is not null)
                 {
-                    var removedSeats = oldStateSafe[carNumber].Except(newSeats).ToList();
-                    var addedSeats = newSeats.Except(oldStateSafe[carNumber]).ToList();
+                    var removedSeats = (oldCar.FreeSeats ?? []).Except(newCar.FreeSeats ?? []).ToList();
+                    var addedSeats = (newCar.FreeSeats ?? []).Except(oldCar.FreeSeats ?? []).ToList();
 
-                    if (removedSeats.Count != 0)
-                        changes.Add($"Вагон {carNumber}: Удалены {string.Join(", ", removedSeats)}");
+                    if (removedSeats.Count > 0)
+                        changes.Add($"{Convert(oldCar.Type)} №{oldCar.Number}: Удалены места {string.Join(", ", removedSeats)}");
 
-                    if (addedSeats.Count != 0)
-                        changes.Add($"Вагон {carNumber}: Добавлены {string.Join(", ", addedSeats)}");
+                    if (addedSeats.Count > 0)
+                        changes.Add($"{Convert(oldCar.Type)} №{oldCar.Number}: Добавлены места {string.Join(", ", addedSeats)}");
                 }
                 else
                 {
-                    changes.Add($"Вагон {carNumber}: Все места удалены");
+                    changes.Add($"{Convert(oldCar.Type)} №{oldCar.Number}: Все места удалены");
                 }
             }
 
-            foreach (var carNumber in newStateSafe.Keys.OrderBy(x => x))
+            foreach (var newCar in newStateSafe.OrderBy(c => c.Number))
             {
-                if (!oldStateSafe.ContainsKey(carNumber))
+                if (!oldStateSafe.Any(c => c.Number == newCar.Number))
                 {
-                    changes.Add($"Вагон {carNumber}: Новый вагон, места {string.Join(", ", newStateSafe[carNumber])}");
+                    changes.Add($"{Convert(newCar.Type)} №{newCar.Number}: Новый вагон, места {string.Join(", ", newCar.FreeSeats ?? [])}");
                 }
             }
 
             return changes;
         }
+
+
         private static string Convert(TrainVO train)
         {
             string route = train.StationFrom.Label + " - " + train.StationTo.Label;
             string times = $"{train.FromTime:HH:mm}→{train.ToTime:HH:mm}";
 
             return string.Join("\n", route, times);
+        }
+
+        private static string Convert(CarType type)
+        {
+            return type switch
+            {
+                CarType.Common => "Общий вагон",
+                CarType.Seat => "Сидячий вагон",
+                CarType.Platzkart => "Плацкартный вагон",
+                CarType.Coupe => "Купейный вагон",
+                CarType.Soft => "Мягкий вагон",
+                CarType.SV => "Вагон СВ",
+                _ => "Вагон неизвестного типа"
+            };
         }
 
     }

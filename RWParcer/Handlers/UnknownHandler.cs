@@ -4,6 +4,6 @@ namespace RWParcer.Handlers
 {
     public class UnknownHandler : ICommandHandler
     {
-        public Task HandleAsync(CommandContext ctx) => ctx.SendMessage("Неизвестная команда. Используйте /start.");
+        public Task HandleAsync(CommandContext ctx) => ctx.SendMessage("Неизвестная команда. Используйте /start");
     }
 }

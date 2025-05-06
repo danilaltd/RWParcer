@@ -25,14 +25,14 @@ namespace RWParcer.Handlers.Search
             var stations = ctx.Session.Data.OfType<StationVO>().ToList();
             if (stations.Count != 2)
             {
-                await ctx.ResetSessionAsync("Ошибка выбора станции. Начните заново.", _router);
+                await ctx.ResetSessionAsync("Ошибка выбора станции. Начните заново", _router);
                 return;
             }
 
             var trains = await _facade.GetTimesForRouteAsync(ctx.ChatId, new RouteVO(stations[0], stations[1]));
             if (trains.Count == 0)
             {
-                await ctx.ResetSessionAsync("Поезда не найдены.", _router);
+                await ctx.ResetSessionAsync("Поезда не найдены", _router);
                 return;
             }
 

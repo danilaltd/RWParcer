@@ -26,13 +26,13 @@ namespace RWParcer.Handlers.Moderator
             if (user is null)
             {
                 ctx.Session.Reset();
-                await ctx.SendMessage("Сессия устарела — начните заново.");
+                await ctx.SendMessage("Сессия устарела — начните заново");
                 return;
             }
 
             if (!uint.TryParse(ctx.Input, out var num) || num < 1)
             {
-                await ctx.SendMessage("Неверный формат, введите целое положительное число.");
+                await ctx.SendMessage("Неверный формат, введите целое положительное число");
                 return;
             }
 

@@ -1,4 +1,5 @@
 ﻿using RWParcer.Interfaces;
+using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -22,7 +23,7 @@ namespace RWParcer
         }
 
         public Task SendMessage(string text)
-            => Bot.SendMessage(ChatId, text, replyMarkup: null, cancellationToken: Token);
+            => SendMessageToClient(text, replyMarkup: null);
 
         public Task SendKeyboard(IEnumerable<string> options, string prompt, bool wrapping = false)
         {
@@ -44,15 +45,109 @@ namespace RWParcer
                 OneTimeKeyboard = true
             };
 
-            return Bot.SendMessage(ChatId, prompt, replyMarkup: keyboard, cancellationToken: Token);
+            return SendMessageToClient(prompt, replyMarkup: keyboard);
         }
 
         public async Task ResetSessionAsync(string message, ICommandRouter router)
         {
             Session.Reset();
-            await Bot.SendMessage(ChatId, message);
+            await SendMessage(message);
             Session.SetCommand(CommandNames.MainMenuSelect);
             await router.RouteAsync(CommandNames.MainMenuSelect, this);
+        }
+
+        private async Task SendMessageToClient(string message, ReplyKeyboardMarkup? replyMarkup = null)
+        {
+            const int maxLength = 4096;
+            List<string> chunks = SplitMessageSmart(message, maxLength).ToList();
+
+            foreach (var chunk in chunks)
+            {
+                await Bot.SendMessage(ChatId, chunk, replyMarkup: replyMarkup, cancellationToken: Token);
+            }
+        }
+
+
+        public static IEnumerable<string> SplitMessageSmart(
+    string message,
+    int maxLength,
+    string[]? candidateDelimiters = null)
+        {
+            candidateDelimiters ??= ["\n\n", "\n", " "];
+
+            // 1) Подбор делимитера
+            string chosenDelim = candidateDelimiters.FirstOrDefault(d => message.Contains(d)) ?? " ";
+            string delim = chosenDelim ?? "";
+
+            // 2) Разбиваем на блоки по выбранному делимитеру
+            List<string> blocks;
+            if (chosenDelim != null)
+            {
+                blocks = message
+                    .Split(new[] { chosenDelim }, StringSplitOptions.None)
+                    .Select(s => s.Trim())
+                    .Where(s => s.Length > 0)
+                    .ToList();
+            }
+            else
+            {
+                blocks = new List<string> { message };
+            }
+
+            // 3) Жёсткое дробление слишком длинных блоков
+            var hardSplit = new List<string>();
+            foreach (var block in blocks)
+            {
+                if (block.Length <= maxLength)
+                {
+                    hardSplit.Add(block);
+                }
+                else
+                {
+                    int pos = 0;
+                    while (pos < block.Length)
+                    {
+                        int end = Math.Min(pos + maxLength, block.Length);
+                        int split = -1;
+                        foreach (var token in candidateDelimiters)
+                        {
+                            int idx = block.LastIndexOf(token, end - 1, end - pos);
+                            if (idx > pos)
+                            {
+                                split = idx + token.Length;
+                                break;
+                            }
+                        }
+                        if (split <= pos)
+                            split = end;
+
+                        hardSplit.Add(block.Substring(pos, split - pos));
+                        pos = split;
+                    }
+                }
+            }
+
+            // 4) Группировка кусков без превышения maxLength
+            var current = new StringBuilder();
+            foreach (var chunk in hardSplit)
+            {
+                if (current.Length == 0)
+                {
+                    current.Append(chunk);
+                }
+                else if (current.Length + delim.Length + chunk.Length <= maxLength)
+                {
+                    current.Append(delim).Append(chunk);
+                }
+                else
+                {
+                    yield return current.ToString();
+                    current.Clear();
+                    current.Append(chunk);
+                }
+            }
+            if (current.Length > 0)
+                yield return current.ToString();
         }
     }
 }

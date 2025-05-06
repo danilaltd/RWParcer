@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using RWParcer.Interfaces;
 using RWParcerCore.InterfaceAdapters.Facades;
 using System.Diagnostics;
@@ -42,11 +41,15 @@ namespace RWParcer
                 OnUpdate,
                 OnError,
                 new ReceiverOptions { AllowedUpdates = _settings.AllowedUpdates },
-                cancellationToken: stoppingToken));
+                cancellationToken: stoppingToken), stoppingToken);
             while (!stoppingToken.IsCancellationRequested)
             {
                 await ProcessNotificationsAsync(stoppingToken);
-                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken); // Проверяем уведомления каждые 5 секунд
+                try
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken); // Проверяем уведомления каждые 5 секунд
+                }
+                catch { }
             }
         }
 
@@ -72,9 +75,9 @@ namespace RWParcer
                     await _router.RouteAsync(session.CurrentCommand ?? CommandNames.Unknown, ctx);
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is UnauthorizedAccessException))
             {
-                await ctx.ResetSessionAsync("Backend Error. Попробуйте снова.", _router);
+                await ctx.ResetSessionAsync("Backend Error. Попробуйте снова", _router);
                 Debug.WriteLine(ex.Message);
             }
             finally

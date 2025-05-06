@@ -15,13 +15,14 @@ namespace RWParcer.Handlers.Moderator
         {
             if (ctx.Session.InitState)
             {
-                await ctx.SendMessage("Введите промежуток времени в формате d*.hh:mm:ss.");
+                string ans = "Введите промежуток времени в формате d*.hh:mm:ss";
+                await ctx.SendMessage(ans);
                 return;
             }
 
             if (!TimeSpan.TryParse(ctx.Input, out var ts) || ts == default)
             {
-                await ctx.SendMessage("Неверный формат времени, используйте d*.hh:mm:ss.");
+                await ctx.SendMessage("Неверный формат времени, используйте d*.hh:mm:ss");
                 return;
             }
 

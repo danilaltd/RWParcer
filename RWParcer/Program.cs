@@ -48,7 +48,8 @@ namespace RWParcer
                                 services.AddSingleton<UnsubscribeDateChoiceProvider>();
                                 services.AddSingleton<ManageUsersChoiceProvider>();
                                 services.AddSingleton<ModeratorChoiceProvider>();
-                                
+                                services.AddSingleton<ModeratorChooseSpanProvider>();
+
 
                                 var commandHandlers = new[]
                                 {
@@ -82,6 +83,7 @@ namespace RWParcer
                                     typeof(SendMessageEnterMessageHandler),
                                     typeof(ViewAllMessagesHandler),
                                     typeof(ViewMessagesHandler),
+                                    typeof(ModeratorSpanHandler),
                                 };
 
                                 foreach (var handler in commandHandlers)

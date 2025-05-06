@@ -1,5 +1,4 @@
 ﻿using RWParcer.Interfaces;
-using RWParcerCore.Domain.ValueObjects;
 
 namespace RWParcer.MenuProviders
 {
@@ -9,7 +8,7 @@ namespace RWParcer.MenuProviders
         {
             var options = new Dictionary<string, CommandNames>
             {
-                ["Получить пользователей за промежуток времени"] = CommandNames.ModeratorEnterSpan,
+                ["Получить пользователей за промежуток времени"] = CommandNames.ModeratorSpanSelect,
                 ["Просмотреть все сообщения"] = CommandNames.ViewAllMessages,
             };
             return Task.FromResult((IReadOnlyDictionary<string, CommandNames>)options);

@@ -1,6 +1,7 @@
 ﻿using RWParcer.Interfaces;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.InterfaceAdapters.Facades;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RWParcer.Handlers.TrainsMenu.Subscribe
 {
@@ -19,9 +20,16 @@ namespace RWParcer.Handlers.TrainsMenu.Subscribe
         {
             if (ctx.Session.Date < DateOnly.FromDateTime(DateTime.Today))
             {
-                await ctx.SendMessage("Эта дата уже прошла. Укажите актуальную дату.");
+                await ctx.SendMessage("Эта дата уже прошла. Укажите актуальную дату");
                 return;
             }
+
+            if (ctx.Session.Date > DateOnly.FromDateTime(DateTime.Today).AddMonths(3))
+            {
+                await ctx.SendMessage("Эта дата наступит нескоро. Укажите актуальную дату");
+                return;
+            }
+
 
             var train = ctx.Session.Data.OfType<TrainVO>().First();
             try

@@ -33,7 +33,7 @@ namespace RWParcer.Handlers.Subscriptions
             var subscriptions = await _facade.GetSubscritionsAsync(ctx.ChatId, ctx.ChatId);
             if (subscriptions.Count == 0)
             {
-                await ctx.ResetSessionAsync("Нет подписок.", _router);
+                await ctx.ResetSessionAsync("Нет подписок", _router);
                 return;
             }
 
@@ -50,19 +50,19 @@ namespace RWParcer.Handlers.Subscriptions
             var subscriptionsList = ctx.Session.Data.OfType<List<SubscriptionVO>>().FirstOrDefault();
             if (subscriptionsList == null)
             {
-                await ctx.ResetSessionAsync("Сессия устарела, начните заново.", _router);
+                await ctx.ResetSessionAsync("Сессия устарела, начните заново", _router);
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(ctx.Input))
             {
-                await ctx.SendMessage("Выберите поезд из списка клавиатуры.");
+                await ctx.SendMessage("Выберите поезд из списка клавиатуры");
                 return;
             }
 
             if (!(int.TryParse(ctx.Input, out int index) && index >= 1 && index <= subscriptionsList.Count))
             {
-                await ctx.SendMessage("Введите корректный индекс подписки.");
+                await ctx.SendMessage("Введите корректный индекс подписки");
                 return;
             }
 

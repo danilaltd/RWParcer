@@ -8,7 +8,7 @@ namespace RWParcerCore.Domain.Entities
         public string UserId { get; private set; }
         public SubscriptionVO Details { get; private set; }
         public DateTime? LastUpdate { get; set; }
-        public Dictionary<int, List<int>>? LastState { get; set; }
+        public List<CarVO> LastState { get; set; } = [];
 
         private Subscription() { }
         public Subscription(Guid id, string userId, SubscriptionVO details)

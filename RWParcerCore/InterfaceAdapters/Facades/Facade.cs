@@ -18,6 +18,7 @@ using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.IServices;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.Infrastructure;
+using RWParcerCore.Infrastructure.InMemoryRepositories;
 using RWParcerCore.Infrastructure.Repositories;
 using RWParcerCore.Infrastructure.Services;
 
@@ -73,13 +74,13 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             var options = new DbContextOptionsBuilder<AppDbContext>()
                             .UseSqlite("Data Source=app.db")
                             .Options;
-            if (File.Exists("app.db")) File.Delete("app.db");
-            if (File.Exists("app.db-shm")) File.Delete("app.db-shm");
-            if (File.Exists("app.db-wal")) File.Delete("app.db-wal");
-            using (var context = new AppDbContext(options))
-            {
-                context.Database.EnsureCreated();
-            }
+            //if (File.Exists("app.db")) File.Delete("app.db");
+            //if (File.Exists("app.db-shm")) File.Delete("app.db-shm");
+            //if (File.Exists("app.db-wal")) File.Delete("app.db-wal");
+            //using (var context = new AppDbContext(options))
+            //{
+            //    context.Database.EnsureCreated();
+            //}
 
             IAppDbContextFactory appDbContextFactory = new AppDbContextFactory(options);
 

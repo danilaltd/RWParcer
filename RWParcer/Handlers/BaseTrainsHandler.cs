@@ -23,19 +23,19 @@ namespace RWParcer.Handlers
             var trainsList = ctx.Session.Data.OfType<List<TrainVO>>().FirstOrDefault();
             if (trainsList == null)
             {
-                await ctx.ResetSessionAsync("Сессия устарела, начните заново.", _router);
+                await ctx.ResetSessionAsync("Сессия устарела, начните заново", _router);
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(ctx.Input))
             {
-                await ctx.SendMessage("Выберите поезд из списка клавиатуры.");
+                await ctx.SendMessage("Выберите поезд из списка клавиатуры");
                 return;
             }
 
             if (!(int.TryParse(ctx.Input, out int index) && index >= 1 && index <= trainsList.Count))
             {
-                await ctx.SendMessage("Введите корректный индекс поезда.");
+                await ctx.SendMessage("Введите корректный индекс поезда");
                 return;
             }
 

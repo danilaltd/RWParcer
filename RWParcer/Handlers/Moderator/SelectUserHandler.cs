@@ -33,14 +33,14 @@ namespace RWParcer.Handlers.Moderator
 
             if (ts == default)
             {
-                await ctx.ResetSessionAsync("Ошибка. Начните заново.", _router);
+                await ctx.ResetSessionAsync("Ошибка. Начните заново", _router);
                 return;
             }
 
             var users = await _facade.GetUsersAsync(ctx.ChatId, ts);
             if (users.Count == 0)
             {
-                await ctx.ResetSessionAsync("Нет пользователей за данный промежуток.", _router);
+                await ctx.ResetSessionAsync("Нет пользователей за данный промежуток", _router);
                 return;
             }
 
@@ -57,19 +57,19 @@ namespace RWParcer.Handlers.Moderator
             var usersList = ctx.Session.Data.OfType<List<UserVO>>().FirstOrDefault();
             if (usersList == null)
             {
-                await ctx.ResetSessionAsync("Сессия устарела, начните заново.", _router);
+                await ctx.ResetSessionAsync("Сессия устарела, начните заново", _router);
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(ctx.Input))
             {
-                await ctx.SendMessage("Выберите пользователя из списка клавиатуры.");
+                await ctx.SendMessage("Выберите пользователя из списка клавиатуры");
                 return;
             }
 
             if (!(int.TryParse(ctx.Input, out int index) && index >= 1 && index <= usersList.Count))
             {
-                await ctx.SendMessage("Введите корректный индекс пользователя.");
+                await ctx.SendMessage("Введите корректный индекс пользователя");
                 return;
             }
 

@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Web;
 
-namespace RWParcerCore.Infrastructure.Repositories
+namespace RWParcerCore.Infrastructure.InMemoryRepositories
 {
     internal class RWParcer(HttpClient httpClient) : IRWRepository
     {
@@ -76,12 +76,11 @@ namespace RWParcerCore.Infrastructure.Repositories
             return trains ?? [];
         }
 
-        public async Task<Dictionary<int, List<int>>> GetSeatsAsync(SubscriptionVO subscription)
+        public async Task<List<CarVO>> GetSeatsAsync(SubscriptionVO subscription)
         {
-            Dictionary<int, List<int>> result = [];
-
+            List<CarVO> result = [];
             UriBuilder builder = new(GetSeatsBaseUrl);
-            for (int carType = 1; carType <= 5; carType++)
+            for (int carType = 1; carType <= 6; carType++)
             {
                 var query = HttpUtility.ParseQueryString(builder.Query);
                 query["from"] = subscription.Train.StationFrom.Exp;
@@ -114,7 +113,6 @@ namespace RWParcerCore.Infrastructure.Repositories
 
                 JsonElement root = doc.RootElement;
 
-
                 if (root.TryGetProperty("tariffs", out JsonElement tariffsElement))
                 {
                     foreach (JsonElement tariff in tariffsElement.EnumerateArray())
@@ -132,8 +130,8 @@ namespace RWParcerCore.Infrastructure.Repositories
                                         Debug.WriteLine("carNumberStr null");
                                         continue;
                                     }
-                                    int carNumber = int.Parse(carNumberStr);
-                                    List<int> emptySeats = [];
+                                    uint carNumber = uint.Parse(carNumberStr);
+                                    List<uint> emptySeats = [];
 
                                     foreach (JsonElement seat in placesElement.EnumerateArray())
                                     {
@@ -143,10 +141,10 @@ namespace RWParcerCore.Infrastructure.Repositories
                                             Debug.WriteLine("seatStr null");
                                             continue;
                                         }
-                                        emptySeats.Add(int.Parse(seatStr));
+                                        emptySeats.Add(uint.Parse(seatStr));
                                     }
 
-                                    result[carNumber] = emptySeats;
+                                    result.Add(new((CarType)carType, carNumber, emptySeats));
                                 }
                             }
                         }

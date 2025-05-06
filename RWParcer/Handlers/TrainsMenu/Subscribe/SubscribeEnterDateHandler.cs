@@ -19,19 +19,25 @@ namespace RWParcer.Handlers.TrainsMenu.Subscribe
         {
             if (ctx.Session.InitState)
             {
-                await ctx.SendMessage("Введите дату в формате DD.MM.YYYY.");
+                await ctx.SendMessage("Введите дату в формате DD.MM.YYYY");
                 return;
             }
 
             if (!DateOnly.TryParseExact(ctx.Input, "dd.MM.yyyy", out var date))
             {
-                await ctx.SendMessage("Неверный формат даты, используйте DD.MM.YYYY.");
+                await ctx.SendMessage("Неверный формат даты, используйте DD.MM.YYYY");
                 return;
             }
 
             if (date < DateOnly.FromDateTime(DateTime.Today))
             {
-                await ctx.SendMessage("Эта дата уже прошла. Укажите актуальную дату.");
+                await ctx.SendMessage("Эта дата уже прошла. Укажите актуальную дату");
+                return;
+            }
+
+            if (date > DateOnly.FromDateTime(DateTime.Today).AddMonths(3))
+            {
+                await ctx.SendMessage("Эта дата наступит нескоро. Укажите актуальную дату");
                 return;
             }
 

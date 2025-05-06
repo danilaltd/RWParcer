@@ -8,11 +8,12 @@ namespace RWParcer.Converters
         {
             string name = user.IsModerator ? "Модератор" : "Пользователь";
             string id = "Id: " + user.Id;
+            string link = "link: " + "tg://openmessage?user_id=" + user.Id;
             string minUpdateInterval = $"Минимальный интервал обновления {user.MinUpdateInterval}";
             string maxSubscriptions = $"Максимальное количество подписок {user.MaxSubscriptions}";
             string isBlocked = user.IsBlocked ? "Заблокирован" : "";
             string lastActivity = $"Последняя активность: {user.LastActivity.ToString()}";
-            return string.Join("\n", new[] { name, id, minUpdateInterval, maxSubscriptions, isBlocked, lastActivity }.Where(s => !string.IsNullOrEmpty(s)));
+            return string.Join("\n", new[] { name, id, link, minUpdateInterval, maxSubscriptions, isBlocked, lastActivity }.Where(s => !string.IsNullOrEmpty(s)));
         }
     }
 }

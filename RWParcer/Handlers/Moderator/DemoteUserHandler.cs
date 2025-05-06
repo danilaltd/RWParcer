@@ -20,7 +20,7 @@ namespace RWParcer.Handlers.Moderator
             if (user is null)
             {
                 ctx.Session.Reset();
-                await ctx.SendMessage("Сессия устарела — начните заново.");
+                await ctx.SendMessage("Сессия устарела — начните заново");
                 return;
             }
 

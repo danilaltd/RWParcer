@@ -35,6 +35,10 @@
         ModeratorMenuSelect,
         SelectUser,
         ModeratorEnterSpan,
+        ModeratorSpanDay,
+        ModeratorSpanHour,
+        ModeratorSpanMinute,
+        ModeratorSpanSelect,
         ManageUserMenuSelect,
 
         SendMessageEnterMessage,

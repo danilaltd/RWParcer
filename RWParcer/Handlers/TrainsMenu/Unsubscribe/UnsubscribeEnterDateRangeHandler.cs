@@ -20,7 +20,7 @@ namespace RWParcer.Handlers.TrainsMenu.Unsubscribe
         {
             if (ctx.Session.InitState)
             {
-                await ctx.SendMessage("Введите диапазон в формате DD.MM.YYYY-DD.MM.YYYY.");
+                await ctx.SendMessage("Введите диапазон в формате DD.MM.YYYY-DD.MM.YYYY");
                 return;
             }
 
@@ -31,25 +31,25 @@ namespace RWParcer.Handlers.TrainsMenu.Unsubscribe
                 !DateOnly.TryParseExact(dates[1].Trim(), "dd.MM.yyyy", out var endDate) ||
                 startDate > endDate)
             {
-                await ctx.SendMessage("Неверный формат диапазона, используйте DD.MM.YYYY-DD.MM.YYYY.");
+                await ctx.SendMessage("Неверный формат диапазона, используйте DD.MM.YYYY-DD.MM.YYYY");
                 return;
             }
 
             if ((endDate.DayNumber - startDate.DayNumber) >= 60)
             {
-                await ctx.SendMessage("Слишком большой диапазон.");
+                await ctx.SendMessage("Слишком большой диапазон");
                 return;
             }
 
             if (startDate < DateOnly.FromDateTime(DateTime.Today))
             {
-                await ctx.SendMessage("Эта дата уже прошла. Укажите актуальную дату.");
+                await ctx.SendMessage("Эта дата уже прошла. Укажите актуальную дату");
                 return;
             }
 
             if (endDate > DateOnly.FromDateTime(DateTime.Today).AddMonths(3))
             {
-                await ctx.SendMessage("Эта дата наступит нескоро. Укажите актуальную дату.");
+                await ctx.SendMessage("Эта дата наступит нескоро. Укажите актуальную дату");
                 return;
             }
 

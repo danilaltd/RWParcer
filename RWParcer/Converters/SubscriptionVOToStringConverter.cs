@@ -8,7 +8,7 @@ namespace RWParcer.Converters
         {
             string date = subscription.Date.ToString("dd.MM.yyyy");
 
-            return string.Join("\n", date, '\n', TrainVOToStringConverter.Convert(subscription.Train));
+            return string.Join("\n", date, TrainVOToStringConverter.Convert(subscription.Train));
         }
     }
 }

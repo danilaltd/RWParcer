@@ -24,7 +24,7 @@ namespace RWParcer.Handlers.Favorites
             var favorites = await _facade.GetFavoritesAsync(ctx.ChatId);
             if (favorites.Count == 0)
             {
-                await ctx.ResetSessionAsync("В избранном пусто.", _router);
+                await ctx.ResetSessionAsync("В избранном пусто", _router);
                 return;
             }
 
