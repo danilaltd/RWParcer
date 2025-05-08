@@ -1,6 +1,5 @@
 # 1️⃣ Используем .NET SDK для сборки проекта
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-COPY /etc/secrets/appsettings.json /app/RWParcer/appsettings.json
 WORKDIR /app
 
 # 2️⃣ Копируем только .csproj файлы для быстрого restore
