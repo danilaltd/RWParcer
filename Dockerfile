@@ -1,6 +1,5 @@
 # 1️⃣ Используем .NET SDK для сборки проекта
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-RUN --mount=type=secret,id=appsettings_json,dst=/etc/secrets/appsettings.json cat /etc/secrets/appsettings.json
 WORKDIR /app
 
 # 2️⃣ Копируем только .csproj файлы для быстрого restore
@@ -27,4 +26,4 @@ COPY --from=build /app/out .
 EXPOSE 8080
 
 # 8️⃣ Запускаем приложение
-ENTRYPOINT ["dotnet", "RWParcer.dll"]
+ENTRYPOINT ["/bin/sh", "-c", "ln -s /etc/secrets/appsettings.json /app/RWParcer/appsettings.json && dotnet RWParcer.dll"]
