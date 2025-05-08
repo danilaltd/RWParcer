@@ -24,49 +24,44 @@ namespace RWParcer
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.WebHost.UseUrls("http://0.0.0.0:8080"); // Указываем порт
 
-            var app = builder.Build();
-            app.MapGet("/", () => "Bot is running"); // Добавляем обработку HTTP-запросов
-            var host = Host.CreateDefaultBuilder()
-                            .ConfigureAppConfiguration(config =>
-                            {
-                                var secretPath = "/etc/secrets/appsettings.json";
-                                if (File.Exists(secretPath))
-                                {
-                                    config.AddJsonFile(secretPath, optional: false, reloadOnChange: true);
-                                }
-                                else
-                                {
-                                    config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                                }
-                            })
-                            .ConfigureServices((context, services) =>
-                            {
-                                services.Configure<BotSettings>(context.Configuration.GetSection("BotSettings"));
+            var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+            builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
-                                services.AddScoped<ISessionManager, SessionManager>();
+            const string secretPath = "/etc/secrets/appsettings.json";
+            if (File.Exists(secretPath))
+            {
+                builder.Configuration.AddJsonFile(secretPath, optional: false, reloadOnChange: true);
+            }
+            else
+            {
+                builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            }
 
-                                services.AddSingleton<ITelegramBotClient>(sp =>
-                                {
-                                    var settings = sp.GetRequiredService<IOptions<BotSettings>>().Value;
-                                    return new TelegramBotClient(settings.ApiToken);
-                                });
-                                services.AddSingleton<ISessionStore, JsonSessionStore>();
-                                services.AddSingleton<IFacade, Facade>();
-                                services.AddTransient<ICommandRouter, CommandRouter>();
+            builder.Services.Configure<BotSettings>(builder.Configuration.GetSection("BotSettings"));
+            
+            builder.Services.AddScoped<ISessionManager, SessionManager>();
+            
+            builder.Services.AddSingleton<ITelegramBotClient>(sp =>
+            {
+                var settings = sp.GetRequiredService<IOptions<BotSettings>>().Value;
+                return new TelegramBotClient(settings.ApiToken);
+            });
 
-                                services.AddSingleton<MainMenuProvider>();
-                                services.AddSingleton<TrainActionsProvider>();
-                                services.AddSingleton<SubscribeDateChoiceProvider>();
-                                services.AddSingleton<SubscriptionActionsProvider>();
-                                services.AddSingleton<UnsubscribeDateChoiceProvider>();
-                                services.AddSingleton<ManageUsersChoiceProvider>();
-                                services.AddSingleton<ModeratorChoiceProvider>();
-                                services.AddSingleton<ModeratorChooseSpanProvider>();
+            builder.Services.AddSingleton<ISessionStore, JsonSessionStore>();
+            builder.Services.AddSingleton<IFacade, Facade>();
+            builder.Services.AddTransient<ICommandRouter, CommandRouter>();
+            
+            builder.Services.AddSingleton<MainMenuProvider>();
+            builder.Services.AddSingleton<TrainActionsProvider>();
+            builder.Services.AddSingleton<SubscribeDateChoiceProvider>();
+            builder.Services.AddSingleton<SubscriptionActionsProvider>();
+            builder.Services.AddSingleton<UnsubscribeDateChoiceProvider>();
+            builder.Services.AddSingleton<ManageUsersChoiceProvider>();
+            builder.Services.AddSingleton<ModeratorChoiceProvider>();
+            builder.Services.AddSingleton<ModeratorChooseSpanProvider>();
 
-
-                                var commandHandlers = new[]
+            var commandHandlers = new[]
                                 {
                                     typeof(StartHandler),
                                     typeof(MenuSelectHandler),
@@ -101,16 +96,17 @@ namespace RWParcer
                                     typeof(ModeratorSpanHandler),
                                 };
 
-                                foreach (var handler in commandHandlers)
-                                {
-                                    services.AddTransient(handler);
-                                }
+            foreach (var handler in commandHandlers)
+            {
+                builder.Services.AddTransient(handler);
+            }
 
-                                services.AddHostedService<BotService>();
-                            })
-                            .Build();
-            host.Services.GetRequiredService<IFacade>();
-            await host.RunAsync();
+            builder.Services.AddHostedService<BotService>();
+
+            var app = builder.Build();
+            app.MapGet("/", () => "Bot is running");
+            
+            await app.RunAsync();
         }
     }
 }
