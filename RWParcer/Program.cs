@@ -14,6 +14,8 @@ using RWParcer.Handlers.TrainsMenu.Unsubscribe;
 using RWParcer.Handlers.Subscriptions;
 using Microsoft.Extensions.Options;
 using RWParcer.Handlers.Moderator;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 
 namespace RWParcer
 {
@@ -21,6 +23,11 @@ namespace RWParcer
     {
         public static async Task Main()
         {
+            var builder = WebApplication.CreateBuilder();
+            builder.WebHost.UseUrls("http://0.0.0.0:8080"); // Указываем порт
+
+            var app = builder.Build();
+            app.MapGet("/", () => "Bot is running"); // Добавляем обработку HTTP-запросов
             var host = Host.CreateDefaultBuilder()
                             .ConfigureAppConfiguration(config =>
                             {
