@@ -3,8 +3,12 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /app
 
 # Копируем .csproj и восстанавливаем зависимости
+RUN ls RWParcerCore/
+RUN ls RWParcer/
 COPY RWParcerCore/RWParcerCore.csproj RWParcerCore/
 COPY RWParcer/RWParcer.csproj RWParcer/
+RUN ls .
+RUN ls RWParcer
 RUN dotnet restore RWParcerCore.csproj && dotnet restore RWParcer.csproj
 
 # Копируем весь проект
