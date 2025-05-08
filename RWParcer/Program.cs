@@ -21,9 +21,9 @@ namespace RWParcer
 {
     public class Program
     {
-        public static async Task Main()
+        public static async Task Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder();
+            var builder = WebApplication.CreateBuilder(args);
             builder.WebHost.UseUrls("http://0.0.0.0:8080"); // Указываем порт
 
             var app = builder.Build();
@@ -32,22 +32,6 @@ namespace RWParcer
                             .ConfigureAppConfiguration(config =>
                             {
                                 var secretPath = "/etc/secrets/appsettings.json";
-                                Console.WriteLine($"📂 check1");
-
-                                foreach (var file in Directory.GetFiles("/etc/secrets/"))
-                                {
-                                    Console.WriteLine($"📂 Найден файл: {file}");
-                                }
-                                Console.WriteLine($"📂 check2");
-                                foreach (var file in Directory.GetFiles("/etc/"))
-                                {
-                                    Console.WriteLine($"📂 Найден файл: {file}");
-                                }
-                                Console.WriteLine($"📂 check3");
-                                foreach (var file in Directory.GetFiles("/"))
-                                {
-                                    Console.WriteLine($"📂 Найден файл: {file}");
-                                }
                                 if (File.Exists(secretPath))
                                 {
                                     config.AddJsonFile(secretPath, optional: false, reloadOnChange: true);
