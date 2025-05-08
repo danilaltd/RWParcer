@@ -25,6 +25,18 @@ namespace RWParcer
                             .ConfigureAppConfiguration(config =>
                             {
                                 var secretPath = "/etc/secrets/appsettings.json";
+                                foreach (var file in Directory.GetFiles("/etc/secrets/"))
+                                {
+                                    Console.WriteLine($"📂 Найден файл: {file}");
+                                }
+                                foreach (var file in Directory.GetFiles("/etc/"))
+                                {
+                                    Console.WriteLine($"📂 Найден файл: {file}");
+                                }
+                                foreach (var file in Directory.GetFiles("/"))
+                                {
+                                    Console.WriteLine($"📂 Найден файл: {file}");
+                                }
                                 if (File.Exists(secretPath))
                                 {
                                     config.AddJsonFile(secretPath, optional: false, reloadOnChange: true);
