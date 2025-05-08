@@ -26,4 +26,4 @@ COPY --from=build /app/out .
 EXPOSE 8080
 
 # 8️⃣ Запускаем приложение
-ENTRYPOINT ["/bin/sh", "-c", "ln -s /etc/secrets/appsettings.json /app/RWParcer/appsettings.json && dotnet RWParcer.dll"]
+ENTRYPOINT ["dotnet", "RWParcer.dll"]

@@ -24,17 +24,14 @@ namespace RWParcer
             var host = Host.CreateDefaultBuilder()
                             .ConfigureAppConfiguration(config =>
                             {
-                                var defaultPath = "appsettings.json";
-
                                 var secretPath = "/etc/secrets/appsettings.json";
-
                                 if (File.Exists(secretPath))
                                 {
                                     config.AddJsonFile(secretPath, optional: false, reloadOnChange: true);
                                 }
-                                else if (File.Exists(defaultPath))
+                                else
                                 {
-                                    config.AddJsonFile(defaultPath, optional: false, reloadOnChange: true);
+                                    config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
                                 }
                             })
                             .ConfigureServices((context, services) =>
