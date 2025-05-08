@@ -123,7 +123,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             _unSubscribe = new UnSubscribeUseCase(userRepository, subscriptionRepository);
             _getSubscriptions = new GetSubscriptionsUseCase(userRepository, subscriptionRepository);
 
-            _popNotifications = new PopNotificationsUseCase(notificationRepository);
+            _popNotifications = new PopNotificationsUseCase(notificationRepository, userRepository);
 
             _ = Task.Run(() => StartAsync());
         }
