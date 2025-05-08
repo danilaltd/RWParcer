@@ -12,6 +12,6 @@ namespace RWParcerCore.Infrastructure
         }
 
         public AppDbContext CreateDbContext()
-            => new AppDbContext(_options);
+            => new AppDbContext();
     }
 }

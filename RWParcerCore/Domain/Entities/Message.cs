@@ -6,7 +6,7 @@
         public string SenderId { get; set; }
         public string ReceiverId { get; set; }
         public string Content { get; set; }
-        public DateTime SentDate { get; set; } = DateTime.Now;
+        public DateTime SentDate { get; set; } = DateTime.UtcNow;
         public List<string> ReadBy { get; private set; } = [];
 
         private Message() { }

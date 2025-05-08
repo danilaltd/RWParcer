@@ -71,9 +71,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             //INotificationRepository notificationRepository = new InMemoryNotificationRepository();
             //IRWRepository rwRepository = new RWParcer(httpClient);
             //IMessageRepository messageRepository = new InMemoryMessageRepository();
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                            .UseSqlite("Data Source=app.db")
-                            .Options;
+
             //if (File.Exists("app.db")) File.Delete("app.db");
             //if (File.Exists("app.db-shm")) File.Delete("app.db-shm");
             //if (File.Exists("app.db-wal")) File.Delete("app.db-wal");
@@ -81,6 +79,10 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             //{
             //    context.Database.EnsureCreated();
             //}
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                            .UseNpgsql("Host=db.phzzfofwodzqkppnmjzq.supabase.co;Port=5432;Database=postgres;Username=postgres;Password=mypswhelloworl;SSL Mode=Require;Trust Server Certificate=true")
+                            .Options;
+
 
             IAppDbContextFactory appDbContextFactory = new AppDbContextFactory(options);
 

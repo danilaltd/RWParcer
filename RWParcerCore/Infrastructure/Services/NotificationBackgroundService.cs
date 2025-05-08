@@ -42,7 +42,7 @@ namespace RWParcerCore.Infrastructure.Services
 
         private async Task<bool> UnsubscribeExpiredAsync(IEnumerable<Subscription> subscriptions)
         {
-            DateOnly curDate = DateOnly.FromDateTime(DateTime.Now);
+            DateOnly curDate = DateOnly.FromDateTime(DateTime.UtcNow);
             var expiredSubscriptions = subscriptions.Where(s => s.Details.Date < curDate).ToList();
 
             if (expiredSubscriptions.Any())
@@ -65,7 +65,7 @@ namespace RWParcerCore.Infrastructure.Services
                 {
                     try
                     {
-                        if (DateTime.Now - subscription.LastUpdate < TimeSpan.FromSeconds(await _userRepository.GetUserMinIntervalAsync(subscription.UserId))) break;
+                        if (DateTime.UtcNow - subscription.LastUpdate < TimeSpan.FromSeconds(await _userRepository.GetUserMinIntervalAsync(subscription.UserId))) break;
                         Debug.WriteLine($"Попытка {attempt}: Запрос {subscription.Id}");
                         var response = await _rwRepository.GetSeatsAsync(subscription.Details);
                         if (!AreStatesEqual(response, subscription.LastState))
@@ -84,7 +84,7 @@ namespace RWParcerCore.Infrastructure.Services
                             subscription.LastState = response;
 
                         }
-                        subscription.LastUpdate = DateTime.Now;
+                        subscription.LastUpdate = DateTime.UtcNow;
                         await _subscriptionRepository.UpdateAsync(subscription);
                         break;
                     }

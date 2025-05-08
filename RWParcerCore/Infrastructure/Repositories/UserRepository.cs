@@ -117,13 +117,13 @@ namespace RWParcerCore.Infrastructure.Repositories
             {
                 var u = await ctx.Users.FirstOrDefaultAsync(x => x.Id == userId)
                         ?? throw new KeyNotFoundException($"User {userId} not found");
-                u.LastActivity = DateTime.Now;
+                u.LastActivity = DateTime.UtcNow;
                 await ctx.SaveChangesAsync();
             });
 
         public Task<List<User>> GetLastUsersAsync(TimeSpan timeSpan)
         {
-            var cutoffTime = DateTime.Now.Subtract(timeSpan); // Вычисляем пороговое время перед запросом
+            var cutoffTime = DateTime.UtcNow.Subtract(timeSpan); // Вычисляем пороговое время перед запросом
 
             return QueryAsync(ctx =>
                 ctx.Users
