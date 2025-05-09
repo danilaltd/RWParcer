@@ -29,7 +29,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (favoriteItem == null)
             {
-                Debug.WriteLine("AddFavorite err");
+                Console.WriteLine("AddFavorite err");
                 return;
             }
 
@@ -48,7 +48,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (train is null)
             {
-                Debug.WriteLine("Exists err");
+                Console.WriteLine("Exists err");
                 return false;
             }
 
@@ -67,7 +67,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (favoriteItem == null)
             {
-                Debug.WriteLine("RemoveFavorite err");
+                Console.WriteLine("RemoveFavorite err");
                 return;
             }
 

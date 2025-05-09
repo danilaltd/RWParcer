@@ -95,7 +95,7 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    Debug.WriteLine($"Ошибка: {response.StatusCode}");
+                    Console.WriteLine($"Ошибка: {response.StatusCode}");
                     return [];
                 }
 
@@ -108,7 +108,7 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
                 }
                 catch (System.Text.Json.JsonException e)
                 {
-                    Debug.WriteLine($"Ошибка десериализации JSON: {e.Message}");
+                    Console.WriteLine($"Ошибка десериализации JSON: {e.Message}");
                     throw;
                 }
 
@@ -128,7 +128,7 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
                                     string? carNumberStr = numberElement.GetString();
                                     if (carNumberStr == null)
                                     {
-                                        Debug.WriteLine("carNumberStr null");
+                                        Console.WriteLine("carNumberStr null");
                                         continue;
                                     }
                                     uint carNumber = uint.Parse(carNumberStr);
@@ -139,7 +139,7 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
                                         string? seatStr = seat.GetString();
                                         if (seatStr == null)
                                         {
-                                            Debug.WriteLine("seatStr null");
+                                            Console.WriteLine("seatStr null");
                                             continue;
                                         }
                                         emptySeats.Add(uint.Parse(seatStr));

@@ -27,7 +27,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (subscriptionItem == null)
             {
-                Debug.WriteLine("AddSubscription err");
+                Console.WriteLine("AddSubscription err");
                 return;
             }
 
@@ -46,7 +46,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (subscription is null)
             {
-                Debug.WriteLine("Exists err");
+                Console.WriteLine("Exists err");
                 return false;
             }
 
@@ -67,7 +67,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (subscriptionItem == null)
             {
-                Debug.WriteLine("RemoveSubscription err");
+                Console.WriteLine("RemoveSubscription err");
                 return;
             }
 

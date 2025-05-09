@@ -103,7 +103,7 @@ namespace RWParcerCore.Infrastructure
             }
             catch (JsonException ex)
             {
-                Debug.WriteLine($"Deserialization error for SubscriptionVO: {ex.Message}");
+                Console.WriteLine($"Deserialization error for SubscriptionVO: {ex.Message}");
                 return new SubscriptionVO(new TrainVO("default", "0", "", "", "", "", 0, 0, "", "", "", "", 0), DateOnly.FromDateTime(DateTime.Now));
             }
         }
@@ -117,7 +117,7 @@ namespace RWParcerCore.Infrastructure
             }
             catch (JsonException ex)
             {
-                Debug.WriteLine($"Deserialization error for TrainVO: {ex.Message}");
+                Console.WriteLine($"Deserialization error for TrainVO: {ex.Message}");
                 return new TrainVO("default", "0", "", "", "", "", 0, 0, "", "", "", "", 0);
             }
         }

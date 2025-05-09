@@ -18,7 +18,7 @@ namespace RWParcerCore.Infrastructure.Services
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            Debug.Write("Waiting...");
+            Console.Write("Waiting...");
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
@@ -35,7 +35,7 @@ namespace RWParcerCore.Infrastructure.Services
                     await Task.WhenAll(tasks);
                 } catch (Exception ex)
                 {
-                    Debug.WriteLine($"Неизвестная ошибка: {ex.Message}");
+                    Console.WriteLine($"Неизвестная ошибка: {ex.Message}");
                 }
             }
         }
@@ -66,11 +66,11 @@ namespace RWParcerCore.Infrastructure.Services
                     try
                     {
                         if (DateTime.UtcNow - subscription.LastUpdate < TimeSpan.FromSeconds(await _userRepository.GetUserMinIntervalAsync(subscription.UserId))) break;
-                        Debug.WriteLine($"Попытка {attempt}: Запрос {subscription.Id}");
+                        Console.WriteLine($"Попытка {attempt}: Запрос {subscription.Id}");
                         var response = await _rwRepository.GetSeatsAsync(subscription.Details);
                         if (!AreStatesEqual(response, subscription.LastState))
                         {
-                            Debug.WriteLine($"Изменение данных для {subscription.Id}\n");
+                            Console.WriteLine($"Изменение данных для {subscription.Id}\n");
                             var changes = FindSeatChanges(subscription.LastState, response);
                             if (changes.Count > 0)
                             {
@@ -90,15 +90,15 @@ namespace RWParcerCore.Infrastructure.Services
                     }
                     catch (TaskCanceledException)
                     {
-                        Debug.WriteLine($"Тайм-аут запроса для {subscription.Id} (Попытка {attempt})");
+                        Console.WriteLine($"Тайм-аут запроса для {subscription.Id} (Попытка {attempt})");
                     }
                     catch (HttpRequestException ex)
                     {
-                        Debug.WriteLine($"Ошибка HTTP ({subscription.Id}, Попытка {attempt}): {ex.Message}");
+                        Console.WriteLine($"Ошибка HTTP ({subscription.Id}, Попытка {attempt}): {ex.Message}");
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"Неизвестная ошибка ({subscription.Id}, Попытка {attempt}): {ex.Message}");
+                        Console.WriteLine($"Неизвестная ошибка ({subscription.Id}, Попытка {attempt}): {ex.Message}");
                     }
                 }
             }
