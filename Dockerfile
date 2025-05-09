@@ -6,10 +6,10 @@ WORKDIR /app
 COPY RWParcerCore/RWParcerCore.csproj RWParcerCore/
 COPY RWParcer/RWParcer.csproj RWParcer/
 
-# 3️⃣ Восстанавливаем зависимости (чтобы избежать перересчета слоев при изменениях в коде)
+# 3️⃣ Восстанавливаем зависимости
 RUN dotnet restore RWParcerCore/RWParcerCore.csproj && dotnet restore RWParcer/RWParcer.csproj
 
-# 4️⃣ Теперь копируем весь проект после restore
+# 4️⃣ Копируем весь проект
 COPY RWParcerCore/ RWParcerCore/
 COPY RWParcer/ RWParcer/
 
@@ -20,10 +20,22 @@ RUN dotnet publish RWParcer/RWParcer.csproj -c Release -o /app/out
 # 6️⃣ Используем легкий .NET runtime для запуска
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
+
+# 7️⃣ Устанавливаем Psiphon (пример для Linux)
+RUN apt-get update && apt-get install -y wget && \
+    wget https://psiphon3.com/psiphon3.tar.gz && \
+    tar -xzf psiphon3.tar.gz && \
+    rm psiphon3.tar.gz
+
+# 8️⃣ Копируем скомпилированные файлы из build
 COPY --from=build /app/out .
 
-# 7️⃣ Render.com ожидает, что приложение слушает порт, указанный в переменной окружения PORT
+# 9️⃣ Создаем скрипт для запуска Psiphon и приложения
+RUN echo "#!/bin/bash\n./psiphon --config psiphon.config &\ndotnet RWParcer.dll" > start.sh && \
+    chmod +x start.sh
+
+# 10️⃣ Render.com ожидает порт из переменной окружения PORT
 EXPOSE 8080
 
-# 8️⃣ Запускаем приложение
-ENTRYPOINT ["dotnet", "RWParcer.dll"]
+# 11️⃣ Запускаем скрипт
+ENTRYPOINT ["./start.sh"]
