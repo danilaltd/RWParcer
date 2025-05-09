@@ -2,15 +2,16 @@
 using RWParcerCore.Domain.DTOs;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.ValueObjects;
+using RWParcerCore.InterfaceAdapters.Facades;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Web;
 
 namespace RWParcerCore.Infrastructure.InMemoryRepositories
 {
-    internal class RWParcer(HttpClient httpClient) : IRWRepository
+    internal class RWParcer(HttpClientFactoryWithProxyRotation httpClient) : IRWRepository
     {
-        private readonly HttpClient _httpClient = httpClient;
+        private readonly HttpClientFactoryWithProxyRotation httpFactory = httpClient;
         private readonly string GetStationsUrl = "https://pass.rw.by/ru/ajax/autocomplete/search/?term=";
         private readonly string GetTrainsBaseUrl = "https://apicast.rw.by/v1/rasp/ru/index/route";
         private readonly string GetSeatsBaseUrl = "https://pass.rw.by/ru/ajax/route/car_places";
@@ -18,7 +19,7 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
         public async Task<List<RepoStation>> GetStationsAsync(string pref)
         {
             string fullUrl = GetStationsUrl + pref;
-            HttpResponseMessage response = await _httpClient.GetAsync(fullUrl);
+            HttpResponseMessage response = await httpFactory.CreateClient().GetAsync(fullUrl);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -43,7 +44,7 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
             query["user_key"] = "c2a3d81674b7f4c9e4af16bdba110d53";
             builder.Query = query.ToString();
 
-            HttpResponseMessage response = await _httpClient.GetAsync(builder.ToString());
+            HttpResponseMessage response = await httpFactory.CreateClient().GetAsync(builder.ToString());
 
             if (!response.IsSuccessStatusCode)
             {
@@ -90,7 +91,7 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
                 query["car_type"] = carType.ToString();
                 builder.Query = query.ToString();
 
-                HttpResponseMessage response = await _httpClient.GetAsync(builder.ToString());
+                HttpResponseMessage response = await httpFactory.CreateClient().GetAsync(builder.ToString());
 
                 if (!response.IsSuccessStatusCode)
                 {
