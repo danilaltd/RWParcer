@@ -23,10 +23,6 @@ CONFIG
   ./psiphon --config psiphon-$i.conf &
 done
 
-# Установка переменных окружения для прокси
-export http_proxy=http://localhost:8080
-export https_proxy=http://localhost:8080
-
 # Пауза для запуска Psiphon (опционально, можно настроить)
 sleep 10
 
