@@ -36,22 +36,22 @@ namespace RWParcer
 
         public async Task SaveAsync(ISessionManager sessions)
         {
-            var json = JsonConvert.SerializeObject(sessions, _settings);
-            var tmpFile = _path + ".tmp";
+            //var json = JsonConvert.SerializeObject(sessions, _settings);
+            //var tmpFile = _path + ".tmp";
 
-            await _saveLock.WaitAsync();
-            try
-            {
-                // 1) Асинхронно пишем в временный файл
-                await File.WriteAllTextAsync(tmpFile, json).ConfigureAwait(false);
+            //await _saveLock.WaitAsync();
+            //try
+            //{
+            //    // 1) Асинхронно пишем в временный файл
+            //    await File.WriteAllTextAsync(tmpFile, json).ConfigureAwait(false);
 
-                // 2) Синхронная атомарная замена
-                File.Replace(tmpFile, _path, null);
-            }
-            finally
-            {
-                _saveLock.Release();
-            }
+            //    // 2) Синхронная атомарная замена
+            //    File.Replace(tmpFile, _path, null);
+            //}
+            //finally
+            //{
+            //    _saveLock.Release();
+            //}
         }
     }
 }
