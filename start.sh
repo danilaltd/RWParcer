@@ -23,7 +23,7 @@ CONFIG
   ./psiphon --config psiphon.config &
 done
 
-wait
+sleep 5
 
 # Запуск .NET приложения
 exec dotnet RWParcer.dll
