@@ -1,41 +1,48 @@
-# 1️⃣ Используем .NET SDK для сборки проекта
+# 1️⃣ Use .NET SDK to build the project
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /app
+WORKDIR /src
 
-# 2️⃣ Копируем только .csproj файлы для быстрого restore
+# 2️⃣ Copy only the .csproj files for fast restore
 COPY RWParcerCore/RWParcerCore.csproj RWParcerCore/
 COPY RWParcer/RWParcer.csproj RWParcer/
 
-# 3️⃣ Восстанавливаем зависимости
-RUN dotnet restore RWParcerCore/RWParcerCore.csproj && dotnet restore RWParcer/RWParcer.csproj
+# 3️⃣ Restore dependencies
+RUN dotnet restore RWParcerCore/RWParcerCore.csproj \
+    && dotnet restore RWParcer/RWParcer.csproj
 
-# 4️⃣ Копируем весь проект
+# 4️⃣ Copy the rest of the source code
 COPY RWParcerCore/ RWParcerCore/
 COPY RWParcer/ RWParcer/
 
-# 5️⃣ Компилируем проекты
+# 5️⃣ Publish projects
 RUN dotnet publish RWParcerCore/RWParcerCore.csproj -c Release -o /app/out
-RUN dotnet publish RWParcer/RWParcer.csproj -c Release -o /app/out
+RUN dotnet publish RWParcer/RWParcer.csproj       -c Release -o /app/out
 
-# 6️⃣ Используем легкий .NET runtime для запуска
+# 6️⃣ Use lightweight .NET runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 
-# 7️⃣ Устанавливаем Psiphon (пример для Linux)
-RUN apt-get update && apt-get install -y wget && \
-    wget https://psiphon3.com/psiphon3.tar.gz && \
-    tar -xzf psiphon3.tar.gz && \
-    rm psiphon3.tar.gz
+# 7️⃣ Download Psiphon binary and make it executable
+RUN apt-get update \
+    && apt-get install -y wget \
+    && wget -O psiphon https://github.com/Psiphon-Labs/psiphon-tunnel-core-binaries/raw/master/linux/psiphon-tunnel-core-x86_64 \
+    && chmod +x psiphon
 
-# 8️⃣ Копируем скомпилированные файлы из build
-COPY --from=build /app/out .
+# 8️⃣ Copy published output from build stage
+COPY --from=build /app/out ./
 
-# 9️⃣ Создаем скрипт для запуска Psiphon и приложения
-RUN echo "#!/bin/bash\n./psiphon --config psiphon.config &\ndotnet RWParcer.dll" > start.sh && \
-    chmod +x start.sh
+# 9️⃣ Expose port from environment variable and configure ASP.NET Core
+ENV ASPNETCORE_URLS=http://*:${PORT}
+EXPOSE ${PORT}
 
-# 10️⃣ Render.com ожидает порт из переменной окружения PORT
-EXPOSE 8080
+# 🔟 Create startup script to run Psiphon + app
+RUN echo "#!/bin/bash\n" \
+         "# Start Psiphon in background\n" \
+         "./psiphon --config psiphon.config &\n" \
+         "# Run the .NET application\n" \
+         "exec dotnet RWParcer.dll" \
+    > start.sh \
+    && chmod +x start.sh
 
-# 11️⃣ Запускаем скрипт
+# 1️⃣1️⃣ Run startup script
 ENTRYPOINT ["./start.sh"]
