@@ -65,7 +65,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         {
             var proxies = new[]
 {
-    "47.90.167.27:8081"
+    "127.0.0.1:8081"
 };
 
 
@@ -287,11 +287,11 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             var proxy = new WebProxy(proxyAddress);
             var handler = new HttpClientHandler
             {
-                //Proxy = proxy,
-                //UseProxy = true
+                Proxy = proxy,
+                UseProxy = true
             };
 
-            HttpClient httpClient = new();
+            HttpClient httpClient = new(handler, disposeHandler: true);
             httpClient.DefaultRequestHeaders.Add("Cookie", "hg-client-security=2wYWCwYjyj7EbcjAw98T7DTE4GQ; hg-security=jSvnyAzRO13rHxzxDQofaNhudTzZhdMLWREbC5iPNPrQbWMqaYq3EQPi1vGNz_rCZZ5FJBk9B9T1V401kT7hxaNLwppBih0=");
             return httpClient;
             //return new HttpClient(handler, disposeHandler: true); // важно: disposeHandler
