@@ -20,10 +20,10 @@ for (( i=0; i<1; i++ )); do
 }
 CONFIG
 
-  ./psiphon --config psiphon-$i.conf &
+  ./psiphon --config psiphon.config &
 done
 
-# Пауза для запуска Psiphon (опционально, можно настроить)
+# Пауза для запуска Psiphon (опционально, можно настроить) psiphon-$i.conf
 sleep 10
 
 # Запуск .NET приложения

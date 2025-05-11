@@ -13,6 +13,7 @@ RUN dotnet restore RWParcerCore/RWParcerCore.csproj \
 # Копирование остального исходного кода
 COPY RWParcerCore/ RWParcerCore/
 COPY RWParcer/ RWParcer/
+COPY psiphon.config ./
 
 # Публикация проектов
 RUN dotnet publish RWParcerCore/RWParcerCore.csproj -c Release -o /app/out
@@ -29,6 +30,7 @@ RUN apt-get update && apt-get install -y wget bash && rm -rf /var/lib/apt/lists/
 
 # Копирование опубликованного .NET приложения
 COPY --from=build /app/out ./
+COPY --from=build /src/psiphon.config ./
 
 ENV ASPNETCORE_URLS=http://*:${PORT}
 EXPOSE ${PORT}
