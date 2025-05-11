@@ -10,9 +10,11 @@ COPY RWParcer/RWParcer.csproj RWParcer/
 RUN dotnet restore RWParcerCore/RWParcerCore.csproj \
     && dotnet restore RWParcer/RWParcer.csproj
 
-# 4️⃣ Copy the rest of the source code
+# 4️⃣ Copy the rest of the source code and psiphon.config
 COPY RWParcerCore/ RWParcerCore/
 COPY RWParcer/ RWParcer/
+# Copy your Psiphon configuration file into the image
+COPY psiphon.config ./
 
 # 5️⃣ Publish projects
 RUN dotnet publish RWParcerCore/RWParcerCore.csproj -c Release -o /app/out
@@ -28,8 +30,9 @@ RUN apt-get update \
     && wget -O psiphon https://github.com/Psiphon-Labs/psiphon-tunnel-core-binaries/raw/master/linux/psiphon-tunnel-core-x86_64 \
     && chmod +x psiphon
 
-# 8️⃣ Copy published output from build stage
+# 8️⃣ Copy published output and configuration from build stage
 COPY --from=build /app/out ./
+COPY --from=build /src/psiphon.config ./
 
 # 9️⃣ Expose port from environment variable and configure ASP.NET Core
 ENV ASPNETCORE_URLS=http://*:${PORT}

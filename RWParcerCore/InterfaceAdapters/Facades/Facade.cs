@@ -287,11 +287,14 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             var proxy = new WebProxy(proxyAddress);
             var handler = new HttpClientHandler
             {
-                Proxy = proxy,
-                UseProxy = true
+                //Proxy = proxy,
+                //UseProxy = true
             };
 
-            return new HttpClient(handler, disposeHandler: true); // важно: disposeHandler
+            HttpClient httpClient = new();
+            httpClient.DefaultRequestHeaders.Add("Cookie", "hg-client-security=2wYWCwYjyj7EbcjAw98T7DTE4GQ; hg-security=jSvnyAzRO13rHxzxDQofaNhudTzZhdMLWREbC5iPNPrQbWMqaYq3EQPi1vGNz_rCZZ5FJBk9B9T1V401kT7hxaNLwppBih0=");
+            return httpClient;
+            //return new HttpClient(handler, disposeHandler: true); // важно: disposeHandler
         }
     }
 
