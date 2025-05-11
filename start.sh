@@ -23,8 +23,7 @@ CONFIG
   ./psiphon --config psiphon.config &
 done
 
-# Пауза для запуска Psiphon (опционально, можно настроить) psiphon-$i.conf
-sleep 10
+wait
 
 # Запуск .NET приложения
 exec dotnet RWParcer.dll
