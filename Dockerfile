@@ -1,14 +1,42 @@
-# ✅ Use lightweight Debian base with bash and wget
-FROM debian:bullseye-slim AS psiphon-test
+# Этап сборки: компиляция .NET приложения
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+# Копирование .csproj файлов для восстановления зависимостей
+COPY RWParcerCore/RWParcerCore.csproj RWParcerCore/
+COPY RWParcer/RWParcer.csproj RWParcer/
+
+# Восстановление зависимостей
+RUN dotnet restore RWParcerCore/RWParcerCore.csproj \
+    && dotnet restore RWParcer/RWParcer.csproj
+
+# Копирование остального исходного кода
+COPY RWParcerCore/ RWParcerCore/
+COPY RWParcer/ RWParcer/
+
+# Публикация проектов
+RUN dotnet publish RWParcerCore/RWParcerCore.csproj -c Release -o /app/out
+RUN dotnet publish RWParcer/RWParcer.csproj -c Release -o /app/out
+
+# Этап выполнения: настройка окружения с .NET и Psiphon
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 
-# 1️⃣ Install wget and bash
+# Установка wget и bash для загрузки и работы Psiphon
 RUN apt-get update && apt-get install -y wget bash && rm -rf /var/lib/apt/lists/*
 
-# 2️⃣ Download Psiphon binary
+# Загрузка бинарного файла Psiphon и установка прав на выполнение
 RUN wget -O psiphon https://github.com/Psiphon-Labs/psiphon-tunnel-core-binaries/raw/master/linux/psiphon-tunnel-core-x86_64 \
     && chmod +x psiphon
 
-COPY start.sh .
-RUN chmod +x start.sh
-ENTRYPOINT ["./start.sh"]
+# Копирование опубликованного .NET приложения
+COPY --from=build /app/out ./
+
+# Копирование локального скрипта start.sh в образ
+COPY start.sh /app/start.sh
+
+# Установка прав на выполнение для скрипта
+RUN chmod +x /app/start.sh
+
+# Указание точки входа для запуска скрипта
+ENTRYPOINT ["/app/start.sh"]
