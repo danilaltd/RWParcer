@@ -66,7 +66,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             var proxies = new[]
          {
     //"127.0.0.1:8080",
-    //"127.0.0.1:8081",
+    "127.0.0.1:8081",
     "127.0.0.1:8090",
     //"127.0.0.1:8091",
     //"127.0.0.1:8100",
