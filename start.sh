@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -eu
 
 # Define arrays for HTTP and SOCKS ports
 HTTP_PORTS=(8090 8091 8092 8093 8094 8095 8096 8097 8098 8099 8100 8101 8102 8103 8104 8105 8106 8107 8108 8109)
@@ -16,19 +16,9 @@ echo "Шаг 1: Загрузка списка серверов..."
 curl -L -o server_list_compressed "https://s3.amazonaws.com//psiphon/web/mjr4-p23r-puwl/server_list_compressed"
 ls -lh server_list_compressed
 
-echo "Шаг 2: Проверяем, загружен ли файл..."
-if [ ! -s server_list_compressed ]; then
-  echo "Ошибка: Файл server_list_compressed отсутствует или пустой!"
-  exit 1
-fi
-
-echo "Шаг 3: Распаковка..."
-gunzip -c server_list_compressed > server_list.json 2>/dev/null
-ls -lh server_list.json
-head -n 10 server_list.json
-
 echo "Шаг 4: Извлечение токенов..."
-printf "\x1f\x8b\x08\x00\x00\x00\x00\x00" | cat - server_list_compressed | gzip -dc 2>&1 | json_xs | grep '"data"' | awk -F\" '{print $4}' | sed "s@\\\n@\n\n\n\n@g" > server_tokens.txt || echo "Предупреждение: gzip мог завершиться с ошибкой!"
+printf "\x1f\x8b\x08\x00\x00\x00\x00\x00" | cat - server_list_compressed | gzip -dc 2>/dev/null | json_xs | grep '"data"' | awk -F\" '{print $4}' | sed "s@\\\n@\n\n\n\n@g" > server_tokens.txt
+
 
 echo "Шаг 5: Проверяем токены..."
 ls -lh server_tokens.txt
