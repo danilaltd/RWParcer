@@ -71,4 +71,4 @@ done
 sleep 5
 
 # Run the dotnet application
-#exec dotnet RWParcer.dll
+exec dotnet RWParcer.dll
