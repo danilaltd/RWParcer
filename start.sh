@@ -23,7 +23,7 @@ if [ ! -s server_list_compressed ]; then
 fi
 
 echo "Шаг 3: Распаковка..."
-gunzip -c server_list_compressed > server_list.json
+gunzip -c server_list_compressed > server_list.json 2>/dev/null
 ls -lh server_list.json
 head -n 10 server_list.json
 
