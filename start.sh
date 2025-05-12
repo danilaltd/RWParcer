@@ -2,50 +2,41 @@
 set -eu
 
 # Define arrays for HTTP and SOCKS ports
-HTTP_PORTS=(8090 8091 8092 8093 8094 8095 8096 8097 8098 8099 8100 8101 8102 8103 8104 8105 8106 8107 8108 8109)
-SOCKS_PORTS=(1080 1081 1082 1083 1084 1085 1086 1087 1088 1089 1090 1091 1092 1093 1094 1095 1096 1097 1098 1099)
+HTTP_PORTS=(8090 8091 8092 8093 8094 8095 8096 8097 8098 8099)
+SOCKS_PORTS=(1080 1081 1082 1083 1084 1085 1086 1087 1088 1089)
 PSIPHON_BIN="./psiphon"
 
-# Check if the Psiphon binary exists and is executable
-if [[ ! -x "$PSIPHON_BIN" ]]; then
-  echo "Не найден исполняемый файл $PSIPHON_BIN"
-  exit 1
-fi
+# Функция для запуска Psiphon-инстансов
+start_psiphon() {
+  echo "Шаг 1: Загрузка списка серверов..."
+  curl -L -o server_list_compressed "https://s3.amazonaws.com//psiphon/web/mjr4-p23r-puwl/server_list_compressed"
+  ls -lh server_list_compressed
 
-echo "Шаг 1: Загрузка списка серверов..."
-curl -L -o server_list_compressed "https://s3.amazonaws.com//psiphon/web/mjr4-p23r-puwl/server_list_compressed"
-ls -lh server_list_compressed
+  echo "Шаг 4: Извлечение токенов..."
+  printf "\x1f\x8b\x08\x00\x00\x00\x00\x00" | cat - server_list_compressed | gzip -dc 2>/dev/null | json_xs | grep '"data"' | awk -F\" '{print $4}' | sed "s@\\\n@\n\n\n\n@g" > server_tokens.txt
+  sed -i '/^$/d' server_tokens.txt
 
-echo "Шаг 4: Извлечение токенов..."
-printf "\x1f\x8b\x08\x00\x00\x00\x00\x00" | cat - server_list_compressed | gzip -dc 2>/dev/null | json_xs | grep '"data"' | awk -F\" '{print $4}' | sed "s@\\\n@\n\n\n\n@g" > server_tokens.txt
-sed -i '/^$/d' server_tokens.txt
+  echo "Шаг 5: Проверяем токены..."
+  ls -lh server_tokens.txt
+  echo "Всего токенов: $(wc -l < server_tokens.txt)"
 
+  echo "✅ Все шаги выполнены!"
+  mapfile -t tokens < server_tokens.txt
 
-echo "Шаг 5: Проверяем токены..."
-ls -lh server_tokens.txt
-#cat server_tokens.txt
-echo "Всего токенов: $(wc -l < server_tokens.txt)"
+  # Проверка наличия достаточного количества токенов
+  if [ ${#tokens[@]} -lt 10 ]; then
+    echo "Недостаточно серверных токенов: доступно только ${#tokens[@]}"
+    exit 1
+  fi
 
-echo "✅ Все шаги выполнены!"
-mapfile -t tokens < server_tokens.txt
-#printf "%s\n" "${tokens[@]}"
+  # Запуск 10 Psiphon-инстансов
+  for (( i=0; i<10; i++ )); do
+    inst_dir="instance-$i"
+    mkdir -p "$inst_dir"
+    token=${tokens[$i]}
 
-
-
-# Check if there are enough unique tokens (at least 20)
-if [ ${#tokens[@]} -lt 15 ]; then
-  echo "Недостаточно серверных токенов: доступно только ${#tokens[@]}"
-  exit 1
-fi
-
-# Step 4: Launch 20 Psiphon instances with unique servers
-for (( i=0; i<15; i++ )); do
-  inst_dir="instance-$i"
-  mkdir -p "$inst_dir"
-  token=${tokens[$i]}
-
-  # Create configuration file for this instance
-  cat > "$inst_dir/psiphon-$i.conf" <<CONFIG
+    # Создание конфигурационного файла
+    cat > "$inst_dir/psiphon-$i.conf" <<CONFIG
 {
   "LocalHttpProxyPort": ${HTTP_PORTS[$i]},
   "LocalSocksProxyPort": ${SOCKS_PORTS[$i]},
@@ -59,16 +50,47 @@ for (( i=0; i<15; i++ )); do
 }
 CONFIG
 
-  # Launch Psiphon instance in the background
-  (
-    cd "$inst_dir"
-    nohup "../$PSIPHON_BIN" --config "psiphon-$i.conf" &
-  )
-  echo "Запущен Psiphon instance-$i: HTTP ${HTTP_PORTS[$i]}, SOCKS ${SOCKS_PORTS[$i]}, Server: $token"
+    # Запуск Psiphon-инстанса в фоновом режиме
+    (
+      cd "$inst_dir"
+      nohup "../$PSIPHON_BIN" --config "psiphon-$i.conf" &
+    )
+    echo "Запущен Psiphon instance-$i: HTTP ${HTTP_PORTS[$i]}, SOCKS ${SOCKS_PORTS[$i]}, Server: $token"
+  done
+}
+
+# Функция для остановки Psiphon-инстансов
+stop_psiphon() {
+  for (( i=0; i<10; i++ )); do
+    pkill -f "psiphon-$i.conf" || true
+  done
+}
+
+# Проверка наличия исполняемого файла Psiphon
+if [[ ! -x "$PSIPHON_BIN" ]]; then
+  echo "Не найден исполняемый файл $PSIPHON_BIN"
+  exit 1
+fi
+
+# Основной цикл для перезапуска Psiphon каждые 60 минут
+nohup bash -c '
+  while true; do
+	echo "Перезапуск psiphon"
+    stop_psiphon
+	echo "psiphon остановлен"
+    start_psiphon
+	echo "psiphon запущен"
+	sleep 60
+	echo "код работает, осталось 59 минут"
+    sleep 3540
+  done
+' >/dev/null 2>&1 &
+
+while ! netstat -tulnp | grep -q 8099; do
+    echo "Ожидаем запуск прокси-серверов..."
+    sleep 5
 done
-
-# Wait for instances to initialize
 sleep 5
-
-# Run the dotnet application
+# Запуск .NET приложения
+echo "✅ Launch dotnet!"
 exec dotnet RWParcer.dll
