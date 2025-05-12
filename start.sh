@@ -33,13 +33,13 @@ mapfile -t tokens < server_tokens.txt
 
 
 # Check if there are enough unique tokens (at least 20)
-if [ ${#tokens[@]} -lt 5 ]; then
+if [ ${#tokens[@]} -lt 10 ]; then
   echo "Недостаточно серверных токенов: доступно только ${#tokens[@]}"
   exit 1
 fi
 
 # Step 4: Launch 20 Psiphon instances with unique servers
-for (( i=0; i<5; i++ )); do
+for (( i=0; i<10; i++ )); do
   inst_dir="instance-$i"
   mkdir -p "$inst_dir"
   token=${tokens[$i]}
