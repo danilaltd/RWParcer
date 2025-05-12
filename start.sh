@@ -55,7 +55,7 @@ CONFIG
       cd "$inst_dir"
       nohup "../$PSIPHON_BIN" --config "psiphon-$i.conf" &
     )
-    echo "Запущен Psiphon instance-$i: HTTP ${HTTP_PORTS[$i]}, SOCKS ${SOCKS_PORTS[$i]}, Server: $token"
+    echo "Запущен Psiphon instance-$i: HTTP ${HTTP_PORTS[$i]}, SOCKS ${SOCKS_PORTS[$i]}, Server: tocken № $i"
   done
 }
 
@@ -81,9 +81,12 @@ psiphon_loop() {
 	echo "psiphon остановлен"
 	start_psiphon
 	echo "psiphon запущен"
-	sleep 60
-	echo "код работает, осталось 59 минут"
-	sleep 3540
+	minutes_left=60
+	while [ $minutes_left -gt 0 ]; do
+		echo "код работает, осталось $minutes_left минут"
+		sleep 60
+		((minutes_left--))
+	done
   done
 }
 

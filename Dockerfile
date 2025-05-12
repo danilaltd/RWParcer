@@ -24,7 +24,7 @@ RUN dotnet publish RWParcer/RWParcer.csproj -c Release -o /app/out
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y wget curl bash jq libjson-xs-perl net-tools \
+RUN apt-get update && apt-get install -y wget curl bash jq libjson-xs-perl net-tools procps \
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y wget bash && rm -rf /var/lib/apt/lists/* \
