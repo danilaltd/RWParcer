@@ -24,6 +24,9 @@ WORKDIR /src
 #FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y wget curl bash \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN apt-get update && apt-get install -y wget bash && rm -rf /var/lib/apt/lists/* \
     && wget -O psiphon https://github.com/Psiphon-Labs/psiphon-tunnel-core-binaries/raw/master/linux/psiphon-tunnel-core-x86_64 \
     && chmod +x psiphon
