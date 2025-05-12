@@ -18,6 +18,7 @@ ls -lh server_list_compressed
 
 echo "Шаг 4: Извлечение токенов..."
 printf "\x1f\x8b\x08\x00\x00\x00\x00\x00" | cat - server_list_compressed | gzip -dc 2>/dev/null | json_xs | grep '"data"' | awk -F\" '{print $4}' | sed "s@\\\n@\n\n\n\n@g" > server_tokens.txt
+sed -i '/^$/d' server_tokens.txt
 
 
 echo "Шаг 5: Проверяем токены..."
