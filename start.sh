@@ -23,7 +23,7 @@ sed -i '/^$/d' server_tokens.txt
 
 echo "Шаг 5: Проверяем токены..."
 ls -lh server_tokens.txt
-cat server_tokens.txt
+#cat server_tokens.txt
 echo "Всего токенов: $(wc -l < server_tokens.txt)"
 
 echo "✅ Все шаги выполнены!"
