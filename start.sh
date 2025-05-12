@@ -36,8 +36,7 @@ CONFIG
   # Запуск из своей директории с перенаправлением логов
   (
     cd "$inst_dir"
-    nohup "$PSIPHON_BIN" --config "psiphon-$i.conf" \
-      &> "psiphon-$i.log" &
+    nohup "$PSIPHON_BIN" --config "psiphon-$i.conf" &
   )
   echo "Запущен Psiphon instance-$i: HTTP ${HTTP_PORTS[$i]}, SOCKS ${SOCKS_PORTS[$i]}"
 done
