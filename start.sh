@@ -72,25 +72,31 @@ if [[ ! -x "$PSIPHON_BIN" ]]; then
   exit 1
 fi
 
-# Основной цикл для перезапуска Psiphon каждые 60 минут
-nohup bash -c '
+
+psiphon_loop() {
+  trap 'echo "Получен SIGTERM, выхожу из цикла"; exit 0' TERM
   while true; do
-	echo "Перезапуск psiphon"
-    stop_psiphon
+    echo "Перезапуск psiphon"
+	stop_psiphon
 	echo "psiphon остановлен"
-    start_psiphon
+	start_psiphon
 	echo "psiphon запущен"
 	sleep 60
 	echo "код работает, осталось 59 минут"
-    sleep 3540
+	sleep 3540
   done
-' >/dev/null 2>&1 &
+}
 
+# 1) Kick off the loop in background
+psiphon_loop &
+
+# 2) Wait for your proxies to come up before launching .NET
+echo "Ожидаем proxy на порт 8099…"
 while ! netstat -tulnp | grep -q 8099; do
-    echo "Ожидаем запуск прокси-серверов..."
-    sleep 5
+  sleep 2
 done
-sleep 5
+sleep 3
+
 # Запуск .NET приложения
 echo "✅ Launch dotnet!"
 exec dotnet RWParcer.dll
