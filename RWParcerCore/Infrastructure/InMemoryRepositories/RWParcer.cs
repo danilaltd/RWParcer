@@ -3,7 +3,6 @@ using RWParcerCore.Domain.DTOs;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.InterfaceAdapters.Facades;
-using System.Diagnostics;
 using System.Text.Json;
 using System.Web;
 
