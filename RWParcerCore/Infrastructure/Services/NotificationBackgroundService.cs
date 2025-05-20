@@ -2,8 +2,6 @@
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.IServices;
 using RWParcerCore.Domain.ValueObjects;
-using System.Diagnostics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RWParcerCore.Infrastructure.Services
 {
@@ -132,10 +130,10 @@ namespace RWParcerCore.Infrastructure.Services
                     var addedSeats = (newCar.FreeSeats ?? []).Except(oldCar.FreeSeats ?? []).ToList();
 
                     if (removedSeats.Count > 0)
-                        changes.Add($"{Convert(oldCar.Type)} №{oldCar.Number}: Удалены места {string.Join(", ", removedSeats)}");
+                        changes.Add($"{Convert(oldCar.Type)} №{oldCar.Number}: Заняты места {string.Join(", ", removedSeats)}");
 
                     if (addedSeats.Count > 0)
-                        changes.Add($"{Convert(oldCar.Type)} №{oldCar.Number}: Добавлены места {string.Join(", ", addedSeats)}");
+                        changes.Add($"{Convert(oldCar.Type)} №{oldCar.Number}: Освобождены места {string.Join(", ", addedSeats)}");
                 }
                 else
                 {

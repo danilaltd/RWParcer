@@ -88,7 +88,7 @@ psiphon_loop() {
     BASE_INDEX=$(( (BASE_INDEX + NUM_INSTANCES) % TOTAL_TOKENS ))
 
     # Ждём перед следующим циклом (например, 60 минут)
-    for (( m=60; m>0; m-- )); do
+    for (( m=30; m>0; m-- )); do
       echo "Ждём $m минут до следующего обновления..."
       sleep 60
     done
