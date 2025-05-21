@@ -1,16 +1,15 @@
-﻿using RWParcerCore.Domain.Entities;
+﻿using RWParcerCore.Domain.Interfaces;
+using RWParcerCore.Domain.Entities;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.ValueObjects;
-using System.Diagnostics;
 
 namespace RWParcerCore.Infrastructure.Repositories
 {
-    internal class InMemoryFavoritesRepository : IFavoritesRepository
+    internal class InMemoryFavoritesRepository(ILogger logger) : IFavoritesRepository
     {
         private readonly List<Favorite> _favorites = [];
         private readonly SemaphoreSlim _semaphore = new(1, 1);
-
-        private readonly object _lock = new();
+        private readonly ILogger _logger = logger;
 
         public async Task<IEnumerable<Favorite>> GetFavoritesAsync(string userId)
         {
@@ -29,7 +28,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (favoriteItem == null)
             {
-                Console.WriteLine("AddFavorite err");
+                _logger.LogDebug("AddFavorite err");
                 return;
             }
 
@@ -48,7 +47,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (train is null)
             {
-                Console.WriteLine("Exists err");
+                _logger.LogDebug("Exists err");
                 return false;
             }
 
@@ -67,7 +66,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (favoriteItem == null)
             {
-                Console.WriteLine("RemoveFavorite err");
+                _logger.LogDebug("RemoveFavorite err");
                 return;
             }
 

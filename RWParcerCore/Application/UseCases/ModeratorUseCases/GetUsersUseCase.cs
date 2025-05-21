@@ -12,18 +12,25 @@ namespace RWParcerCore.Application.UseCases.ModeratorUseCases
         public async Task<List<UserVO>> GetUsersAsync(string userId, TimeSpan timeSpan)
         {
             if (!await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} not found");
+            Exception? originalException = null;
             try
             {
                 if (await _userRepository.IsUserBannedAsync(userId)) throw new UnauthorizedAccessException($"User {userId} is banned");
                 if (!await _userRepository.IsUserModeratorAsync(userId)) throw new UnauthorizedAccessException($"Only moderators can get users {userId}");
                 return [.. (await _userRepository.GetLastUsersAsync(timeSpan)).Select(item => UserMapper.FromEntity(item))];
-            } finally
+            }
+            catch (Exception ex)
+            {
+                originalException = ex;
+                throw;
+            }
+            finally
             {
                 try
                 {
                     await _userRepository.UpdateActivityAsync(userId);
                 }
-                catch { }
+                catch when (originalException != null) { }
             }
         }
     }

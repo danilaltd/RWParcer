@@ -1,14 +1,16 @@
-﻿using RWParcerCore.Domain.Entities;
+﻿using RWParcerCore.Domain.Interfaces;
+using RWParcerCore.Domain.Entities;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.ValueObjects;
 using System.Diagnostics;
 
 namespace RWParcerCore.Infrastructure.Repositories
 {
-    internal class InMemorySubscriptionRepository : ISubscriptionRepository
+    internal class InMemorySubscriptionRepository(ILogger logger) : ISubscriptionRepository
     {
         private readonly List<Subscription> _subscriptions = [];
         private readonly SemaphoreSlim _semaphore = new(1, 1); // Потокобезопасный механизм блокировки
+        private readonly ILogger _logger = logger;
 
         public async Task<IEnumerable<Subscription>> GetUserSubscriptionsAsync(string userId)
         {
@@ -27,7 +29,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (subscriptionItem == null)
             {
-                Console.WriteLine("AddSubscription err");
+                _logger.LogDebug("AddSubscription err");
                 return;
             }
 
@@ -46,7 +48,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (subscription is null)
             {
-                Console.WriteLine("Exists err");
+                _logger.LogDebug("Exists err");
                 return false;
             }
 
@@ -67,7 +69,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (subscriptionItem == null)
             {
-                Console.WriteLine("RemoveSubscription err");
+                _logger.LogDebug("RemoveSubscription err");
                 return;
             }
 

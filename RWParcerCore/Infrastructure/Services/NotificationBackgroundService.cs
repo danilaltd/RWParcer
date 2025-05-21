@@ -1,11 +1,12 @@
-﻿using RWParcerCore.Domain.Entities;
+﻿using RWParcerCore.Domain.Interfaces;
+using RWParcerCore.Domain.Entities;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.IServices;
 using RWParcerCore.Domain.ValueObjects;
 
 namespace RWParcerCore.Infrastructure.Services
 {
-    internal class NotificationBackgroundService(ISubscriptionRepository subscriptionRepository, INotificationRepository notificationRepository, IUserRepository userRepository, IRWRepository rwRepository, int maxRetries, int threadingMax) : INotificationBackgroundService
+    internal class NotificationBackgroundService(ISubscriptionRepository subscriptionRepository, INotificationRepository notificationRepository, IUserRepository userRepository, IRWRepository rwRepository, ILogger logger, int maxRetries, int threadingMax) : INotificationBackgroundService
     {
         private readonly ISubscriptionRepository _subscriptionRepository = subscriptionRepository;
         private readonly INotificationRepository _notificationRepository = notificationRepository;
@@ -13,10 +14,12 @@ namespace RWParcerCore.Infrastructure.Services
         private readonly IRWRepository _rwRepository = rwRepository;
         private readonly SemaphoreSlim _semaphore = new(threadingMax);
         private readonly int _maxRetries = maxRetries;
+        private readonly ILogger _logger = logger;
+
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            Console.Write("Waiting...");
+            _logger.LogDebug("Waiting...");
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
@@ -33,7 +36,7 @@ namespace RWParcerCore.Infrastructure.Services
                     await Task.WhenAll(tasks);
                 } catch (Exception ex)
                 {
-                    Console.WriteLine($"Неизвестная ошибка: {ex.Message}");
+                    _logger.LogDebug($"Неизвестная ошибка: {ex.Message}");
                 }
             }
         }
@@ -64,11 +67,11 @@ namespace RWParcerCore.Infrastructure.Services
                     try
                     {
                         if (DateTime.UtcNow - subscription.LastUpdate < TimeSpan.FromSeconds(await _userRepository.GetUserMinIntervalAsync(subscription.UserId))) break;
-                        Console.WriteLine($"Попытка {attempt}: Запрос {subscription.Id}");
+                        _logger.LogDebug($"Попытка {attempt}: Запрос {subscription.Id}");
                         var response = await _rwRepository.GetSeatsAsync(subscription.Details);
                         if (!AreStatesEqual(response, subscription.LastState))
                         {
-                            Console.WriteLine($"Изменение данных для {subscription.Id}\n");
+                            _logger.LogDebug($"Изменение данных для {subscription.Id}\n");
                             var changes = FindSeatChanges(subscription.LastState, response);
                             if (changes.Count > 0)
                             {
@@ -88,15 +91,15 @@ namespace RWParcerCore.Infrastructure.Services
                     }
                     catch (TaskCanceledException)
                     {
-                        Console.WriteLine($"Тайм-аут запроса для {subscription.Id} (Попытка {attempt})");
+                        _logger.LogDebug($"Тайм-аут запроса для {subscription.Id} (Попытка {attempt})");
                     }
                     catch (HttpRequestException ex)
                     {
-                        Console.WriteLine($"Ошибка HTTP ({subscription.Id}, Попытка {attempt}): {ex.Message}");
+                        _logger.LogDebug($"Ошибка HTTP ({subscription.Id}, Попытка {attempt}): {ex.Message}");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Неизвестная ошибка ({subscription.Id}, Попытка {attempt}): {ex.Message}");
+                        _logger.LogDebug($"Неизвестная ошибка ({subscription.Id}, Попытка {attempt}): {ex.Message}");
                     }
                 }
             }

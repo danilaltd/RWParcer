@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using RWParcer.Handlers.Moderator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using RWParcer.Settings;
 
 namespace RWParcer
 {
@@ -39,7 +40,9 @@ namespace RWParcer
             }
 
             builder.Services.Configure<BotSettings>(builder.Configuration.GetSection("BotSettings"));
-            
+            builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));
+            builder.Services.Configure<ProxySettings>(builder.Configuration.GetSection("ProxySettings"));
+
             builder.Services.AddScoped<ISessionManager, SessionManager>();
             
             builder.Services.AddSingleton<ITelegramBotClient>(sp =>
@@ -49,7 +52,12 @@ namespace RWParcer
             });
 
             builder.Services.AddSingleton<ISessionStore, JsonSessionStore>();
-            builder.Services.AddSingleton<IFacade, Facade>();
+            builder.Services.AddSingleton<IFacade>(sp =>
+            {
+                var dbSettings = sp.GetRequiredService<IOptions<DatabaseSettings>>().Value;
+                var proxySettings = sp.GetRequiredService<IOptions<ProxySettings>>().Value;
+                return new Facade(dbSettings.ConnectionString, proxySettings.ProxyAddresses);
+            });
             builder.Services.AddTransient<ICommandRouter, CommandRouter>();
             
             builder.Services.AddSingleton<MainMenuProvider>();

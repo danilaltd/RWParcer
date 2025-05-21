@@ -1,17 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RWParcerCore.Domain.Entities;
+using RWParcerCore.Domain.Interfaces;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.ValueObjects;
-using System.Diagnostics;
 
 namespace RWParcerCore.Infrastructure.Repositories
 {
     internal class FavoritesRepository : RepositoryBase, IFavoritesRepository
     {
-        public FavoritesRepository(IAppDbContextFactory factory)
+        public FavoritesRepository(IAppDbContextFactory factory, ILogger logger)
             : base(factory)
         {
+            _logger = logger;
         }
+        private readonly ILogger _logger;
 
         public Task<IEnumerable<Favorite>> GetFavoritesAsync(string userId)
             => QueryAsync(async ctx =>
@@ -24,7 +26,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (favoriteItem is null)
             {
-                Console.WriteLine("AddFavorite err");
+                _logger.LogDebug("AddFavorite err");
                 return Task.CompletedTask;
             }
 
@@ -39,7 +41,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (train is null)
             {
-                Console.WriteLine("Exists err");
+                _logger.LogDebug("Exists err");
                 return Task.FromResult(false);
             }
 
@@ -55,7 +57,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (favoriteItem == null)
             {
-                Console.WriteLine("RemoveFavorite err");
+                _logger.LogDebug("RemoveFavorite err");
                 return Task.CompletedTask;
             }
 

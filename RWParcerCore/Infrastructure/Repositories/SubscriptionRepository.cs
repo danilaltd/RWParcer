@@ -1,17 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RWParcerCore.Domain.Entities;
+using RWParcerCore.Domain.Interfaces;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.ValueObjects;
-using System.Diagnostics;
 
 namespace RWParcerCore.Infrastructure.Repositories
 {
     internal class SubscriptionRepository : RepositoryBase, ISubscriptionRepository
     {
-        public SubscriptionRepository(IAppDbContextFactory factory)
+        public SubscriptionRepository(IAppDbContextFactory factory, ILogger logger)
             : base(factory)
         {
+            _logger = logger;
         }
+        private readonly ILogger _logger;
 
         public Task<IEnumerable<Subscription>> GetUserSubscriptionsAsync(string userId)
         {
@@ -27,7 +29,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (subscriptionItem == null)
             {
-                Console.WriteLine("AddSubscription err");
+                _logger.LogDebug("AddSubscription err");
                 return Task.CompletedTask;
             }
 
@@ -42,7 +44,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (subscription is null)
             {
-                Console.WriteLine("Exists err");
+                _logger.LogDebug("Exists err");
                 return Task.FromResult(false);
             }
 
@@ -56,7 +58,7 @@ namespace RWParcerCore.Infrastructure.Repositories
         {
             if (subscriptionItem == null)
             {
-                Console.WriteLine("RemoveSubscription err");
+                _logger.LogDebug("RemoveSubscription err");
                 return Task.CompletedTask;
             }
 

@@ -1,21 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RWParcerCore.Domain.Interfaces;
 using RWParcerCore.Domain.Entities;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.Infrastructure.Converters;
-using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace RWParcerCore.Infrastructure
 {
-    internal class AppDbContext : DbContext
+    internal class AppDbContext(ILogger logger) : DbContext
     {
         public DbSet<Favorite> Favorites { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<User> Users { get; set; }
+        private readonly ILogger _logger = logger;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -94,7 +95,7 @@ namespace RWParcerCore.Infrastructure
         }
 
         // Вспомогательные методы десериализации с обработкой ошибок
-        private static SubscriptionVO DeserializeSubscriptionVO(string json, JsonSerializerOptions jsonOptions)
+        private SubscriptionVO DeserializeSubscriptionVO(string json, JsonSerializerOptions jsonOptions)
         {
             try
             {
@@ -103,12 +104,12 @@ namespace RWParcerCore.Infrastructure
             }
             catch (JsonException ex)
             {
-                Console.WriteLine($"Deserialization error for SubscriptionVO: {ex.Message}");
+                _logger.LogDebug($"Deserialization error for SubscriptionVO: {ex.Message}");
                 return new SubscriptionVO(new TrainVO("default", "0", "", "", "", "", 0, 0, "", "", "", "", 0), DateOnly.FromDateTime(DateTime.Now));
             }
         }
 
-        private static TrainVO DeserializeTrainVO(string json, JsonSerializerOptions jsonOptions)
+        private TrainVO DeserializeTrainVO(string json, JsonSerializerOptions jsonOptions)
         {
             try
             {
@@ -117,7 +118,7 @@ namespace RWParcerCore.Infrastructure
             }
             catch (JsonException ex)
             {
-                Console.WriteLine($"Deserialization error for TrainVO: {ex.Message}");
+                _logger.LogDebug($"Deserialization error for TrainVO: {ex.Message}");
                 return new TrainVO("default", "0", "", "", "", "", 0, 0, "", "", "", "", 0);
             }
         }

@@ -13,11 +13,13 @@ using RWParcerCore.Application.UseCases.NotificationService;
 using RWParcerCore.Application.UseCases.RWService;
 using RWParcerCore.Application.UseCases.SubscriptionService;
 using RWParcerCore.Application.UseCases.UserService;
+using RWParcerCore.Domain.Interfaces;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.IServices;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.Infrastructure;
 using RWParcerCore.Infrastructure.InMemoryRepositories;
+using RWParcerCore.Infrastructure.Logging;
 using RWParcerCore.Infrastructure.Repositories;
 using RWParcerCore.Infrastructure.Services;
 
@@ -59,68 +61,24 @@ namespace RWParcerCore.InterfaceAdapters.Facades
 
         private readonly IPopNotifications _popNotifications;
 
-
-        public Facade()
+        public Facade(string connectionString, string[] proxies)
         {
-            var proxies = new[]
-{
-    "127.0.0.1:8090",
-    "127.0.0.1:8091",
-    "127.0.0.1:8092",
-    "127.0.0.1:8093",
-    "127.0.0.1:8094",
-    "127.0.0.1:8095",
-    "127.0.0.1:8096",
-    "127.0.0.1:8097",
-    "127.0.0.1:8098",
-    "127.0.0.1:8099",
-    //"127.0.0.1:8100",
-    //"127.0.0.1:8101",
-    //"127.0.0.1:8102",
-    //"127.0.0.1:8103",
-    //"127.0.0.1:8104",
-    //"127.0.0.1:8105",
-    //"127.0.0.1:8106",
-    //"127.0.0.1:8107",
-    //"127.0.0.1:8108",
-    //"127.0.0.1:8109"
-};
-
-
-
-
             var factory = new HttpClientFactoryWithProxyRotation(proxies);
-            HttpClient httpClient = new();
-            httpClient.DefaultRequestHeaders.Add("Cookie", "hg-client-security=2wYWCwYjyj7EbcjAw98T7DTE4GQ; hg-security=jSvnyAzRO13rHxzxDQofaNhudTzZhdMLWREbC5iPNPrQbWMqaYq3EQPi1vGNz_rCZZ5FJBk9B9T1V401kT7hxaNLwppBih0=");
-            //IUserRepository userRepository = new InMemoryUserRepository();
-            //IFavoritesRepository favoritesRepository = new InMemoryFavoritesRepository();
-            //ISubscriptionRepository subscriptionRepository = new InMemorySubscriptionRepository();
-            //INotificationRepository notificationRepository = new InMemoryNotificationRepository();
-            //IRWRepository rwRepository = new RWParcer(httpClient);
-            //IMessageRepository messageRepository = new InMemoryMessageRepository();
-
-            //if (File.Exists("app.db")) File.Delete("app.db");
-            //if (File.Exists("app.db-shm")) File.Delete("app.db-shm");
-            //if (File.Exists("app.db-wal")) File.Delete("app.db-wal");
-            //using (var context = new AppDbContext(options))
-            //{
-            //    context.Database.EnsureCreated();
-            //}
             var options = new DbContextOptionsBuilder<AppDbContext>()
-                            .UseNpgsql("Host=db.phzzfofwodzqkppnmjzq.supabase.co;Port=5432;Database=postgres;Username=postgres;Password=mypswhelloworl;SSL Mode=Require;Trust Server Certificate=true")
+                            .UseNpgsql(connectionString)
                             .Options;
+            ILogger logger = new ConsoleLogger();
 
-
-            IAppDbContextFactory appDbContextFactory = new AppDbContextFactory(options);
+            IAppDbContextFactory appDbContextFactory = new AppDbContextFactory(options, logger);
 
             IUserRepository userRepository = new UserRepository(appDbContextFactory);
-            IFavoritesRepository favoritesRepository = new FavoritesRepository(appDbContextFactory);
-            ISubscriptionRepository subscriptionRepository = new SubscriptionRepository(appDbContextFactory);
+            IFavoritesRepository favoritesRepository = new FavoritesRepository(appDbContextFactory, logger);
+            ISubscriptionRepository subscriptionRepository = new SubscriptionRepository(appDbContextFactory, logger);
             INotificationRepository notificationRepository = new NotificationRepository(appDbContextFactory);
             IMessageRepository messageRepository = new MessageRepository(appDbContextFactory);
-            IRWRepository rwRepository = new RWParcer(factory);
+            IRWRepository rwRepository = new RWParcer(factory, logger);
 
-            _notificationBackgroundService = new NotificationBackgroundService(subscriptionRepository, notificationRepository, userRepository, rwRepository, 5, 15); ;
+            _notificationBackgroundService = new NotificationBackgroundService(subscriptionRepository, notificationRepository, userRepository, rwRepository, logger, 5, 15); ;
             _cts = new CancellationTokenSource();
 
             _registerUser = new RegisterUserUseCase(userRepository);

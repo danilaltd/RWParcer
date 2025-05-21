@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using RWParcerCore.Domain.Interfaces;
+using Newtonsoft.Json;
 using RWParcerCore.Domain.DTOs;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.ValueObjects;
@@ -7,8 +8,9 @@ using System.Web;
 
 namespace RWParcerCore.Infrastructure.InMemoryRepositories
 {
-    internal class RWParcer(HttpClientFactoryWithProxyRotation httpFactory) : IRWRepository
+    internal class RWParcer(HttpClientFactoryWithProxyRotation httpFactory, ILogger logger) : IRWRepository
     {
+        private readonly ILogger _logger = logger;
         private readonly HttpClientFactoryWithProxyRotation HttpFactory = httpFactory;
         private readonly string GetStationsUrl = "https://pass.rw.by/ru/ajax/autocomplete/search/?term=";
         private readonly string GetTrainsBaseUrl = "https://apicast.rw.by/v1/rasp/ru/index/route";
@@ -21,7 +23,7 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
 
             if (!response.IsSuccessStatusCode)
             {
-                Console.WriteLine($"Ошибка: {response.StatusCode}");
+                _logger.LogDebug($"Ошибка: {response.StatusCode}");
                 return [];
             }
 
@@ -46,7 +48,7 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
 
             if (!response.IsSuccessStatusCode)
             {
-                Console.WriteLine($"Ошибка: {response.StatusCode}");
+                _logger.LogDebug($"Ошибка: {response.StatusCode}");
                 return [];
             }
             
@@ -57,7 +59,7 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
 
             if (!root.TryGetProperty("routes", out JsonElement routesElement))
             {
-                Console.WriteLine("Ошибка: JSON не содержит маршрутов.");
+                _logger.LogDebug("Ошибка: JSON не содержит маршрутов.");
                 return [];
             }
 
@@ -66,7 +68,7 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
             {
                 Error = (sender, args) =>
                 {
-                    Console.WriteLine($"Ошибка при десериализации {args.ErrorContext.Path}: {args.ErrorContext.Error.Message}");
+                    _logger.LogDebug($"Ошибка при десериализации {args.ErrorContext.Path}: {args.ErrorContext.Error.Message}");
                     args.ErrorContext.Handled = true;
                 }
             };
@@ -105,7 +107,7 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
                 }
                 catch (System.Text.Json.JsonException e)
                 {
-                    Console.WriteLine($"Ошибка десериализации JSON: {e.Message}");
+                    _logger.LogDebug($"Ошибка десериализации JSON: {e.Message}");
                     throw;
                 }
 
@@ -125,7 +127,7 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
                                     string? carNumberStr = numberElement.GetString();
                                     if (carNumberStr == null)
                                     {
-                                        Console.WriteLine("carNumberStr null");
+                                        _logger.LogDebug("carNumberStr null");
                                         continue;
                                     }
                                     uint carNumber = uint.Parse(carNumberStr);
@@ -136,7 +138,7 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
                                         string? seatStr = seat.GetString();
                                         if (seatStr == null)
                                         {
-                                            Console.WriteLine("seatStr null");
+                                            _logger.LogDebug("seatStr null");
                                             continue;
                                         }
                                         emptySeats.Add(uint.Parse(seatStr));

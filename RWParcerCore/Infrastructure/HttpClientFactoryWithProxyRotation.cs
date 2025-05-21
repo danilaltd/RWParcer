@@ -11,12 +11,11 @@ namespace RWParcerCore.Infrastructure
         public HttpClientFactoryWithProxyRotation(IEnumerable<string> proxyList)
         {
             _proxyList = [.. proxyList];
-            if (_proxyList.Count == 0)
-                throw new ArgumentException("Proxy list cannot be empty.");
         }
 
         private HttpClient CreateClientWithProxy()
         {
+            if (_proxyList.Count == 0) return CreateClientNoProxy();
             string proxyAddress;
             lock (_lock)
             {
