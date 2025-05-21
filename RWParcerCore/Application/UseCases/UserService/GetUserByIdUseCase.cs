@@ -12,6 +12,7 @@ namespace RWParcerCore.Application.UseCases.UserService
         public async Task<UserVO> GetUserByIdAsync(string userId, string targetId)
         {
             if (!await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} not found");
+            Exception? originalException = null;
             try
             {
                 if (await _userRepository.IsUserBannedAsync(userId)) throw new UnauthorizedAccessException($"User {userId} is banned");
@@ -23,13 +24,18 @@ namespace RWParcerCore.Application.UseCases.UserService
                 var u = UserMapper.FromEntity(await _userRepository.GetUserByIdAsync(targetId));
                 return u;
             }
+            catch (Exception ex)
+            {
+                originalException = ex;
+                throw;
+            }
             finally
             {
                 try
                 {
                     await _userRepository.UpdateActivityAsync(userId);
                 }
-                catch { }
+                catch when (originalException != null) { }
             }
         }
     }

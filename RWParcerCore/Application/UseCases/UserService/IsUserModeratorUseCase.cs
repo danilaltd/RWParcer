@@ -9,6 +9,7 @@ namespace RWParcerCore.Application.UseCases.UserService
         public async Task<bool> IsUserModeratorAsync(string userId, string targetId)
         {
             if (!await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} not found");
+            Exception? originalException = null;
             try
             {
                 if (await _userRepository.IsUserBannedAsync(userId)) throw new UnauthorizedAccessException($"User {userId} is banned");
@@ -20,13 +21,18 @@ namespace RWParcerCore.Application.UseCases.UserService
                 }
                 return await _userRepository.IsUserModeratorAsync(targetId);
             }
+            catch (Exception ex)
+            {
+                originalException = ex;
+                throw;
+            }
             finally
             {
                 try
                 {
                     await _userRepository.UpdateActivityAsync(userId);
                 }
-                catch { }
+                catch when (originalException != null) { }
             }
         }
     }

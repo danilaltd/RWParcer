@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using RWParcer.Interfaces;
 using RWParcerCore.InterfaceAdapters.Facades;
-using System.Diagnostics;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
