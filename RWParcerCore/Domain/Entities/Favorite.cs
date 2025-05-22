@@ -11,7 +11,7 @@ namespace RWParcerCore.Domain.Entities
             TrainInfo = train;
         }
 
-        private Favorite() { }
+        private Favorite() { UserId = null!; TrainInfo = null!; }
         public Guid Id { get; private set; }
         public string UserId { get; private set; }
         public TrainVO TrainInfo { get; private set; }

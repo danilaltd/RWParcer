@@ -14,7 +14,10 @@
             Id = id;
         }
 
-        private User(){}
+        private User()
+        {
+            Id = null!;
+        }
 
         public void Block()
         {

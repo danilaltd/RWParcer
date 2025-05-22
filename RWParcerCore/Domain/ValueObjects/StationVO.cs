@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace RWParcerCore.Domain.ValueObjects
+﻿namespace RWParcerCore.Domain.ValueObjects
 {
     public class StationVO : ValueObject
     {
@@ -20,4 +18,4 @@ namespace RWParcerCore.Domain.ValueObjects
         }
     }
 }
-                            
+

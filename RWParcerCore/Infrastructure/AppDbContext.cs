@@ -41,14 +41,13 @@ namespace RWParcerCore.Infrastructure
                 Converters = { new TrainVOConverter(), new SubscriptionVOConverter(), new CarVOConverter() }
             };
 
-            // Конфигурация сущности Subscription
             modelBuilder.Entity<Subscription>()
                 .Property(s => s.Details)
                 .HasConversion(
                     v => JsonSerializer.Serialize(v, jsonOptions),
                     v => DeserializeSubscriptionVO(v, jsonOptions)
                 )
-                .HasColumnType("jsonb"); // Изменено на jsonb для PostgreSQL
+                .HasColumnType("jsonb"); 
 
             modelBuilder.Entity<Subscription>()
                 .Property(s => s.LastState)
@@ -56,42 +55,64 @@ namespace RWParcerCore.Infrastructure
                     v => JsonSerializer.Serialize(v, jsonOptions),
                     v => JsonSerializer.Deserialize<List<CarVO>>(v, jsonOptions) ?? new()
                 )
-                .HasColumnType("jsonb"); // Изменено на jsonb для PostgreSQL
+                .HasColumnType("jsonb");
 
             modelBuilder.Entity<Subscription>()
                 .HasIndex(s => s.UserId);
 
-            // Конфигурация сущности Favorite
             modelBuilder.Entity<Favorite>()
                 .Property(f => f.TrainInfo)
                 .HasConversion(
                     v => JsonSerializer.Serialize(v, jsonOptions),
                     v => DeserializeTrainVO(v, jsonOptions)
                 )
-                .HasColumnType("jsonb"); // Изменено на jsonb для PostgreSQL
+                .HasColumnType("jsonb");
 
             modelBuilder.Entity<Favorite>()
                 .HasIndex(f => f.UserId);
 
-            // Настройка именования в формате snake_case для совместимости с PostgreSQL
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
             {
-                entity.SetTableName(ToSnakeCase(entity.GetTableName()));
+                var tableName = entity.GetTableName();
+                if (tableName != null)
+                {
+                    entity.SetTableName(ToSnakeCase(tableName));
+                }
+
                 foreach (var property in entity.GetProperties())
                 {
-                    property.SetColumnName(ToSnakeCase(property.GetColumnName()));
+                    var columnName = property.GetColumnName();
+                    if (columnName != null)
+                    {
+                        property.SetColumnName(ToSnakeCase(columnName));
+                    }
                 }
+
                 foreach (var key in entity.GetKeys())
                 {
-                    key.SetName(ToSnakeCase(key.GetName()));
+                    var keyName = key.GetName();
+                    if (keyName != null)
+                    {
+                        key.SetName(ToSnakeCase(keyName));
+                    }
                 }
+
                 foreach (var foreignKey in entity.GetForeignKeys())
                 {
-                    foreignKey.SetConstraintName(ToSnakeCase(foreignKey.GetConstraintName()));
+                    var constraintName = foreignKey.GetConstraintName();
+                    if (constraintName != null)
+                    {
+                        foreignKey.SetConstraintName(ToSnakeCase(constraintName));
+                    }
                 }
+
                 foreach (var index in entity.GetIndexes())
                 {
-                    index.SetDatabaseName(ToSnakeCase(index.GetDatabaseName()));
+                    var indexName = index.GetDatabaseName();
+                    if (indexName != null)
+                    {
+                        index.SetDatabaseName(ToSnakeCase(indexName));
+                    }
                 }
             }
         }

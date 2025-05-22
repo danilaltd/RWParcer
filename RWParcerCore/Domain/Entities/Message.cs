@@ -9,7 +9,12 @@
         public DateTime SentDate { get; set; } = DateTime.UtcNow;
         public List<string> ReadBy { get; private set; } = [];
 
-        private Message() { }
+        private Message() 
+        { 
+            SenderId = null!;
+            ReceiverId = null!;
+            Content = null!;
+        }
         public Message(Guid id, string senderId, string receiverId, string content)
         {
             Id = id;
