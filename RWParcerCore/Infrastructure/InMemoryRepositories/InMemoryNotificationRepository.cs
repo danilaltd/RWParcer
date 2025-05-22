@@ -1,7 +1,7 @@
 ﻿using RWParcerCore.Domain.Entities;
 using RWParcerCore.Domain.IRepositories;
 
-namespace RWParcerCore.Infrastructure.Repositories
+namespace RWParcerCore.Infrastructure.InMemoryRepositories
 {
     internal class InMemoryNotificationRepository : INotificationRepository
     {

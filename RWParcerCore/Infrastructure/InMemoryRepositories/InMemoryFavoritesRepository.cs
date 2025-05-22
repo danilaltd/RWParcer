@@ -3,7 +3,7 @@ using RWParcerCore.Domain.Entities;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.ValueObjects;
 
-namespace RWParcerCore.Infrastructure.Repositories
+namespace RWParcerCore.Infrastructure.InMemoryRepositories
 {
     internal class InMemoryFavoritesRepository(ILogger logger) : IFavoritesRepository
     {

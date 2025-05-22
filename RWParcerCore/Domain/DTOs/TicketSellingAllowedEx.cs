@@ -7,6 +7,4 @@ namespace RWParcerCore.Domain.DTOs
         [JsonProperty("status")]
         public bool? Status { get; set; }
     }
-
-
 }

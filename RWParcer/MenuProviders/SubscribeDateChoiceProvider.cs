@@ -4,8 +4,7 @@ namespace RWParcer.MenuProviders
 {
     public class SubscribeDateChoiceProvider : IMenuProvider
     {
-
-        public async Task<IReadOnlyDictionary<string, CommandNames>> GetOptionsAsync(CommandContext ctx)
+        public Task<IReadOnlyDictionary<string, CommandNames>> GetOptionsAsync(CommandContext ctx)
         {
             var options = new Dictionary<string, CommandNames>();
 
@@ -14,8 +13,7 @@ namespace RWParcer.MenuProviders
             options[$"Ввести диапазон"] = CommandNames.SubscribeEnterDateRange;
             options["В главное меню"] = CommandNames.MainMenuSelect;
 
-            return options;
+            return Task.FromResult((IReadOnlyDictionary<string, CommandNames>)options);
         }
     }
-
 }

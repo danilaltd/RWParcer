@@ -13,7 +13,7 @@ namespace RWParcer.MenuProviders
             _facade = facade;
         }
 
-        public async Task<IReadOnlyDictionary<string, CommandNames>> GetOptionsAsync(CommandContext ctx)
+        public Task<IReadOnlyDictionary<string, CommandNames>> GetOptionsAsync(CommandContext ctx)
         {
             var options = new Dictionary<string, CommandNames>
             {
@@ -22,10 +22,7 @@ namespace RWParcer.MenuProviders
                 ["В главное меню"] = CommandNames.MainMenuSelect
             };
 
-            return options;
+            return Task.FromResult((IReadOnlyDictionary<string, CommandNames>)options);
         }
-
     }
-
-
 }

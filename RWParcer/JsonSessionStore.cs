@@ -34,8 +34,9 @@ namespace RWParcer
         public void Save(ISessionManager sessions)
             => SaveAsync(sessions).GetAwaiter().GetResult();  // на всякий случай
 
-        public async Task SaveAsync(ISessionManager sessions)
+        public Task SaveAsync(ISessionManager sessions)
         {
+            return Task.CompletedTask;
             //var json = JsonConvert.SerializeObject(sessions, _settings);
             //var tmpFile = _path + ".tmp";
 
