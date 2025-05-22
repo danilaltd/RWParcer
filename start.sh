@@ -8,19 +8,22 @@ SOCKS_PORTS=(1080 1081 1082 1083 1084 1085 1086 1087 1088 1089)
 PSIPHON_BIN="./psiphon"
 
 # С какого токена начинать (можно менять в коде или задавать через env)
-START_INDEX=${START_INDEX:-10}
+START_INDEX=${START_INDEX:-0}
 
 # Загрузка и разбор списка токенов
 load_tokens() {
   echo "Шаг 1: Загрузка списка серверов..."
-  curl -sL -o server_list_compressed \
-    "https://s3.amazonaws.com//psiphon/web/mjr4-p23r-puwl/server_list_compressed"
+  if ! curl -sL -o server_list_compressed \
+    "https://s3.amazonaws.com//psiphon/web/mjr4-p23r-puwl/server_list_compressed"; then
+    echo "Ошибка при загрузке server_list_compressed"
+    exit 1
+  fi
   
   echo "Шаг 2: Извлечение токенов..."
   printf "\x1f\x8b\x08\x00\x00\x00\x00\x00" | \
-    cat - server_list_compressed | gzip -dc 2>/dev/null | \
-    json_xs | grep '"data"' | awk -F\" '{print $4}' | \
-    sed "s@\\\n@\n\n\n\n@g" > server_tokens.txt
+  cat - server_list_compressed | gzip -dc 2>/dev/null | \
+  json_xs | grep '"data"' | awk -F\" '{print $4}' | \
+  sed "s@\\\n@\n\n\n\n@g" > server_tokens.txt
   sed -i '/^$/d' server_tokens.txt
   
   TOKENS=( $(< server_tokens.txt) )
