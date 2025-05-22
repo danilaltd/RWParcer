@@ -79,13 +79,11 @@ namespace RWParcerCore.Infrastructure.Converters
             writer.WriteString("trainDays", value.TrainDays);
             writer.WriteString("trainDaysExcept", value.TrainDaysExcept);
 
-            var minskTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Minsk");
-
             var fromTimeDateTime = new DateTime(1970, 1, 1, value.FromTime.Hour, value.FromTime.Minute, value.FromTime.Second, DateTimeKind.Unspecified);
             var toTimeDateTime = new DateTime(1970, 1, 1, value.ToTime.Hour, value.ToTime.Minute, value.ToTime.Second, DateTimeKind.Unspecified);
 
-            var fromTimeUtc = TimeZoneInfo.ConvertTimeToUtc(fromTimeDateTime, minskTimeZone);
-            var toTimeUtc = TimeZoneInfo.ConvertTimeToUtc(toTimeDateTime, minskTimeZone);
+            var fromTimeUtc = fromTimeDateTime.AddHours(-3);
+            var toTimeUtc = toTimeDateTime.AddHours(-3);
 
             writer.WriteString("fromTime", fromTimeUtc.ToString("HH:mm:ss"));
             writer.WriteString("toTime", toTimeUtc.ToString("HH:mm:ss"));

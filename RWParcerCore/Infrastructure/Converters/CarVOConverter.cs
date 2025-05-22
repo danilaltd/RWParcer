@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace RWParcerCore.Infrastructure
+namespace RWParcerCore.Infrastructure.Converters
 {
     internal class CarVOConverter : JsonConverter<CarVO>
     {

@@ -61,8 +61,7 @@
         private static TimeOnly UnixTimeToTimeOnly(long unix)
         {
             var utcDateTime = DateTimeOffset.FromUnixTimeSeconds(unix).UtcDateTime;
-            var minskTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Minsk");
-            var minskTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, minskTimeZone);
+            var minskTime = utcDateTime.AddHours(3);
             return TimeOnly.FromDateTime(minskTime);
         }
 
