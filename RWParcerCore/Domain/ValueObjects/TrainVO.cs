@@ -58,11 +58,14 @@
             yield return Duration;
         }
 
-        private static TimeOnly UnixTimeToTimeOnly(long unix) => TimeOnly.FromDateTime(
-            DateTimeOffset.FromUnixTimeSeconds(unix)
-                .ToOffset(TimeSpan.FromHours(3))
-                .DateTime
-        );
+        private static TimeOnly UnixTimeToTimeOnly(long unix)
+        {
+            var utcDateTime = DateTimeOffset.FromUnixTimeSeconds(unix).UtcDateTime;
+            var minskTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Minsk");
+            var minskTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, minskTimeZone);
+            return TimeOnly.FromDateTime(minskTime);
+        }
+
     }
 }
                             

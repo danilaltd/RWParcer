@@ -30,14 +30,14 @@ namespace RWParcerCore.Infrastructure.Converters
 
             // Parse fromTime and toTime
             string fromTimeStr = GetStringProperty(root, "fromTime");
-            if (!TimeOnly.TryParse(fromTimeStr, out var fromTimeParsed))
+            if (!TimeSpan.TryParse(fromTimeStr, out var fromTimeParsed))
                 throw new JsonException($"Invalid time format for fromTime: {fromTimeStr}");
-            long fromTime = DateTimeOffset.Parse($"1970-01-01 {fromTimeStr}").ToUnixTimeSeconds();
-
+            long fromTime = new DateTimeOffset(1970, 1, 1, fromTimeParsed.Hours, fromTimeParsed.Minutes, 0, TimeSpan.Zero).ToUnixTimeSeconds();
+            
             string toTimeStr = GetStringProperty(root, "toTime");
-            if (!TimeOnly.TryParse(toTimeStr, out var toTimeParsed))
+            if (!TimeSpan.TryParse(toTimeStr, out var toTimeParsed))
                 throw new JsonException($"Invalid time format for toTime: {toTimeStr}");
-            long toTime = DateTimeOffset.Parse($"1970-01-01 {toTimeStr}").ToUnixTimeSeconds();
+            long toTime = new DateTimeOffset(1970, 1, 1, toTimeParsed.Hours, toTimeParsed.Minutes, 0, TimeSpan.Zero).ToUnixTimeSeconds();
 
             // Extract durationMinutes
             if (!root.TryGetProperty("durationMinutes", out var durationMinutesElement))
@@ -79,9 +79,17 @@ namespace RWParcerCore.Infrastructure.Converters
             writer.WriteString("trainDays", value.TrainDays);
             writer.WriteString("trainDaysExcept", value.TrainDaysExcept);
 
-            // Serialize FromTime and ToTime as strings
-            writer.WriteString("fromTime", value.FromTime.AddHours(-1).ToString("HH:mm:ss"));
-            writer.WriteString("toTime", value.ToTime.AddHours(-1).ToString("HH:mm:ss"));
+            var minskTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Minsk");
+
+            var fromTimeDateTime = new DateTime(1970, 1, 1, value.FromTime.Hour, value.FromTime.Minute, value.FromTime.Second, DateTimeKind.Unspecified);
+            var toTimeDateTime = new DateTime(1970, 1, 1, value.ToTime.Hour, value.ToTime.Minute, value.ToTime.Second, DateTimeKind.Unspecified);
+
+            var fromTimeUtc = TimeZoneInfo.ConvertTimeToUtc(fromTimeDateTime, minskTimeZone);
+            var toTimeUtc = TimeZoneInfo.ConvertTimeToUtc(toTimeDateTime, minskTimeZone);
+
+            writer.WriteString("fromTime", fromTimeUtc.ToString("HH:mm:ss"));
+            writer.WriteString("toTime", toTimeUtc.ToString("HH:mm:ss"));
+
 
             // Serialize Duration as durationMinutes
             writer.WriteNumber("durationMinutes", (uint)value.Duration.TotalMinutes);

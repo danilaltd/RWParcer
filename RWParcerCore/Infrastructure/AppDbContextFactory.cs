@@ -17,6 +17,6 @@ namespace RWParcerCore.Infrastructure
         }
 
         public AppDbContext CreateDbContext()
-            => new AppDbContext(_logger);
+            => new AppDbContext(_options, _logger);
     }
 }

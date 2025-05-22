@@ -9,21 +9,23 @@ using System.Text.Json.Serialization;
 
 namespace RWParcerCore.Infrastructure
 {
-    internal class AppDbContext(ILogger logger) : DbContext
+    internal class AppDbContext : DbContext
     {
+        private readonly ILogger _logger;
         public DbSet<Favorite> Favorites { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<User> Users { get; set; }
-        private readonly ILogger _logger = logger;
-
+        public AppDbContext(DbContextOptions<AppDbContext> options, ILogger logger) : base(options)
+        {
+            _logger = logger;
+        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                // Используем Npgsql для подключения к Supabase (PostgreSQL)
-                optionsBuilder.UseNpgsql("User Id=postgres.phzzfofwodzqkppnmjzq;Password=mypswhelloworl;Server=aws-0-eu-north-1.pooler.supabase.com;Port=5432;Database=postgres");
+                throw new Exception("No options in AppDbContext");
             }
         }
 

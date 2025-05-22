@@ -78,7 +78,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             IMessageRepository messageRepository = new MessageRepository(appDbContextFactory);
             IRWRepository rwRepository = new RWParcer(factory, logger);
 
-            _notificationBackgroundService = new NotificationBackgroundService(subscriptionRepository, notificationRepository, userRepository, rwRepository, logger, 5, 15); ;
+            _notificationBackgroundService = new NotificationBackgroundService(subscriptionRepository, notificationRepository, userRepository, rwRepository, logger, 5, 15);
             _cts = new CancellationTokenSource();
 
             _registerUser = new RegisterUserUseCase(userRepository);

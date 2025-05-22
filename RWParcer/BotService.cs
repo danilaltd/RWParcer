@@ -46,7 +46,7 @@ namespace RWParcer
                 await ProcessNotificationsAsync(stoppingToken);
                 try
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken); // Проверяем уведомления каждые 5 секунд
+                    await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
                 }
                 catch { }
             }
