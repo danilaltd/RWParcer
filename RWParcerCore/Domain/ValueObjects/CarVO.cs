@@ -1,15 +1,5 @@
 ﻿namespace RWParcerCore.Domain.ValueObjects
 {
-
-    internal enum CarType
-    {
-        Common = 1,
-        Seat,
-        Platzkart,
-        Coupe,
-        Soft,
-        SV
-    }
     internal class CarVO(CarType type, uint number, List<uint> freeSeats) : ValueObject
     {
         public CarType Type { get; private set; } = type;
