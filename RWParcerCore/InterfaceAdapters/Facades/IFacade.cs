@@ -28,6 +28,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         Task SubscribeAsync(string userId, SubscriptionVO subscription);
         Task UnbanUserAsync(string userId, string targetId);
         Task UnSubscribeAsync(string userId, SubscriptionVO subscription);
+        Task ResetSubscribeAsync(string userId, SubscriptionVO subscription);
         Task<bool> IsUserBannedAsync(string userId, string targetId);
         Task<UserVO> GetUserByIdAsync(string userId, string targetId);
     }

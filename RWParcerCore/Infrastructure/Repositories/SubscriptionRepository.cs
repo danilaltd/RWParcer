@@ -88,18 +88,43 @@ namespace RWParcerCore.Infrastructure.Repositories
             );
         }
 
-        public Task UpdateAsync(Subscription subscription)
+        public Task UpdateAsync(Subscription subscriptionItem)
         {
+            if (subscriptionItem == null)
+            {
+                _logger.LogDebug("UpdateSubscription err");
+                return Task.CompletedTask;
+            }
             return QueryAsync(ctx =>
                 ctx.Subscriptions
-                   .Where(s => s.Id == subscription.Id)
+                   .Where(s => s.Id == subscriptionItem.Id)
                    .ExecuteUpdateAsync(setters => setters
-                       .SetProperty(s => s.UserId, subscription.UserId)
-                       .SetProperty(s => s.LastUpdate, subscription.LastUpdate)
-                       .SetProperty(s => s.LastState, subscription.LastState)
-                       .SetProperty(s => s.Details, subscription.Details)
-                   )
-    );
+                       .SetProperty(s => s.UserId, subscriptionItem.UserId)
+                       .SetProperty(s => s.LastUpdate, subscriptionItem.LastUpdate)
+                       .SetProperty(s => s.LastState, subscriptionItem.LastState)
+                       .SetProperty(s => s.Details, subscriptionItem.Details)
+                            )
+                    );
+        }
+
+        public Task ResetAsync(Subscription subscriptionItem)
+        {
+            if (subscriptionItem == null)
+            {
+                _logger.LogDebug("ResetSubscription err");
+                return Task.CompletedTask;
+            }
+
+            return QueryAsync(ctx =>
+                ctx.Subscriptions
+                   .Where(s => s.Id == subscriptionItem.Id)
+                   .ExecuteUpdateAsync(setters => setters
+                       .SetProperty(s => s.UserId, subscriptionItem.UserId)
+                       .SetProperty(s => s.LastUpdate, u => null)
+                       .SetProperty(s => s.LastState, u => new())
+                       .SetProperty(s => s.Details, subscriptionItem.Details)
+                            )
+                    );
         }
     }
 }

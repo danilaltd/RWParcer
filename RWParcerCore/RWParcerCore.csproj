@@ -27,11 +27,9 @@
     <Folder Include="Application\Interfaces\INotificationService\" />
     <Folder Include="Application\Interfaces\IRWService\" />
     <Folder Include="Application\Interfaces\IModerator\" />
-    <Folder Include="Application\Interfaces\ISubscriptionService\" />
     <Folder Include="Application\UseCases\NotificationService\" />
     <Folder Include="Application\UseCases\RWService\" />
     <Folder Include="Application\UseCases\ModeratorUseCases\" />
-    <Folder Include="Application\UseCases\SubscriptionService\" />
     <Folder Include="Domain\DTOs\" />
     <Folder Include="Domain\Entities\" />
     <Folder Include="Domain\IServices\" />

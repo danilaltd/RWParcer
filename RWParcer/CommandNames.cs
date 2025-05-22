@@ -31,6 +31,7 @@
             SubscriptionMenuSelect,
 
         UnsubscribeSubscription,
+        ResetSubscription,
 
         ModeratorMenuSelect,
         SelectUser,

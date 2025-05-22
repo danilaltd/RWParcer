@@ -245,7 +245,6 @@
       <Field Name="_removeFromFavorites" />
       <Field Name="_getFavorites" />
       <Field Name="_subscribe" />
-      <Field Name="_unSubscribe" />
       <Field Name="_getSubscriptions" />
       <Field Name="_popNotifications" />
     </ShowAsAssociation>
@@ -467,18 +466,6 @@
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAAAQAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
       <FileName>Application\UseCases\SubscriptionService\GetSubscriptionsUseCase.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="_userRepository" />
-      <Field Name="_subscriptionRepository" />
-    </ShowAsAssociation>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
-  <Class Name="RWParcerCore.Application.UseCases.SubscriptionService.SubscribeUseCase" BaseTypeListCollapsed="true">
-    <Position X="20" Y="18" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAgAAAAAAAQAAAAAAAAAAAAAQAAAAAAAAAAAAA=</HashCode>
-      <FileName>Application\UseCases\SubscriptionService\SubscribeUseCase.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="_userRepository" />
@@ -873,11 +860,11 @@
       <FileName>Application\Interfaces\ISubscriptionService\ISubscribe.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="RWParcerCore.Application.Interfaces.ISubscriptionService.IUnSubscribe">
+  <Interface Name="RWParcerCore.Application.Interfaces.ISubscriptionService.IResetSubscribe">
     <Position X="22.5" Y="31.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
-      <FileName>Application\Interfaces\ISubscriptionService\IUnSubscribe.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>Application\Interfaces\ISubscriptionService\IResetSubscribe.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IUserService.IGetUserById">
@@ -946,7 +933,7 @@
   <Interface Name="RWParcerCore.Domain.IRepositories.ISubscriptionRepository">
     <Position X="25" Y="11" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAIAAgAAAEQAAAAAAgAAAAAEAAAQAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAIAAgAAAEQAAAAAAgAAAAAMAAAQAA=</HashCode>
       <FileName>Domain\IRepositories\ISubscriptionRepository.cs</FileName>
     </TypeIdentifier>
   </Interface>

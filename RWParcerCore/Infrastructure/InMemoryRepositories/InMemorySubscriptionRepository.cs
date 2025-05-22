@@ -126,6 +126,26 @@ namespace RWParcerCore.Infrastructure.Repositories
                 _semaphore.Release();
             }
         }
+
+        public async Task ResetAsync(Subscription subscriptionItem)
+        {
+            if (subscriptionItem == null)
+            {
+                _logger.LogDebug("RemoveSubscription err");
+                return;
+            }
+
+            await _semaphore.WaitAsync();
+            try
+            {
+                subscriptionItem.LastState = [];
+                subscriptionItem.LastUpdate = null;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
     }
 
 

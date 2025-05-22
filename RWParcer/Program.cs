@@ -88,6 +88,7 @@ namespace RWParcer
                                     typeof(FavoritesSelectHandler),
                                     typeof(SubscriptionsSelectHandler),
                                     typeof(UnsubscribeSubscriptionHandler),
+                                    typeof(ResetSubscriptionHandler),
                                     typeof(ModeratorEnterSpanHandler),
                                     typeof(SelectUserHandler),
                                     typeof(ChangeUserMinIntervalLimitHandler),

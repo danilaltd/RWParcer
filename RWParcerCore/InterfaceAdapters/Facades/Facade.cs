@@ -57,6 +57,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
 
         private readonly ISubscribe _subscribe;
         private readonly IUnSubscribe _unSubscribe;
+        private readonly IResetSubscribe _resetSubscribe;
         private readonly IGetSubscriptions _getSubscriptions;
 
         private readonly IPopNotifications _popNotifications;
@@ -108,6 +109,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
 
             _subscribe = new SubscribeUseCase(userRepository, subscriptionRepository);
             _unSubscribe = new UnSubscribeUseCase(userRepository, subscriptionRepository);
+            _resetSubscribe = new ResetSubscribeUseCase(userRepository, subscriptionRepository);
             _getSubscriptions = new GetSubscriptionsUseCase(userRepository, subscriptionRepository);
 
             _popNotifications = new PopNotificationsUseCase(notificationRepository, userRepository);
@@ -161,6 +163,10 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         public async Task UnSubscribeAsync(string userId, SubscriptionVO subscription)
         {
             await _unSubscribe.UnSubscribeAsync(userId, subscription);
+        }
+        public async Task ResetSubscribeAsync(string userId, SubscriptionVO subscription)
+        {
+            await _resetSubscribe.ResetSubscribeAsync(userId, subscription);
         }
         public async Task<List<NotificationVO>> PopNotificationsAsync()
         {

@@ -72,6 +72,7 @@ namespace RWParcer
                                                                 return new MenuSelectHandler(router, menu, "Что сделать с этой подпиской? Выберите пункт меню");
                                                                 } },
                 { CommandNames.UnsubscribeSubscription,  s => s.GetRequiredService<UnsubscribeSubscriptionHandler>() },
+                { CommandNames.ResetSubscription,  s => s.GetRequiredService<ResetSubscriptionHandler>() },
                 { CommandNames.Unknown,                s => s.GetRequiredService<UnknownHandler>() },
                 { CommandNames.ModeratorSpanSelect,                s => {
                                                                 var router = s.GetRequiredService<ICommandRouter>();
@@ -84,7 +85,7 @@ namespace RWParcer
                 { CommandNames.ModeratorSpanMinute, s => new ModeratorSpanHandler(s.GetRequiredService<ICommandRouter>(), TimeSpan.FromMinutes(1)) },
 
                 { CommandNames.SelectUser,                s => s.GetRequiredService<SelectUserHandler>() },
-                { CommandNames.        ModeratorMenuSelect,      s => {
+                { CommandNames.ModeratorMenuSelect,      s => {
                                                                 var router = s.GetRequiredService<ICommandRouter>();
                                                                 var menu = s.GetRequiredService<ModeratorChoiceProvider>();
                                                                 return new MenuSelectHandler(router, menu, "Выберите команду модератора");
