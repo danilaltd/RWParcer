@@ -2,7 +2,7 @@
 using RWParcer.Interfaces;
 using RWParcerCore.InterfaceAdapters.Facades;
 
-namespace RWParcer.Handlers.Moderator
+namespace RWParcer.Handlers
 {
     public class GetStatusHandler : ICommandHandler
     {

@@ -6,7 +6,7 @@ using RWParcerCore.Domain.ValueObjects;
 using System.Text.Json;
 using System.Web;
 
-namespace RWParcerCore.Infrastructure.InMemoryRepositories
+namespace RWParcerCore.Infrastructure.Repositories
 {
     internal class RWParcer(HttpClientFactoryWithProxyRotation httpFactory, ILogger logger) : IRWRepository
     {

@@ -2,7 +2,7 @@
 using RWParcer.Interfaces;
 using RWParcerCore.InterfaceAdapters.Facades;
 
-namespace RWParcer.Handlers.Moderator
+namespace RWParcer.Handlers
 {
     public class ViewMessagesHandler : ICommandHandler
     {
@@ -21,7 +21,7 @@ namespace RWParcer.Handlers.Moderator
             if (messages.Count > 0)
             {
                 string text = "Все сообщения:\n\n";
-                text += string.Join("\n\n", (messages).Select(m => MessageVOToStringConverter.Convert(m)));
+                text += string.Join("\n\n", messages.Select(m => MessageVOToStringConverter.Convert(m)));
                 await ctx.SendMessage(text);
             }
             else
