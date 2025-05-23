@@ -1,5 +1,5 @@
-﻿using RWParcerCore.Domain.Interfaces;
-using RWParcerCore.Domain.Entities;
+﻿using RWParcerCore.Domain.Entities;
+using RWParcerCore.Domain.Interfaces;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.IServices;
 using RWParcerCore.Domain.ValueObjects;
@@ -34,7 +34,8 @@ namespace RWParcerCore.Infrastructure.Services
 
                     var tasks = subscriptions.Select(subscription => ProcessSubscriptionAsync(subscription, cancellationToken)).ToArray();
                     await Task.WhenAll(tasks);
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     _logger.LogDebug($"Неизвестная ошибка: {ex.Message}");
                 }

@@ -1,5 +1,5 @@
-﻿using RWParcerCore.Domain.Interfaces;
-using RWParcerCore.Domain.Entities;
+﻿using RWParcerCore.Domain.Entities;
+using RWParcerCore.Domain.Interfaces;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.ValueObjects;
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RWParcerCore.Domain.Interfaces;
 using RWParcerCore.Domain.Entities;
+using RWParcerCore.Domain.Interfaces;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.Infrastructure.Converters;
 using System.Text;
@@ -47,7 +47,7 @@ namespace RWParcerCore.Infrastructure
                     v => JsonSerializer.Serialize(v, jsonOptions),
                     v => DeserializeSubscriptionVO(v, jsonOptions)
                 )
-                .HasColumnType("jsonb"); 
+                .HasColumnType("jsonb");
 
             modelBuilder.Entity<Subscription>()
                 .Property(s => s.LastState)

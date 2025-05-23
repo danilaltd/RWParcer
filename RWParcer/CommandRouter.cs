@@ -49,7 +49,7 @@ namespace RWParcer
                         { CommandNames.SubscribeEnterDate,     s => s.GetRequiredService<SubscribeEnterDateHandler>() },
                         { CommandNames.SubscribeUseLastDate,     s => s.GetRequiredService<SubscribeUseLastDateHandler>() },
                         { CommandNames.SubscribeEnterDateRange,     s => s.GetRequiredService<SubscribeEnterDateRnageHandler>() },
-                
+
 
                         { CommandNames.UnsubscribeDateSelect,      s => {
                                                                         var router = s.GetRequiredService<ICommandRouter>();
@@ -61,8 +61,8 @@ namespace RWParcer
                         { CommandNames.UnsubscribeUseLastDate,     s => s.GetRequiredService<UnsubscribeUseLastDateHandler>() },
                         { CommandNames.UnsubscribeEnterDateRange,     s => s.GetRequiredService<UnsubscribeEnterDateRangeHandler>() },
 
-                
-                
+
+
                 { CommandNames.FavoritesSelect,             s => s.GetRequiredService<FavoritesSelectHandler>() },
                 { CommandNames.SubscriptionsSelect,             s => s.GetRequiredService<SubscriptionsSelectHandler>() },
 

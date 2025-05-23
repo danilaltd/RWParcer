@@ -9,7 +9,8 @@ namespace RWParcer.Handlers.Moderator
         private readonly IFacade _facade;
         private readonly ICommandRouter _router;
 
-        public PromoteUserHandler(IFacade facade, ICommandRouter router) { 
+        public PromoteUserHandler(IFacade facade, ICommandRouter router)
+        {
             _facade = facade;
             _router = router;
         }

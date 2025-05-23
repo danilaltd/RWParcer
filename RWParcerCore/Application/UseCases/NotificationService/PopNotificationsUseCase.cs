@@ -1,7 +1,7 @@
 ﻿using RWParcerCore.Application.Interfaces.INotificationService;
-using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.Mappers;
+using RWParcerCore.Domain.ValueObjects;
 
 namespace RWParcerCore.Application.UseCases.NotificationService
 {

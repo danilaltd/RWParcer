@@ -1,7 +1,6 @@
 ﻿using RWParcer.Interfaces;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.InterfaceAdapters.Facades;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RWParcer.Handlers.TrainsMenu.Subscribe
 {

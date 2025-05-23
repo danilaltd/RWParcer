@@ -7,7 +7,7 @@ namespace RWParcerCore.Infrastructure
     internal class AppDbContextFactory : IAppDbContextFactory
     {
         private readonly DbContextOptions<AppDbContext> _options;
-        private readonly ILogger _logger; 
+        private readonly ILogger _logger;
 
 
         public AppDbContextFactory(DbContextOptions<AppDbContext> options, ILogger logger)

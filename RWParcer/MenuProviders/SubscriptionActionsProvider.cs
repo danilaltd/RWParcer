@@ -1,18 +1,9 @@
 ﻿using RWParcer.Interfaces;
-using RWParcerCore.Domain.ValueObjects;
-using RWParcerCore.InterfaceAdapters.Facades;
 
 namespace RWParcer.MenuProviders
 {
     public class SubscriptionActionsProvider : IMenuProvider
     {
-        private readonly IFacade _facade;
-
-        public SubscriptionActionsProvider(IFacade facade)
-        {
-            _facade = facade;
-        }
-
         public Task<IReadOnlyDictionary<string, CommandNames>> GetOptionsAsync(CommandContext ctx)
         {
             var options = new Dictionary<string, CommandNames>

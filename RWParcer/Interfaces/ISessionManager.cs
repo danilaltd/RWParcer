@@ -1,6 +1,7 @@
 ﻿namespace RWParcer.Interfaces
 {
-    public interface ISessionManager { 
+    public interface ISessionManager
+    {
         UserSession GetSession(string chatId);
     }
 }

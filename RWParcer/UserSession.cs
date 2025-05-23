@@ -11,7 +11,7 @@ namespace RWParcer
             InitState = initState;
             Data = data ?? [];
         }
-        public UserSession(){}
+        public UserSession() { }
         public CommandNames? CurrentCommand { get; private set; }
         private bool _initState = true;
         public bool InitState
@@ -26,11 +26,13 @@ namespace RWParcer
         }
         public List<object> Data { get; } = [];
         public DateOnly Date { get; set; } = DateOnly.FromDateTime(DateTime.Today);
-        public void Reset() { 
-            CurrentCommand = null; 
-            Data.Clear(); 
+        public void Reset()
+        {
+            CurrentCommand = null;
+            Data.Clear();
         }
-        public void SetCommand(CommandNames cmd) { 
+        public void SetCommand(CommandNames cmd)
+        {
             CurrentCommand = cmd;
             InitState = true;
         }

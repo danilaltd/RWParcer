@@ -6,14 +6,14 @@ namespace RWParcer.Handlers.Subscriptions
 {
     class UnsubscribeSubscriptionHandler : ICommandHandler
     {
-            private readonly ICommandRouter _router;
-            private readonly IFacade _facade;
+        private readonly ICommandRouter _router;
+        private readonly IFacade _facade;
 
-            public UnsubscribeSubscriptionHandler(IFacade facade, ICommandRouter router)
-            {
-                _facade = facade;
-                _router = router;
-            }
+        public UnsubscribeSubscriptionHandler(IFacade facade, ICommandRouter router)
+        {
+            _facade = facade;
+            _router = router;
+        }
 
         public async Task HandleAsync(CommandContext ctx)
         {

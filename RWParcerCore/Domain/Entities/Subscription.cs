@@ -10,8 +10,8 @@ namespace RWParcerCore.Domain.Entities
         public DateTime? LastUpdate { get; set; }
         public List<CarVO> LastState { get; set; } = [];
 
-        private Subscription() 
-        { 
+        private Subscription()
+        {
             UserId = null!;
             Details = null!;
         }

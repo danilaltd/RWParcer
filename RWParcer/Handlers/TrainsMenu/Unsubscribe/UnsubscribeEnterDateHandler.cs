@@ -41,7 +41,7 @@ namespace RWParcer.Handlers.TrainsMenu.Unsubscribe
             {
                 await ctx.SendMessage($"Подписка на дату {date:dd.MM.yyy} не существует");
             }
-            
+
             ctx.Session.SetCommand(CommandNames.MainMenuSelect);
             await _router.RouteAsync(CommandNames.MainMenuSelect, ctx);
         }

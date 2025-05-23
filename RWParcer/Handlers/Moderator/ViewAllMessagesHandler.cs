@@ -9,7 +9,8 @@ namespace RWParcer.Handlers.Moderator
         private readonly IFacade _facade;
         private readonly ICommandRouter _router;
 
-        public ViewAllMessagesHandler(IFacade facade, ICommandRouter router) { 
+        public ViewAllMessagesHandler(IFacade facade, ICommandRouter router)
+        {
             _facade = facade;
             _router = router;
         }
@@ -17,11 +18,13 @@ namespace RWParcer.Handlers.Moderator
         public async Task HandleAsync(CommandContext ctx)
         {
             var messages = await _facade.GetAllMessagesAsync(ctx.ChatId);
-            if (messages.Count > 0) {
+            if (messages.Count > 0)
+            {
                 string text = "Все сообщения:\n\n";
                 text += string.Join("\n\n", (messages).Select(m => MessageVOToStringConverter.Convert(m)));
                 await ctx.SendMessage(text);
-            } else
+            }
+            else
             {
                 await ctx.SendMessage("Нет сообщений");
             }

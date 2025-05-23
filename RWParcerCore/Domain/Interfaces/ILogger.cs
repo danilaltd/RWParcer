@@ -7,4 +7,4 @@ namespace RWParcerCore.Domain.Interfaces
         void LogInfo(string message, params object[] args);
         void LogDebug(string message, params object[] args);
     }
-} 
+}

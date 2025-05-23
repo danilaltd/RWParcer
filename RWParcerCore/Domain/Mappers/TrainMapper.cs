@@ -5,7 +5,7 @@ namespace RWParcerCore.Domain.Mappers
 {
     internal static class TrainMapper
     {
-        public static TrainVO FromDTO(RepoTrain dto) => new        (
+        public static TrainVO FromDTO(RepoTrain dto) => new(
             trainType: dto.TrainType ?? "",
             trainNumber: dto.TrainNumber ?? "",
             titleStationFrom: dto.TitleStationFrom ?? "",

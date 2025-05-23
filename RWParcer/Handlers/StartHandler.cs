@@ -8,7 +8,8 @@ namespace RWParcer.Handlers
         private readonly ICommandRouter _router;
         private readonly IFacade _facade;
 
-        public StartHandler(IFacade facade, ICommandRouter router) { 
+        public StartHandler(IFacade facade, ICommandRouter router)
+        {
             _facade = facade;
             _router = router;
         }

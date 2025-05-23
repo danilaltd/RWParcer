@@ -1,5 +1,4 @@
 ﻿using RWParcer.Interfaces;
-using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.InterfaceAdapters.Facades;
 
 namespace RWParcer.Handlers.Moderator
@@ -9,7 +8,8 @@ namespace RWParcer.Handlers.Moderator
         private readonly IFacade _facade;
         private readonly ICommandRouter _router;
 
-        public FeedbackHandler(IFacade facade, ICommandRouter router) { 
+        public FeedbackHandler(IFacade facade, ICommandRouter router)
+        {
             _facade = facade;
             _router = router;
         }

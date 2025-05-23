@@ -33,7 +33,7 @@ namespace RWParcerCore.Infrastructure.Converters
             if (!TimeSpan.TryParse(fromTimeStr, out var fromTimeParsed))
                 throw new JsonException($"Invalid time format for fromTime: {fromTimeStr}");
             long fromTime = new DateTimeOffset(1970, 1, 1, fromTimeParsed.Hours, fromTimeParsed.Minutes, 0, TimeSpan.Zero).ToUnixTimeSeconds();
-            
+
             string toTimeStr = GetStringProperty(root, "toTime");
             if (!TimeSpan.TryParse(toTimeStr, out var toTimeParsed))
                 throw new JsonException($"Invalid time format for toTime: {toTimeStr}");

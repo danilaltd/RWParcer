@@ -9,7 +9,7 @@ namespace RWParcerCore.Application.UseCases.FeedbackService
         private readonly IMessageRepository _messageRepository = messageRepository;
         private readonly INotificationRepository _notificationRepository = notificationRepository;
 
-        public async Task SendMessageAsync(string userId, string targetUserId , string message)
+        public async Task SendMessageAsync(string userId, string targetUserId, string message)
         {
             if (!await _userRepository.IsUserRegistredAsync(userId)) throw new KeyNotFoundException($"User with ID {userId} not found");
             await _userRepository.UpdateActivityAsync(userId);
@@ -19,7 +19,7 @@ namespace RWParcerCore.Application.UseCases.FeedbackService
 
             await _messageRepository.AddAsync(new(Guid.NewGuid(), "admin", targetUserId, message));
             await _notificationRepository.AddAsync(new(Guid.NewGuid(), targetUserId, $"Новое сообщение! \n{message}"));
-            
+
         }
     }
 }

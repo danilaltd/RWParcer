@@ -18,7 +18,7 @@ namespace RWParcer.MenuProviders
 
             bool isModerator = await _facade.IsUserModeratorAsync(ctx.ChatId, ctx.ChatId);
 
-            
+
 
             options["🔍 Поиск"] = CommandNames.FromSelect;
             options["⭐ Избранное"] = CommandNames.FavoritesSelect;

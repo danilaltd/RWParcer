@@ -5,30 +5,30 @@
         Start,
         MainMenuSelect,
         FromSelect,
-            ToSelect,
-                TrainSelect,
+        ToSelect,
+        TrainSelect,
 
-                TrainMenuSelect,
-        
+        TrainMenuSelect,
+
         SubscribeDateSelect,
-            SubscribeEnterDate,
+        SubscribeEnterDate,
         SubscribeEnterDateRange,
         SubscribeUseLastDate,
 
         UnsubscribeDateSelect,
-            UnsubscribeEnterDate,
+        UnsubscribeEnterDate,
         UnsubscribeEnterDateRange,
         UnsubscribeUseLastDate,
 
-            AddToFavorites,
-            RemoveFromFavorites,
+        AddToFavorites,
+        RemoveFromFavorites,
 
 
 
         FavoritesSelect,
 
         SubscriptionsSelect,
-            SubscriptionMenuSelect,
+        SubscriptionMenuSelect,
 
         UnsubscribeSubscription,
         ResetSubscription,

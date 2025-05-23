@@ -32,7 +32,7 @@
             TrainDaysExcept = trainDaysExcept;
             Duration = TimeSpan.FromMinutes(durationMinutes);
         }
-        
+
         public string TrainType { get; private set; }
         public string TrainNumber { get; private set; }
         public string TitleStationFrom { get; private set; }
@@ -67,4 +67,4 @@
 
     }
 }
-                            
+

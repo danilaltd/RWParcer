@@ -1,22 +1,21 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using RWParcer.Handlers;
-using RWParcer.Handlers.Search;
-using RWParcer.Interfaces;
-using RWParcer.MenuProviders;
-using RWParcerCore.InterfaceAdapters.Facades;
-using Telegram.Bot;
 using RWParcer.Handlers.Favorites;
+using RWParcer.Handlers.Moderator;
+using RWParcer.Handlers.Search;
+using RWParcer.Handlers.Subscriptions;
 using RWParcer.Handlers.TrainsMenu.Favorites;
 using RWParcer.Handlers.TrainsMenu.Subscribe;
 using RWParcer.Handlers.TrainsMenu.Unsubscribe;
-using RWParcer.Handlers.Subscriptions;
-using Microsoft.Extensions.Options;
-using RWParcer.Handlers.Moderator;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+using RWParcer.Interfaces;
+using RWParcer.MenuProviders;
 using RWParcer.Settings;
+using RWParcerCore.InterfaceAdapters.Facades;
+using Telegram.Bot;
 
 namespace RWParcer
 {
@@ -44,7 +43,7 @@ namespace RWParcer
             builder.Services.Configure<ProxySettings>(builder.Configuration.GetSection("ProxySettings"));
 
             builder.Services.AddScoped<ISessionManager, SessionManager>();
-            
+
             builder.Services.AddSingleton<ITelegramBotClient>(sp =>
             {
                 var settings = sp.GetRequiredService<IOptions<BotSettings>>().Value;
@@ -59,7 +58,7 @@ namespace RWParcer
                 return new Facade(dbSettings.ConnectionString, proxySettings.ProxyAddresses);
             });
             builder.Services.AddTransient<ICommandRouter, CommandRouter>();
-            
+
             builder.Services.AddSingleton<MainMenuProvider>();
             builder.Services.AddSingleton<TrainActionsProvider>();
             builder.Services.AddSingleton<SubscribeDateChoiceProvider>();
@@ -114,7 +113,7 @@ namespace RWParcer
 
             var app = builder.Build();
             app.MapGet("/", () => "Bot is running");
-            
+
             await app.RunAsync();
         }
     }

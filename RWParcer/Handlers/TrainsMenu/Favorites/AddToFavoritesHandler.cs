@@ -9,7 +9,8 @@ namespace RWParcer.Handlers.TrainsMenu.Favorites
         private readonly IFacade _facade;
         private readonly ICommandRouter _router;
 
-        public AddToFavoritesHandler(IFacade facade, ICommandRouter router) { 
+        public AddToFavoritesHandler(IFacade facade, ICommandRouter router)
+        {
             _facade = facade;
             _router = router;
         }

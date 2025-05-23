@@ -1,4 +1,4 @@
- namespace RWParcer.Settings
+namespace RWParcer.Settings
 {
     public class DatabaseSettings
     {
