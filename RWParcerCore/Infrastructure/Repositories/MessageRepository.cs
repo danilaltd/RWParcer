@@ -4,13 +4,8 @@ using RWParcerCore.Domain.IRepositories;
 
 namespace RWParcerCore.Infrastructure.Repositories
 {
-    internal class MessageRepository : RepositoryBase, IMessageRepository
+    internal class MessageRepository(IAppDbContextFactory factory) : RepositoryBase(factory), IMessageRepository
     {
-        public MessageRepository(IAppDbContextFactory factory)
-            : base(factory)
-        {
-        }
-
         public Task AddAsync(Message message)
         {
             ArgumentNullException.ThrowIfNull(message);

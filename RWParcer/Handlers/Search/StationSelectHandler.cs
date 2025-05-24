@@ -4,22 +4,13 @@ using RWParcerCore.InterfaceAdapters.Facades;
 
 namespace RWParcer.Handlers.Search
 {
-    public abstract class StationSelectHandler : ICommandHandler
+    public abstract class StationSelectHandler(IFacade facade, ICommandRouter router, CommandNames nextCommand, string promptText, string keyboardText) : ICommandHandler
     {
-        protected readonly IFacade _facade;
-        protected readonly CommandNames _nextCommand;
-        protected readonly string _promptText;
-        protected readonly string _keyboardText;
-        private readonly ICommandRouter _router;
-
-        protected StationSelectHandler(IFacade facade, ICommandRouter router, CommandNames nextCommand, string promptText, string keyboardText)
-        {
-            _facade = facade;
-            _nextCommand = nextCommand;
-            _promptText = promptText;
-            _keyboardText = keyboardText;
-            _router = router;
-        }
+        protected readonly IFacade _facade = facade;
+        protected readonly CommandNames _nextCommand = nextCommand;
+        protected readonly string _promptText = promptText;
+        protected readonly string _keyboardText = keyboardText;
+        private readonly ICommandRouter _router = router;
 
         public async Task HandleAsync(CommandContext ctx)
         {

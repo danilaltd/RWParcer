@@ -26,12 +26,5 @@
         public string Content { get; set; }
 
         public DateTime SentDate { get; set; } = DateTime.UtcNow;
-
-        public List<string> ReadBy { get; private set; } = [];
-
-        public void MarkAsRead(string userId)
-        {
-            ReadBy.Add(userId);
-        }
     }
 }

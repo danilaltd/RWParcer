@@ -4,14 +4,9 @@ using RWParcerCore.InterfaceAdapters.Facades;
 
 namespace RWParcer.MenuProviders
 {
-    public class TrainActionsProvider : IMenuProvider
+    public class TrainActionsProvider(IFacade facade) : IMenuProvider
     {
-        private readonly IFacade _facade;
-
-        public TrainActionsProvider(IFacade facade)
-        {
-            _facade = facade;
-        }
+        private readonly IFacade _facade = facade;
 
         public async Task<IReadOnlyDictionary<string, CommandNames>> GetOptionsAsync(CommandContext ctx)
         {

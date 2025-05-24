@@ -4,14 +4,10 @@ using RWParcerCore.InterfaceAdapters.Facades;
 
 namespace RWParcer.MenuProviders
 {
-    public class ManageUsersChoiceProvider : IMenuProvider
+    public class ManageUsersChoiceProvider(IFacade facade) : IMenuProvider
     {
-        private readonly IFacade _facade;
+        private readonly IFacade _facade = facade;
 
-        public ManageUsersChoiceProvider(IFacade facade)
-        {
-            _facade = facade;
-        }
         public async Task<IReadOnlyDictionary<string, CommandNames>> GetOptionsAsync(CommandContext ctx)
         {
             var options = new Dictionary<string, CommandNames>();

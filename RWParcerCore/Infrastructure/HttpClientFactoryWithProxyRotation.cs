@@ -2,16 +2,11 @@
 
 namespace RWParcerCore.Infrastructure
 {
-    internal class HttpClientFactoryWithProxyRotation
+    internal class HttpClientFactoryWithProxyRotation(IEnumerable<string> proxyList)
     {
-        private readonly List<string> _proxyList;
+        private readonly List<string> _proxyList = [.. proxyList];
         private int _currentIndex = 0;
         private readonly Lock _lock = new();
-
-        public HttpClientFactoryWithProxyRotation(IEnumerable<string> proxyList)
-        {
-            _proxyList = [.. proxyList];
-        }
 
         private HttpClient CreateClientWithProxy()
         {

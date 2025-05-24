@@ -1,15 +1,9 @@
 ﻿namespace RWParcerCore.Domain.ValueObjects
 {
-    public class StationVO : ValueObject
+    public class StationVO(string label, string exp) : ValueObject
     {
-        public string Label { get; private set; }
-        internal string Exp { get; private set; }
-
-        public StationVO(string label, string exp)
-        {
-            Label = label;
-            Exp = exp;
-        }
+        public string Label { get; private set; } = label;
+        internal string Exp { get; private set; } = exp;
 
         protected override IEnumerable<object> GetEqualityComponents()
         {

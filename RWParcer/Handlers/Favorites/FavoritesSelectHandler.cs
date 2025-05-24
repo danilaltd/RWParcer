@@ -4,10 +4,8 @@ using RWParcerCore.InterfaceAdapters.Facades;
 
 namespace RWParcer.Handlers.Favorites
 {
-    public class FavoritesSelectHandler : BaseTrainsHandler
+    public class FavoritesSelectHandler(ICommandRouter router, IFacade facade) : BaseTrainsHandler(router, facade)
     {
-        public FavoritesSelectHandler(ICommandRouter router, IFacade facade) : base(router, facade) { }
-
         public override async Task HandleAsync(CommandContext ctx)
         {
             if (ctx.Session.InitState)

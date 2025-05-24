@@ -9,18 +9,15 @@ using System.Text.Json.Serialization;
 
 namespace RWParcerCore.Infrastructure
 {
-    internal class AppDbContext : DbContext
+    internal class AppDbContext(DbContextOptions<AppDbContext> options, ILogger logger) : DbContext(options)
     {
-        private readonly ILogger _logger;
+        private readonly ILogger _logger = logger;
         public DbSet<Favorite> Favorites { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<User> Users { get; set; }
-        public AppDbContext(DbContextOptions<AppDbContext> options, ILogger logger) : base(options)
-        {
-            _logger = logger;
-        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

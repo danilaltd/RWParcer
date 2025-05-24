@@ -4,13 +4,8 @@ using RWParcerCore.Domain.IRepositories;
 
 namespace RWParcerCore.Infrastructure.Repositories
 {
-    internal class UserRepository : RepositoryBase, IUserRepository
+    internal class UserRepository(IAppDbContextFactory factory) : RepositoryBase(factory), IUserRepository
     {
-        public UserRepository(IAppDbContextFactory factory)
-            : base(factory)
-        {
-        }
-
         public Task<bool> IsUserRegistredAsync(string userId)
             => QueryAsync(ctx =>
                 ctx.Users.AnyAsync(u => u.Id == userId)

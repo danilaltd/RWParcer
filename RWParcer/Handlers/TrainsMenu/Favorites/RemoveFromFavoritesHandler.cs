@@ -4,16 +4,10 @@ using RWParcerCore.InterfaceAdapters.Facades;
 
 namespace RWParcer.Handlers.TrainsMenu.Favorites
 {
-    public class RemoveFromFavoritesHandler : ICommandHandler
+    public class RemoveFromFavoritesHandler(IFacade facade, ICommandRouter router) : ICommandHandler
     {
-        private readonly IFacade _facade;
-        private readonly ICommandRouter _router;
-
-        public RemoveFromFavoritesHandler(IFacade facade, ICommandRouter router)
-        {
-            _facade = facade;
-            _router = router;
-        }
+        private readonly IFacade _facade = facade;
+        private readonly ICommandRouter _router = router;
 
         public async Task HandleAsync(CommandContext ctx)
         {

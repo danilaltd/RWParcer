@@ -2,16 +2,10 @@
 
 namespace RWParcer.Handlers.Moderator
 {
-    public class ModeratorSpanHandler : ICommandHandler
+    public class ModeratorSpanHandler(ICommandRouter router, TimeSpan span) : ICommandHandler
     {
-        private readonly ICommandRouter _router;
-        private readonly TimeSpan _span;
-
-        public ModeratorSpanHandler(ICommandRouter router, TimeSpan span)
-        {
-            _router = router;
-            _span = span;
-        }
+        private readonly ICommandRouter _router = router;
+        private readonly TimeSpan _span = span;
 
         public async Task HandleAsync(CommandContext ctx)
         {

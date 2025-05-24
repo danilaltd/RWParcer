@@ -5,17 +5,10 @@ using RWParcerCore.InterfaceAdapters.Facades;
 
 namespace RWParcer.Handlers.Subscriptions
 {
-    public class SubscriptionsSelectHandler : ICommandHandler
+    public class SubscriptionsSelectHandler(ICommandRouter router, IFacade facade) : ICommandHandler
     {
-        private readonly IFacade _facade;
-        private readonly ICommandRouter _router;
-
-        public SubscriptionsSelectHandler(ICommandRouter router, IFacade facade)
-        {
-            _router = router;
-            _facade = facade;
-        }
-
+        private readonly IFacade _facade = facade;
+        private readonly ICommandRouter _router = router;
 
         public async Task HandleAsync(CommandContext ctx)
         {

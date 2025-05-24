@@ -1,13 +1,8 @@
 ﻿namespace RWParcerCore.Infrastructure.Repositories
 {
-    internal abstract class RepositoryBase
+    internal abstract class RepositoryBase(IAppDbContextFactory factory)
     {
-        private readonly IAppDbContextFactory _factory;
-
-        protected RepositoryBase(IAppDbContextFactory factory)
-        {
-            _factory = factory;
-        }
+        private readonly IAppDbContextFactory _factory = factory;
 
         protected async Task<TResult> QueryAsync<TResult>(Func<AppDbContext, Task<TResult>> action)
         {

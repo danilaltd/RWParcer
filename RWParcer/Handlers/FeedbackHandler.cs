@@ -3,16 +3,10 @@ using RWParcerCore.InterfaceAdapters.Facades;
 
 namespace RWParcer.Handlers
 {
-    public class FeedbackHandler : ICommandHandler
+    public class FeedbackHandler(IFacade facade, ICommandRouter router) : ICommandHandler
     {
-        private readonly IFacade _facade;
-        private readonly ICommandRouter _router;
-
-        public FeedbackHandler(IFacade facade, ICommandRouter router)
-        {
-            _facade = facade;
-            _router = router;
-        }
+        private readonly IFacade _facade = facade;
+        private readonly ICommandRouter _router = router;
 
         public async Task HandleAsync(CommandContext ctx)
         {

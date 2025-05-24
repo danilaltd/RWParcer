@@ -4,16 +4,10 @@ using RWParcerCore.InterfaceAdapters.Facades;
 
 namespace RWParcer.Handlers.TrainsMenu.Subscribe
 {
-    public class SubscribeEnterDateRnageHandler : ICommandHandler
+    public class SubscribeEnterDateRnageHandler(IFacade facade, ICommandRouter router) : ICommandHandler
     {
-        private readonly ICommandRouter _router;
-        private readonly IFacade _facade;
-
-        public SubscribeEnterDateRnageHandler(IFacade facade, ICommandRouter router)
-        {
-            _facade = facade;
-            _router = router;
-        }
+        private readonly ICommandRouter _router = router;
+        private readonly IFacade _facade = facade;
 
         public async Task HandleAsync(CommandContext ctx)
         {

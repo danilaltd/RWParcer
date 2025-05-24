@@ -6,14 +6,9 @@ using RWParcerCore.Domain.ValueObjects;
 
 namespace RWParcerCore.Infrastructure.Repositories
 {
-    internal class SubscriptionRepository : RepositoryBase, ISubscriptionRepository
+    internal class SubscriptionRepository(IAppDbContextFactory factory, ILogger logger) : RepositoryBase(factory), ISubscriptionRepository
     {
-        public SubscriptionRepository(IAppDbContextFactory factory, ILogger logger)
-            : base(factory)
-        {
-            _logger = logger;
-        }
-        private readonly ILogger _logger;
+        private readonly ILogger _logger = logger;
 
         public Task<IEnumerable<Subscription>> GetUserSubscriptionsAsync(string userId)
         {

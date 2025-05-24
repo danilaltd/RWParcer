@@ -4,13 +4,8 @@ using RWParcerCore.Domain.IRepositories;
 
 namespace RWParcerCore.Infrastructure.Repositories
 {
-    internal class NotificationRepository : RepositoryBase, INotificationRepository
+    internal class NotificationRepository(IAppDbContextFactory factory) : RepositoryBase(factory), INotificationRepository
     {
-        public NotificationRepository(IAppDbContextFactory factory)
-            : base(factory)
-        {
-        }
-
         public Task<IEnumerable<Notification>> PopNotificationsAsync()
             => QueryAsync(async ctx =>
             {

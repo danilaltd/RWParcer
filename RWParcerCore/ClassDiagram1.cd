@@ -1,21 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="RWParcerCore.Infrastructure.Converters.SubscriptionVOConverter" Collapsed="true">
-    <Position X="37.5" Y="2.5" Width="1.5" />
+    <Position X="33.75" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAEAAAA=</HashCode>
       <FileName>Infrastructure\Converters\SubscriptionVOConverter.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Infrastructure.Converters.TrainVOConverter" Collapsed="true">
-    <Position X="35.75" Y="3.5" Width="1.5" />
+    <Position X="32" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>EAAAAAAAAQAAAAAAAAAAAAAgAAAAAAAAAAAAAAEAAAA=</HashCode>
       <FileName>Infrastructure\Converters\TrainVOConverter.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="RWParcerCore.Infrastructure.Repositories.InMemoryFavoritesRepository" BaseTypeListCollapsed="true">
-    <Position X="0.75" Y="10.25" Width="1.5" />
+  <Class Name="RWParcerCore.Infrastructure.InMemoryRepositories.InMemoryFavoritesRepository" BaseTypeListCollapsed="true">
+    <Position X="1.5" Y="5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AEAAAAAAAAAAAAAAAEgAAAEAIAAAAAAAAEAQAAAAAAA=</HashCode>
       <FileName>Infrastructure\InMemoryRepositories\InMemoryFavoritesRepository.cs</FileName>
@@ -28,8 +28,8 @@
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="RWParcerCore.Infrastructure.Repositories.InMemoryMessageRepository" BaseTypeListCollapsed="true">
-    <Position X="11.5" Y="28.75" Width="1.5" />
+  <Class Name="RWParcerCore.Infrastructure.InMemoryRepositories.InMemoryMessageRepository" BaseTypeListCollapsed="true">
+    <Position X="15.75" Y="29.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AEAAAAAAAAAAAAAAAAAAAAEAQAAAAAAAEEAAAAAAAAA=</HashCode>
       <FileName>Infrastructure\InMemoryRepositories\InMemoryMessageRepository.cs</FileName>
@@ -39,8 +39,8 @@
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="RWParcerCore.Infrastructure.Repositories.InMemoryNotificationRepository" BaseTypeListCollapsed="true">
-    <Position X="4.5" Y="27.5" Width="1.5" />
+  <Class Name="RWParcerCore.Infrastructure.InMemoryRepositories.InMemoryNotificationRepository" BaseTypeListCollapsed="true">
+    <Position X="27.75" Y="10.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AEAAAAAAAAAAAAAAAAAAAAEAAAAQAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Infrastructure\InMemoryRepositories\InMemoryNotificationRepository.cs</FileName>
@@ -50,10 +50,10 @@
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="RWParcerCore.Infrastructure.Repositories.InMemorySubscriptionRepository" BaseTypeListCollapsed="true">
-    <Position X="1.75" Y="4" Width="1.5" />
+  <Class Name="RWParcerCore.Infrastructure.InMemoryRepositories.InMemorySubscriptionRepository" BaseTypeListCollapsed="true">
+    <Position X="16.75" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AEAAAAAAAAAAAAAIAAgAAAEQIAAAAAgAAAAAEAQAQAA=</HashCode>
+      <HashCode>AEAAAAAAAAAAAAAIAAgAAAEQIAAAAAgAAAAAMAQAQAA=</HashCode>
       <FileName>Infrastructure\InMemoryRepositories\InMemorySubscriptionRepository.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -64,8 +64,8 @@
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="RWParcerCore.Infrastructure.Repositories.InMemoryUserRepository" BaseTypeListCollapsed="true">
-    <Position X="0.5" Y="22" Width="1.5" />
+  <Class Name="RWParcerCore.Infrastructure.InMemoryRepositories.InMemoryUserRepository" BaseTypeListCollapsed="true">
+    <Position X="25.75" Y="24.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AEAAAQAAAAAJASBAAQCAhAEAAIAAAIAAAIAgAAIAAEA=</HashCode>
       <FileName>Infrastructure\InMemoryRepositories\InMemoryUserRepository.cs</FileName>
@@ -76,7 +76,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Infrastructure.Repositories.FavoritesRepository">
-    <Position X="5" Y="16.75" Width="1.5" />
+    <Position X="4.25" Y="14.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAEgAAAEAIAAAAAAAAAAQAAAAAAA=</HashCode>
       <FileName>Infrastructure\Repositories\FavoritesRepository.cs</FileName>
@@ -87,7 +87,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="RWParcerCore.Infrastructure.Repositories.MessageRepository">
-    <Position X="9.5" Y="16.75" Width="1.5" />
+    <Position X="8.75" Y="14.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAQAAAAAAAAEAAAAAAAAA=</HashCode>
       <FileName>Infrastructure\Repositories\MessageRepository.cs</FileName>
@@ -95,7 +95,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="RWParcerCore.Infrastructure.Repositories.NotificationRepository">
-    <Position X="11.75" Y="16.75" Width="1.5" />
+    <Position X="11" Y="14.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAAAAQAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Infrastructure\Repositories\NotificationRepository.cs</FileName>
@@ -103,7 +103,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="RWParcerCore.Infrastructure.Repositories.RepositoryBase">
-    <Position X="7.25" Y="14.5" Width="1.5" />
+    <Position X="6.5" Y="12.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAACAAAAAEA=</HashCode>
       <FileName>Infrastructure\Repositories\RepositoryBase.cs</FileName>
@@ -113,9 +113,9 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="RWParcerCore.Infrastructure.Repositories.SubscriptionRepository">
-    <Position X="2.75" Y="16.75" Width="1.5" />
+    <Position X="2" Y="14.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAIAAgAAAEQIAAAAAgAAAAAEAAAQAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAIAAgAAAEQIAAAAAgAAAAAMAAAQAA=</HashCode>
       <FileName>Infrastructure\Repositories\SubscriptionRepository.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -124,27 +124,15 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="RWParcerCore.Infrastructure.Repositories.UserRepository">
-    <Position X="7.25" Y="16.75" Width="1.5" />
+    <Position X="6.5" Y="14.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAQAAAAAJASBAAQCAhAEAAIAAAAAAAIAgAAIAAEA=</HashCode>
       <FileName>Infrastructure\Repositories\UserRepository.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="RWParcerCore.Infrastructure.InMemoryRepositories.RWParcer" BaseTypeListCollapsed="true">
-    <Position X="4.75" Y="4.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AEAAAAAAAAABABQAAAAAEBAAIAAIAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Infrastructure\InMemoryRepositories\RWParcer.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="_logger" />
-      <Field Name="HttpFactory" />
-    </ShowAsAssociation>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
   <Class Name="RWParcerCore.Infrastructure.Logging.ConsoleLogger" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="37.5" Y="0.5" Width="1.5" />
+    <Position X="33.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AgAAAAAAAAAAAAAAAAAAAAAAIAAJAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Infrastructure\Logging\ConsoleLogger.cs</FileName>
@@ -152,7 +140,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Infrastructure.Services.NotificationBackgroundService" BaseTypeListCollapsed="true">
-    <Position X="22" Y="6" Width="1.5" />
+    <Position X="3.5" Y="17.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AEAAAIAgAAAAAAARAMAQAAAAIQAAAAAAQQAAAAAAAAA=</HashCode>
       <FileName>Infrastructure\Services\NotificationBackgroundService.cs</FileName>
@@ -167,7 +155,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Infrastructure.AppDbContext">
-    <Position X="7.75" Y="3.75" Width="1.5" />
+    <Position X="10.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAgCAAAQAgAAAAAABAAAAAMAAAAAAAAACEAQAABAA=</HashCode>
       <FileName>Infrastructure\AppDbContext.cs</FileName>
@@ -177,7 +165,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="RWParcerCore.Infrastructure.AppDbContextFactory" BaseTypeListCollapsed="true">
-    <Position X="1.75" Y="7.5" Width="1.5" />
+    <Position X="1.5" Y="11.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAQAAAAAQAAAAAAAAIAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Infrastructure\AppDbContextFactory.cs</FileName>
@@ -187,38 +175,31 @@
     </ShowAsAssociation>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="RWParcerCore.Infrastructure.CarVOConverter" Collapsed="true">
-    <Position X="35.75" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAEAAAA=</HashCode>
-      <FileName>Infrastructure\CarVOConverter.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="RWParcerCore.Infrastructure.HttpClientFactoryWithProxyRotation">
-    <Position X="4.75" Y="0.5" Width="1.5" />
+    <Position X="4.5" Y="1.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAgEAAAAAAAAAAAAIAAIACAAACAAIA=</HashCode>
       <FileName>Infrastructure\HttpClientFactoryWithProxyRotation.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Migrations.InitialCreate" Collapsed="true">
-    <Position X="39.25" Y="0.5" Width="1.5" />
+    <Position X="35.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAI=</HashCode>
       <FileName>Migrations\20250508145554_InitialCreate.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Migrations.AppDbContextModelSnapshot" Collapsed="true">
-    <Position X="34" Y="0.5" Width="1.5" />
+    <Position X="30.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
       <FileName>Migrations\AppDbContextModelSnapshot.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.InterfaceAdapters.Facades.Facade" BaseTypeListCollapsed="true">
-    <Position X="25.5" Y="27" Width="1.5" />
+    <Position X="6.5" Y="26" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AeCACQAMIAAJAYAwwUhUlBgCAIIQCQAAAcIEAMKIlAI=</HashCode>
+      <HashCode>AeCACQAMIAAJAYAwwUhUlBgCAIIUCQQAAcIEAMKIlAI=</HashCode>
       <FileName>InterfaceAdapters\Facades\Facade.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -251,7 +232,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.FavoritesService.AddToFavoritesUseCase" BaseTypeListCollapsed="true">
-    <Position X="22" Y="10" Width="1.5" />
+    <Position X="19.5" Y="4" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAAAAAAAAAAgAAAQAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\FavoritesService\AddToFavoritesUseCase.cs</FileName>
@@ -263,7 +244,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.FavoritesService.GetFavoritesUseCase" BaseTypeListCollapsed="true">
-    <Position X="17" Y="24" Width="1.5" />
+    <Position X="7.5" Y="4" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAAAAAEAAAAAAAAQAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\FavoritesService\GetFavoritesUseCase.cs</FileName>
@@ -275,7 +256,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.FavoritesService.IsInFavoritesUseCase" BaseTypeListCollapsed="true">
-    <Position X="11" Y="24" Width="1.5" />
+    <Position X="19.5" Y="21" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAIAAA=</HashCode>
       <FileName>Application\UseCases\FavoritesService\IsInFavoritesUseCase.cs</FileName>
@@ -287,7 +268,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.FavoritesService.RemoveFromFavoritesUseCase" BaseTypeListCollapsed="true">
-    <Position X="17" Y="6" Width="1.5" />
+    <Position X="7.5" Y="21" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAEAA=</HashCode>
       <FileName>Application\UseCases\FavoritesService\RemoveFromFavoritesUseCase.cs</FileName>
@@ -296,10 +277,10 @@
       <Field Name="_userRepository" />
       <Field Name="_favoriteRepository" />
     </ShowAsAssociation>
-    <Lollipop Position="0.2" Collapsed="true" />
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.FeedbackService.GetAllMessagesUseCase" BaseTypeListCollapsed="true">
-    <Position X="14" Y="6" Width="1.5" />
+    <Position X="16.5" Y="21" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AQAAAAAgAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\FeedbackService\GetAllMessagesUseCase.cs</FileName>
@@ -311,19 +292,19 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.FeedbackService.GetMessagesUseCase" BaseTypeListCollapsed="true">
-    <Position X="17" Y="16" Width="1.5" />
+    <Position X="10.5" Y="21" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AQAAAAAgAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\FeedbackService\GetMessagesUseCase.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Field Name="_messageRepository" />
       <Field Name="_userRepository" />
+      <Field Name="_messageRepository" />
     </ShowAsAssociation>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.FeedbackService.SendFeedbackUseCase" BaseTypeListCollapsed="true">
-    <Position X="22" Y="12" Width="1.5" />
+    <Position X="20.5" Y="9" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AUAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\FeedbackService\SendFeedbackUseCase.cs</FileName>
@@ -336,7 +317,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.FeedbackService.SendMessageUseCase" BaseTypeListCollapsed="true">
-    <Position X="22" Y="14" Width="1.5" />
+    <Position X="13.5" Y="21" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AUAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\FeedbackService\SendMessageUseCase.cs</FileName>
@@ -349,7 +330,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.ModeratorUseCases.BanUserUseCase" BaseTypeListCollapsed="true">
-    <Position X="14" Y="23" Width="1.5" />
+    <Position X="20.5" Y="11" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\ModeratorUseCases\BanUserUseCase.cs</FileName>
@@ -360,7 +341,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.ModeratorUseCases.DemoteUserUseCase" BaseTypeListCollapsed="true">
-    <Position X="20" Y="22" Width="1.5" />
+    <Position X="19.5" Y="6" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAQAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\ModeratorUseCases\DemoteUserUseCase.cs</FileName>
@@ -371,7 +352,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.ModeratorUseCases.GetUsersUseCase" BaseTypeListCollapsed="true">
-    <Position X="8" Y="22" Width="1.5" />
+    <Position X="7.5" Y="6" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA=</HashCode>
       <FileName>Application\UseCases\ModeratorUseCases\GetUsersUseCase.cs</FileName>
@@ -382,7 +363,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.ModeratorUseCases.PromoteUserUseCase" BaseTypeListCollapsed="true">
-    <Position X="17" Y="18" Width="1.5" />
+    <Position X="19.5" Y="19" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\ModeratorUseCases\PromoteUserUseCase.cs</FileName>
@@ -393,7 +374,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.ModeratorUseCases.SetUsersMaxSubscriptionsUseCase" BaseTypeListCollapsed="true">
-    <Position X="8" Y="8" Width="1.5" />
+    <Position X="7.5" Y="19" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\ModeratorUseCases\SetUsersMaxSubscriptionsUseCase.cs</FileName>
@@ -404,7 +385,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.ModeratorUseCases.SetUsersMinIntervalUseCase" BaseTypeListCollapsed="true">
-    <Position X="19" Y="8" Width="1.5" />
+    <Position X="19.5" Y="17" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\ModeratorUseCases\SetUsersMinIntervalUseCase.cs</FileName>
@@ -415,7 +396,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.ModeratorUseCases.UnbanUserUseCase" BaseTypeListCollapsed="true">
-    <Position X="20" Y="20" Width="1.5" />
+    <Position X="19.5" Y="15" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\ModeratorUseCases\UnbanUserUseCase.cs</FileName>
@@ -426,7 +407,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.NotificationService.PopNotificationsUseCase" BaseTypeListCollapsed="true">
-    <Position X="14" Y="19" Width="1.5" />
+    <Position X="19.5" Y="13" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AEAAAAAgAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\NotificationService\PopNotificationsUseCase.cs</FileName>
@@ -438,7 +419,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.RWService.GetStationsUseCase" BaseTypeListCollapsed="true">
-    <Position X="17" Y="22" Width="1.5" />
+    <Position X="16.5" Y="19" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AEAAAAAgAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\RWService\GetStationsUseCase.cs</FileName>
@@ -450,7 +431,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.RWService.GetTrainsUseCase" BaseTypeListCollapsed="true">
-    <Position X="11" Y="22" Width="1.5" />
+    <Position X="10.5" Y="19" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAQAAgAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\RWService\GetTrainsUseCase.cs</FileName>
@@ -462,7 +443,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.SubscriptionService.GetSubscriptionsUseCase" BaseTypeListCollapsed="true">
-    <Position X="14" Y="8" Width="1.5" />
+    <Position X="13.5" Y="19" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAAAQAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
       <FileName>Application\UseCases\SubscriptionService\GetSubscriptionsUseCase.cs</FileName>
@@ -474,7 +455,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.SubscriptionService.UnSubscribeUseCase" BaseTypeListCollapsed="true">
-    <Position X="20" Y="16" Width="1.5" />
+    <Position X="16.5" Y="17" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
       <FileName>Application\UseCases\SubscriptionService\UnSubscribeUseCase.cs</FileName>
@@ -486,7 +467,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.UserService.GetUserByIdUseCase" BaseTypeListCollapsed="true">
-    <Position X="14" Y="21" Width="1.5" />
+    <Position X="10.5" Y="17" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\UserService\GetUserByIdUseCase.cs</FileName>
@@ -497,7 +478,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.UserService.IsUserBannedUseCase" BaseTypeListCollapsed="true">
-    <Position X="11" Y="14" Width="1.5" />
+    <Position X="13.5" Y="17" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
       <FileName>Application\UseCases\UserService\IsUserBannedUseCase.cs</FileName>
@@ -505,10 +486,10 @@
     <ShowAsAssociation>
       <Field Name="_userRepository" />
     </ShowAsAssociation>
-    <Lollipop Position="0.2" Collapsed="true" />
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.UserService.IsUserModeratorUseCase" BaseTypeListCollapsed="true">
-    <Position X="17" Y="20" Width="1.5" />
+    <Position X="16.5" Y="15" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\UserService\IsUserModeratorUseCase.cs</FileName>
@@ -519,7 +500,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Application.UseCases.UserService.RegisterUserUseCase" BaseTypeListCollapsed="true">
-    <Position X="11" Y="20" Width="1.5" />
+    <Position X="16.5" Y="13" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\UseCases\UserService\RegisterUserUseCase.cs</FileName>
@@ -530,35 +511,35 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="RWParcerCore.Domain.DTOs.Place" Collapsed="true">
-    <Position X="37.5" Y="1.5" Width="1.5" />
+    <Position X="33.75" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAQAAAAAAAAAAAIBAAAUAAAAAAACAAAAAAAA=</HashCode>
       <FileName>Domain\DTOs\Place.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.DTOs.RepoStation" Collapsed="true">
-    <Position X="39.25" Y="1.5" Width="1.5" />
+    <Position X="35.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>BAACAAAAFCAAAABAAAAAAAACAAgCAAAAAAAgAAAAAAA=</HashCode>
       <FileName>Domain\DTOs\RepoStation.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.DTOs.RepoTrain" Collapsed="true">
-    <Position X="34" Y="2.5" Width="1.5" />
+    <Position X="30.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>FAAAGQAgAkDDAEBAgDggoAAAgQAAQkigAEEAEkFEJIQ=</HashCode>
       <FileName>Domain\DTOs\RepoTrain.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.DTOs.TicketSellingAllowedEx" Collapsed="true">
-    <Position X="39.25" Y="2.5" Width="1.5" />
+    <Position X="35.5" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Domain\DTOs\TicketSellingAllowedEx.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.Entities.Favorite">
-    <Position X="5" Y="14" Width="1.5" />
+    <Position X="12.75" Y="2.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAACAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Domain\Entities\Favorite.cs</FileName>
@@ -567,22 +548,22 @@
       <Property Name="TrainInfo" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="RWParcerCore.Domain.Entities.Message" Collapsed="true">
-    <Position X="11.5" Y="27.5" Width="1.5" />
+  <Class Name="RWParcerCore.Domain.Entities.Message">
+    <Position X="18.75" Y="28.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CAACAAAAAgAgAAAAAAAgAAAAAAABAAAAAAAABAAAAAA=</HashCode>
+      <HashCode>AAACAAAAAgAgAAAAAAAAAAAAAAABAAAAAAAABAAAAAA=</HashCode>
       <FileName>Domain\Entities\Message.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.Entities.Notification">
-    <Position X="7.5" Y="27.75" Width="1.5" />
+    <Position X="24.75" Y="10.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAAAAAgAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Domain\Entities\Notification.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.Entities.Subscription">
-    <Position X="10.25" Y="4.25" Width="1.5" />
+    <Position X="13.75" Y="5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAAAIAAABAAAAAAAAAAgQAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Domain\Entities\Subscription.cs</FileName>
@@ -592,49 +573,49 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="RWParcerCore.Domain.Entities.User">
-    <Position X="3.5" Y="22.25" Width="1.5" />
+    <Position X="22.75" Y="25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAEGAAAQAAACAAAAAAAAIABAAAAAAiAAAAAgAAAAADA=</HashCode>
       <FileName>Domain\Entities\User.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.Mappers.MessageMapper" Collapsed="true">
-    <Position X="34" Y="1.5" Width="1.5" />
+    <Position X="30.25" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Domain\Mappers\MessageMapper.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.Mappers.NotificationMapper" Collapsed="true">
-    <Position X="35.75" Y="1.5" Width="1.5" />
+    <Position X="32" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Domain\Mappers\NotificationMapper.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.Mappers.StationMapper" Collapsed="true">
-    <Position X="35.75" Y="2.5" Width="1.5" />
+    <Position X="32" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Domain\Mappers\StationMapper.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.Mappers.TrainMapper" Collapsed="true">
-    <Position X="34" Y="3.5" Width="1.5" />
+    <Position X="30.25" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Domain\Mappers\TrainMapper.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.Mappers.UserMapper" Collapsed="true">
-    <Position X="37.5" Y="3.5" Width="1.5" />
+    <Position X="33.75" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Domain\Mappers\UserMapper.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.ValueObjects.CarVO">
-    <Position X="16.75" Y="10.5" Width="1.5" />
+    <Position X="16" Y="8.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAIEAAAAAAAAAAAAAAAQCAAAAAAAA=</HashCode>
       <FileName>Domain\ValueObjects\CarVO.cs</FileName>
@@ -644,21 +625,21 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="RWParcerCore.Domain.ValueObjects.MessageVO">
-    <Position X="3.25" Y="10.5" Width="1.5" />
+    <Position X="2.5" Y="8.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAgAgAAAAIAAAAAAAAAABAAAAAAAABAAAAAA=</HashCode>
       <FileName>Domain\ValueObjects\MessageVO.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.ValueObjects.NotificationVO">
-    <Position X="7.75" Y="10.5" Width="1.5" />
+    <Position X="7" Y="8.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAgAAAAAAIAAAAAgAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Domain\ValueObjects\NotificationVO.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.ValueObjects.RouteVO">
-    <Position X="10" Y="10.5" Width="1.5" />
+    <Position X="9.25" Y="8.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AgAAAAAAAAAAAAAAIAAAAAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Domain\ValueObjects\RouteVO.cs</FileName>
@@ -669,14 +650,14 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="RWParcerCore.Domain.ValueObjects.StationVO">
-    <Position X="12.25" Y="10.5" Width="1.5" />
+    <Position X="11.5" Y="8.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAAAAEAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Domain\ValueObjects\StationVO.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.ValueObjects.SubscriptionVO">
-    <Position X="14.5" Y="10.5" Width="1.5" />
+    <Position X="13.75" Y="8.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAgAAAAAAAAAAAAIAAAAAAAAAAAAAABAAAAAAAAAAA=</HashCode>
       <FileName>Domain\ValueObjects\SubscriptionVO.cs</FileName>
@@ -686,273 +667,292 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="RWParcerCore.Domain.ValueObjects.TrainVO">
-    <Position X="19" Y="10.5" Width="1.5" />
+    <Position X="18.25" Y="8.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAGAAAAAACAAAApBAQgAAAAAAAAACAAAAAAAABBAQ=</HashCode>
       <FileName>Domain\ValueObjects\TrainVO.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.ValueObjects.UserVO">
-    <Position X="5.5" Y="10.5" Width="1.5" />
+    <Position X="4.75" Y="8.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAECAAAAAAAAAAAAIAIAIAAAAAAAAgAAAAAAAAAAABA=</HashCode>
       <FileName>Domain\ValueObjects\UserVO.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RWParcerCore.Domain.ValueObjects.ValueObject">
-    <Position X="11" Y="7.5" Width="1.5" />
+    <Position X="10.25" Y="5.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAEAAoAAAAAAAAAAAAIAAAAAAAACAAiA=</HashCode>
       <FileName>Domain\ValueObjects\ValueObject.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Interface Name="RWParcerCore.Infrastructure.IAppDbContextFactory" Collapsed="true">
-    <Position X="2.25" Y="15" Width="1.5" />
+  <Class Name="RWParcerCore.Infrastructure.Repositories.RWParcer">
+    <Position X="4.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAABABQAAAAAEBAAIAAIAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Infrastructure\Repositories\RWParcer.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_logger" />
+      <Field Name="HttpFactory" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RWParcerCore.Infrastructure.Converters.CarVOConverter" Collapsed="true">
+    <Position X="32" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Infrastructure\Converters\CarVOConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="RWParcerCore.Infrastructure.IAppDbContextFactory">
+    <Position X="0.5" Y="18.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Infrastructure\IAppDbContextFactory.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.InterfaceAdapters.Facades.IFacade" Collapsed="true">
-    <Position X="34" Y="4.75" Width="1.5" />
+    <Position X="30.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AUCACQAAAAAJAQAAAUgQhAgCAAAQAQAAAMAAAAKIlAA=</HashCode>
+      <HashCode>AUCACQAAAAAJAQAAAUgQhAgCAAAQAQQAAMAAAAKIlAA=</HashCode>
       <FileName>InterfaceAdapters\Facades\IFacade.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IFavoritesService.IAddToFavorites">
-    <Position X="28.5" Y="33.25" Width="1.5" />
+    <Position X="9.5" Y="27" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IFavoritesService\IAddToFavorites.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IFavoritesService.IGetFavorites">
-    <Position X="22.5" Y="27.25" Width="1.5" />
+    <Position X="9.5" Y="29" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IFavoritesService\IGetFavorites.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IFavoritesService.IIsInFavorites">
-    <Position X="22.5" Y="33.25" Width="1.5" />
+    <Position X="3.5" Y="31" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAA=</HashCode>
       <FileName>Application\Interfaces\IFavoritesService\IIsInFavorites.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IFavoritesService.IRemoveFromFavorites">
-    <Position X="28.5" Y="27.25" Width="1.5" />
+    <Position X="3.5" Y="27" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAA=</HashCode>
       <FileName>Application\Interfaces\IFavoritesService\IRemoveFromFavorites.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IFeedbackService.IGetAllMessages">
-    <Position X="22.5" Y="25.25" Width="1.5" />
+    <Position X="3.5" Y="33" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IFeedbackService\IGetAllMessages.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IFeedbackService.IGetMessages">
-    <Position X="28.5" Y="25.25" Width="1.5" />
+    <Position X="9.5" Y="25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IFeedbackService\IGetMessages.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IFeedbackService.ISendFeedback">
-    <Position X="28.5" Y="35.25" Width="1.5" />
+    <Position X="3.5" Y="23" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IFeedbackService\ISendFeedback.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IFeedbackService.ISendMessage">
-    <Position X="22.5" Y="35.25" Width="1.5" />
+    <Position X="9.5" Y="33" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IFeedbackService\ISendMessage.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IModerator.IBanUser">
-    <Position X="31.5" Y="31.25" Width="1.5" />
+    <Position X="12.5" Y="29" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IModerator\IBanUser.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IModerator.IDemoteUser">
-    <Position X="19.5" Y="29.25" Width="1.5" />
+    <Position X="9.5" Y="37" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IModerator\IDemoteUser.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IModerator.IGetUsers">
-    <Position X="25.5" Y="37.25" Width="1.5" />
+    <Position X="6.5" Y="36" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA=</HashCode>
       <FileName>Application\Interfaces\IModerator\IGetUsers.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IModerator.IPromoteUser">
-    <Position X="31.5" Y="29.25" Width="1.5" />
+    <Position X="1.5" Y="21" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IModerator\IPromoteUser.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IModerator.ISetUsersMaxSubscriptions">
-    <Position X="28.5" Y="37.25" Width="1.5" />
+    <Position X="3.5" Y="37" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IModerator\ISetUsersMaxSubscriptions.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IModerator.ISetUsersMinInterval">
-    <Position X="22.5" Y="37.25" Width="1.5" />
+    <Position X="4.5" Y="21" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IModerator\ISetUsersMinInterval.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IModerator.IUnbanUser">
-    <Position X="19.5" Y="31.25" Width="1.5" />
+    <Position X="0.5" Y="29" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IModerator\IUnbanUser.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.INotificationService.IPopNotifications">
-    <Position X="22.5" Y="29.25" Width="1.5" />
+    <Position X="6.5" Y="24" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\INotificationService\IPopNotifications.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IRWService.IGetStations">
-    <Position X="25.5" Y="35.25" Width="1.5" />
+    <Position X="3.5" Y="25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IRWService\IGetStations.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IRWService.IGetTrains">
-    <Position X="25.5" Y="24.25" Width="1.5" />
+    <Position X="9.5" Y="31" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IRWService\IGetTrains.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.ISubscriptionService.IGetSubscriptions">
-    <Position X="28.5" Y="29.25" Width="1.5" />
+    <Position X="6.5" Y="34" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
       <FileName>Application\Interfaces\ISubscriptionService\IGetSubscriptions.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.ISubscriptionService.ISubscribe">
-    <Position X="28.5" Y="31.25" Width="1.5" />
+    <Position X="3.5" Y="29" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\ISubscriptionService\ISubscribe.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="RWParcerCore.Application.Interfaces.ISubscriptionService.IResetSubscribe">
-    <Position X="22.5" Y="31.25" Width="1.5" />
+  <Interface Name="RWParcerCore.Application.Interfaces.ISubscriptionService.IResetSubscribe" Collapsed="true">
+    <Position X="32" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\ISubscriptionService\IResetSubscribe.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IUserService.IGetUserById">
-    <Position X="25.5" Y="22.25" Width="1.5" />
+    <Position X="9.5" Y="35" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IUserService\IGetUserById.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IUserService.IIsUserBanned">
-    <Position X="22.5" Y="23.25" Width="1.5" />
+    <Position X="3.5" Y="35" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
       <FileName>Application\Interfaces\IUserService\IIsUserBanned.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IUserService.IIsUserModerator">
-    <Position X="28.5" Y="23.25" Width="1.5" />
+    <Position X="9.5" Y="23" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IUserService\IIsUserModerator.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Application.Interfaces.IUserService.IRegisterUser">
-    <Position X="19.5" Y="27.25" Width="1.5" />
+    <Position X="0.5" Y="27" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Application\Interfaces\IUserService\IRegisterUser.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Domain.Interfaces.ILogger">
-    <Position X="4.75" Y="7.5" Width="1.5" />
+    <Position X="9.5" Y="11.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AgAAAAAAAAAAAAAAAAAAAAAAIAAJAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Domain\Interfaces\ILogger.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Domain.IRepositories.IFavoritesRepository">
-    <Position X="22.75" Y="18.5" Width="1.5" />
+    <Position X="22.5" Y="17.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAEgAAAEAAAAAAAAAAAAQAAAAAAA=</HashCode>
       <FileName>Domain\IRepositories\IFavoritesRepository.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Domain.IRepositories.IMessageRepository">
-    <Position X="24.75" Y="8.75" Width="1.5" />
+    <Position X="18.25" Y="24" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAQAAAAAAAAEAAAAAAAAA=</HashCode>
       <FileName>Domain\IRepositories\IMessageRepository.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Domain.IRepositories.INotificationRepository">
-    <Position X="23" Y="16.25" Width="1.5" />
+    <Position X="22.25" Y="14.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAAAAQAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Domain\IRepositories\INotificationRepository.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Domain.IRepositories.IRWRepository">
-    <Position X="16.5" Y="13.25" Width="1.5" />
+    <Position X="12.25" Y="23.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AEAAAAAAAAABABAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Domain\IRepositories\IRWRepository.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Domain.IRepositories.ISubscriptionRepository">
-    <Position X="25" Y="11" Width="1.5" />
+    <Position X="15.25" Y="26" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAIAAgAAAEQAAAAAAgAAAAAMAAAQAA=</HashCode>
       <FileName>Domain\IRepositories\ISubscriptionRepository.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Domain.IRepositories.IUserRepository">
-    <Position X="14" Y="13.5" Width="1.5" />
+    <Position X="13.5" Y="11.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAQAAAAAJASBAAQCAhAEAAIAAAAAAAIAgAAIAAEA=</HashCode>
       <FileName>Domain\IRepositories\IUserRepository.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="RWParcerCore.Domain.IServices.INotificationBackgroundService">
-    <Position X="31.5" Y="27.25" Width="1.5" />
+    <Position X="0.5" Y="31" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
       <FileName>Domain\IServices\INotificationBackgroundService.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Enum Name="RWParcerCore.Domain.ValueObjects.CarType" Collapsed="true">
-    <Position X="16.75" Y="9" Width="1.5" />
+  <Enum Name="RWParcerCore.Domain.ValueObjects.CarType">
+    <Position X="22" Y="6.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAgAAAQAAAQQAAAAAACAAAAAAAgAAAAAAA=</HashCode>
       <FileName>Domain\ValueObjects\CarType.cs</FileName>

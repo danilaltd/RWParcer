@@ -2,20 +2,14 @@
 
 namespace RWParcer.Handlers
 {
-    public class MenuSelectHandler : ICommandHandler
+    public class MenuSelectHandler(
+        ICommandRouter router,
+        IMenuProvider menu,
+        string menuHead) : ICommandHandler
     {
-        private readonly ICommandRouter _router;
-        private readonly IMenuProvider _menu;
-        private readonly string MenuHead;
-        public MenuSelectHandler(
-            ICommandRouter router,
-            IMenuProvider menu,
-            string menuHead)
-        {
-            _router = router;
-            _menu = menu;
-            MenuHead = menuHead;
-        }
+        private readonly ICommandRouter _router = router;
+        private readonly IMenuProvider _menu = menu;
+        private readonly string MenuHead = menuHead;
 
         public async Task HandleAsync(CommandContext ctx)
         {

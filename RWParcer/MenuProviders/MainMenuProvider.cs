@@ -3,14 +3,9 @@ using RWParcerCore.InterfaceAdapters.Facades;
 
 namespace RWParcer.MenuProviders
 {
-    public class MainMenuProvider : IMenuProvider
+    public class MainMenuProvider(IFacade facade) : IMenuProvider
     {
-        private readonly IFacade _facade;
-
-        public MainMenuProvider(IFacade facade)
-        {
-            _facade = facade;
-        }
+        private readonly IFacade _facade = facade;
 
         public async Task<IReadOnlyDictionary<string, CommandNames>> GetOptionsAsync(CommandContext ctx)
         {

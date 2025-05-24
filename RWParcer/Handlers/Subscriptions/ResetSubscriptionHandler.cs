@@ -4,16 +4,10 @@ using RWParcerCore.InterfaceAdapters.Facades;
 
 namespace RWParcer.Handlers.Subscriptions
 {
-    class ResetSubscriptionHandler : ICommandHandler
+    class ResetSubscriptionHandler(IFacade facade, ICommandRouter router) : ICommandHandler
     {
-        private readonly ICommandRouter _router;
-        private readonly IFacade _facade;
-
-        public ResetSubscriptionHandler(IFacade facade, ICommandRouter router)
-        {
-            _facade = facade;
-            _router = router;
-        }
+        private readonly ICommandRouter _router = router;
+        private readonly IFacade _facade = facade;
 
         public async Task HandleAsync(CommandContext ctx)
         {

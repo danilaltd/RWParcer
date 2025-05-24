@@ -5,10 +5,8 @@ using RWParcerCore.InterfaceAdapters.Facades;
 
 namespace RWParcer.Handlers.Search
 {
-    public class TrainSearchSelectHandler : BaseTrainsHandler
+    public class TrainSearchSelectHandler(ICommandRouter router, IFacade facade) : BaseTrainsHandler(router, facade)
     {
-        public TrainSearchSelectHandler(ICommandRouter router, IFacade facade) : base(router, facade) { }
-
         public override async Task HandleAsync(CommandContext ctx)
         {
             if (ctx.Session.InitState)

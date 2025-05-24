@@ -5,22 +5,13 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace RWParcer
 {
-    public class CommandContext
+    public class CommandContext(string chatId, string input, UserSession session, ITelegramBotClient bot, CancellationToken token)
     {
-        public string ChatId { get; }
-        public string Input { get; }
-        public UserSession Session { get; }
-        public ITelegramBotClient Bot { get; }
-        public CancellationToken Token { get; }
-
-        public CommandContext(string chatId, string input, UserSession session, ITelegramBotClient bot, CancellationToken token)
-        {
-            ChatId = chatId;
-            Input = input;
-            Session = session;
-            Bot = bot;
-            Token = token;
-        }
+        public string ChatId { get; } = chatId;
+        public string Input { get; } = input;
+        public UserSession Session { get; } = session;
+        public ITelegramBotClient Bot { get; } = bot;
+        public CancellationToken Token { get; } = token;
 
         public Task SendMessage(string text)
             => SendMessageToClient(text, replyMarkup: null);

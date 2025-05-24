@@ -4,17 +4,10 @@ using RWParcerCore.Domain.Interfaces;
 
 namespace RWParcerCore.Infrastructure
 {
-    internal class AppDbContextFactory : IAppDbContextFactory
+    internal class AppDbContextFactory(DbContextOptions<AppDbContext> options, ILogger logger) : IAppDbContextFactory
     {
-        private readonly DbContextOptions<AppDbContext> _options;
-        private readonly ILogger _logger;
-
-
-        public AppDbContextFactory(DbContextOptions<AppDbContext> options, ILogger logger)
-        {
-            _options = options;
-            _logger = logger;
-        }
+        private readonly DbContextOptions<AppDbContext> _options = options;
+        private readonly ILogger _logger = logger;
 
         public AppDbContext CreateDbContext()
             => new AppDbContext(_options, _logger);

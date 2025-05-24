@@ -5,16 +5,10 @@ using RWParcerCore.InterfaceAdapters.Facades;
 
 namespace RWParcer.Handlers
 {
-    public abstract class BaseTrainsHandler : ICommandHandler
+    public abstract class BaseTrainsHandler(ICommandRouter router, IFacade facade) : ICommandHandler
     {
-        protected readonly IFacade _facade;
-        protected readonly ICommandRouter _router;
-
-        protected BaseTrainsHandler(ICommandRouter router, IFacade facade)
-        {
-            _router = router;
-            _facade = facade;
-        }
+        protected readonly IFacade _facade = facade;
+        protected readonly ICommandRouter _router = router;
 
         public abstract Task HandleAsync(CommandContext ctx);
 

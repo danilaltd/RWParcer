@@ -6,14 +6,9 @@ using RWParcerCore.Domain.ValueObjects;
 
 namespace RWParcerCore.Infrastructure.Repositories
 {
-    internal class FavoritesRepository : RepositoryBase, IFavoritesRepository
+    internal class FavoritesRepository(IAppDbContextFactory factory, ILogger logger) : RepositoryBase(factory), IFavoritesRepository
     {
-        public FavoritesRepository(IAppDbContextFactory factory, ILogger logger)
-            : base(factory)
-        {
-            _logger = logger;
-        }
-        private readonly ILogger _logger;
+        private readonly ILogger _logger = logger;
 
         public Task<IEnumerable<Favorite>> GetFavoritesAsync(string userId)
             => QueryAsync(async ctx =>
