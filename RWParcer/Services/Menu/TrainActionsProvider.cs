@@ -24,7 +24,7 @@ namespace RWParcer.Services.Menu
 
             options["🔔 Подписаться"] = CommandNames.SubscribeDateSelect;
             options["🚫 Отписаться"] = CommandNames.UnsubscribeDateSelect;
-            options["В главное меню"] = CommandNames.MainMenuSelect;
+            options["🏠 В главное меню"] = CommandNames.MainMenuSelect;
 
             return options;
         }

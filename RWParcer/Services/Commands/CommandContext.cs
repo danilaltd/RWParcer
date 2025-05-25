@@ -15,6 +15,9 @@ namespace RWParcer.Services.Commands
         public CancellationToken Token { get; } = token;
 
         public Task SendMessage(string text)
+            => SendMessageToClient(text, replyMarkup: new ReplyKeyboardRemove());
+
+        public Task SendNotification(string text)
             => SendMessageToClient(text, replyMarkup: null);
 
         public Task SendKeyboard(IEnumerable<string> options, string prompt, bool wrapping = false)
@@ -48,7 +51,7 @@ namespace RWParcer.Services.Commands
             await router.RouteAsync(CommandNames.MainMenuSelect, this);
         }
 
-        private async Task SendMessageToClient(string message, ReplyKeyboardMarkup? replyMarkup = null)
+        private async Task SendMessageToClient(string message, ReplyMarkup? replyMarkup = null)
         {
             const int maxLength = 4096;
             List<string> chunks = SplitMessageSmart(message, maxLength).ToList();
@@ -67,11 +70,9 @@ namespace RWParcer.Services.Commands
         {
             candidateDelimiters ??= ["\n\n", "\n", " "];
 
-            // 1) Подбор делимитера
             string chosenDelim = candidateDelimiters.FirstOrDefault(d => message.Contains(d)) ?? " ";
             string delim = chosenDelim ?? "";
 
-            // 2) Разбиваем на блоки по выбранному делимитеру
             List<string> blocks;
             if (chosenDelim != null)
             {
@@ -86,7 +87,6 @@ namespace RWParcer.Services.Commands
                 blocks = new List<string> { message };
             }
 
-            // 3) Жёсткое дробление слишком длинных блоков
             var hardSplit = new List<string>();
             foreach (var block in blocks)
             {
@@ -119,7 +119,6 @@ namespace RWParcer.Services.Commands
                 }
             }
 
-            // 4) Группировка кусков без превышения maxLength
             var current = new StringBuilder();
             foreach (var chunk in hardSplit)
             {

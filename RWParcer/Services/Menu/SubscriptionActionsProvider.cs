@@ -10,8 +10,8 @@ namespace RWParcer.Services.Menu
             var options = new Dictionary<string, CommandNames>
             {
                 ["🚫 Отписаться"] = CommandNames.UnsubscribeSubscription,
-                ["Сбросить состояние"] = CommandNames.ResetSubscription,
-                ["В главное меню"] = CommandNames.MainMenuSelect
+                ["🔄 Сбросить состояние"] = CommandNames.ResetSubscription,
+                ["🏠 В главное меню"] = CommandNames.MainMenuSelect
             };
 
             return Task.FromResult((IReadOnlyDictionary<string, CommandNames>)options);

@@ -9,8 +9,8 @@ namespace RWParcer.Services.Menu
         {
             var options = new Dictionary<string, CommandNames>
             {
-                ["Получить пользователей за промежуток времени"] = CommandNames.ModeratorSpanSelect,
-                ["Просмотреть все сообщения"] = CommandNames.ViewAllMessages,
+                ["📊 Статистика пользователей"] = CommandNames.ModeratorSpanSelect,
+                ["📨 Все сообщения"] = CommandNames.ViewAllMessages,
             };
             return Task.FromResult((IReadOnlyDictionary<string, CommandNames>)options);
         }

@@ -44,7 +44,7 @@ namespace RWParcer.Services.Handlers.Search
 
             ctx.Session.Data.RemoveAll(d => d is List<StationVO>);
             ctx.Session.Data.Add(candidates);
-            await ctx.SendKeyboard(candidates.Select(s => s.Label), _promptText);
+            await ctx.SendKeyboard(candidates.Select(s => s.Label), $"Выберите станцию из списка\nИЛИ\n{_promptText}");
         }
     }
 }

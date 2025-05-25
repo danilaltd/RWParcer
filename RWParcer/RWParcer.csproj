@@ -36,8 +36,4 @@
     <ProjectReference Include="..\RWParcerCore\RWParcerCore.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Settings\" />
-  </ItemGroup>
-
 </Project>

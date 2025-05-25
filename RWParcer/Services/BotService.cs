@@ -96,7 +96,7 @@ namespace RWParcer.Services
             {
                 var session = _sessions.GetSession(notification.UserId);
                 var ctx = new CommandContext(notification.UserId, "", session, _bot, token);
-                await ctx.SendMessage(notification.Content);
+                await ctx.SendNotification(notification.Content);
             }
         }
 

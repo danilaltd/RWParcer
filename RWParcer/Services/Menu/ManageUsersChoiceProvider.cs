@@ -17,19 +17,19 @@ namespace RWParcer.Services.Menu
             bool isModerator = await _facade.IsUserModeratorAsync(ctx.ChatId, user.Id);
             bool banned = await _facade.IsUserBannedAsync(ctx.ChatId, user.Id);
             if (isModerator)
-                options["Понизить до пользователя"] = CommandNames.DemoteUser;
+                options["⬇️ Понизить до пользователя"] = CommandNames.DemoteUser;
             else
-                options["Повысить до модератора"] = CommandNames.PromoteUser;
+                options["⬆️ Повысить до модератора"] = CommandNames.PromoteUser;
 
             if (banned)
-                options["Разбанить"] = CommandNames.UnbanUser;
+                options["✅ Разбанить"] = CommandNames.UnbanUser;
             else
-                options["Забанить"] = CommandNames.BanUser;
+                options["🚫 Забанить"] = CommandNames.BanUser;
 
-            options["Изменить максимальное количество подписок"] = CommandNames.ChangeUserMaxSubscribtionLimit;
-            options["Изменить минимальный интервал проверки"] = CommandNames.ChangeUserMinIntervalLimit;
-            options["Отправить сообщение пользователю"] = CommandNames.SendMessageEnterMessage;
-            options["В главное меню"] = CommandNames.MainMenuSelect;
+            options["📊 Лимит подписок"] = CommandNames.ChangeUserMaxSubscribtionLimit;
+            options["⏱️ Интервал проверки"] = CommandNames.ChangeUserMinIntervalLimit;
+            options["✉️ Отправить сообщение"] = CommandNames.SendMessageEnterMessage;
+            options["🏠 В главное меню"] = CommandNames.MainMenuSelect;
 
             return options;
         }

@@ -13,7 +13,7 @@ namespace RWParcer.Services.Handlers
         {
             if (ctx.Session.InitState)
             {
-                await ctx.SendMessage("Введите сообщение");
+                await ctx.SendMessage("Введите сообщение:");
                 return;
             }
 

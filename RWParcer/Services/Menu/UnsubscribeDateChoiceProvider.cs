@@ -12,7 +12,7 @@ namespace RWParcer.Services.Menu
             options["📅 Ввести дату"] = CommandNames.UnsubscribeEnterDate;
             options[$"🕒 Использовать последнюю дату: {ctx.Session.Date}"] = CommandNames.UnsubscribeUseLastDate;
             options[$"Ввести диапазон"] = CommandNames.UnsubscribeEnterDateRange;
-            options["В главное меню"] = CommandNames.MainMenuSelect;
+            options["🏠 В главное меню"] = CommandNames.MainMenuSelect;
 
             return Task.FromResult((IReadOnlyDictionary<string, CommandNames>)options);
         }

@@ -9,10 +9,10 @@ namespace RWParcer.Services.Menu
         {
             var options = new Dictionary<string, CommandNames>
             {
-                ["Ввести промежуток времени"] = CommandNames.ModeratorEnterSpan,
-                ["За последнюю минуту"] = CommandNames.ModeratorSpanMinute,
-                ["За последний час"] = CommandNames.ModeratorSpanHour,
-                ["За последний день"] = CommandNames.ModeratorSpanDay,
+                ["📅 Ввести период"] = CommandNames.ModeratorEnterSpan,
+                ["⏱️ Последняя минута"] = CommandNames.ModeratorSpanMinute,
+                ["🕐 Последний час"] = CommandNames.ModeratorSpanHour,
+                ["📆 Последний день"] = CommandNames.ModeratorSpanDay,
             };
             return Task.FromResult((IReadOnlyDictionary<string, CommandNames>)options);
         }

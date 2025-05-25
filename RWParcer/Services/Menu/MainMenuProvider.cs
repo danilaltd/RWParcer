@@ -18,12 +18,12 @@ namespace RWParcer.Services.Menu
 
             options["🔍 Поиск"] = CommandNames.FromSelect;
             options["⭐ Избранное"] = CommandNames.FavoritesSelect;
-            options["⭐ Подписки"] = CommandNames.SubscriptionsSelect;
-            options["Мой статус"] = CommandNames.GetStatus;
+            options["📢 Подписки"] = CommandNames.SubscriptionsSelect;
+            options["👤 Мой статус"] = CommandNames.GetStatus;
             if (isModerator)
-                options["Меню модератора"] = CommandNames.ModeratorMenuSelect;
-            options["Просмотреть сообщения"] = CommandNames.ViewMessages;
-            options["Обратная связь"] = CommandNames.Feedback;
+                options["👮 Меню модератора"] = CommandNames.ModeratorMenuSelect;
+            options["📨 Мои сообщения"] = CommandNames.ViewMessages;
+            options["💬 Обратная связь"] = CommandNames.Feedback;
 
             return options;
         }
