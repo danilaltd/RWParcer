@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace RWParcer
+namespace RWParcer.Infrastructure.Database
 {
     public class SessionDbContextFactory
     {

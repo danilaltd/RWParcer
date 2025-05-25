@@ -1,8 +1,9 @@
 ﻿using RWParcer.Interfaces;
+using RWParcer.Services.Commands;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.InterfaceAdapters.Facades;
 
-namespace RWParcer.Handlers.Moderator
+namespace RWParcer.Services.Handlers.Moderator
 {
     public class ChangeUserMinIntervalLimitHandler(IFacade facade, ICommandRouter router) : ICommandHandler
     {

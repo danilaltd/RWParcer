@@ -1,6 +1,7 @@
 ﻿using RWParcer.Interfaces;
+using RWParcer.Services.Commands;
 
-namespace RWParcer.MenuProviders
+namespace RWParcer.Services.Menu
 {
     public class ModeratorChoiceProvider : IMenuProvider
     {

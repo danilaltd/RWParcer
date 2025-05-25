@@ -1,9 +1,10 @@
 ﻿using RWParcer.Interfaces;
+using RWParcer.Models;
 using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace RWParcer
+namespace RWParcer.Services.Commands
 {
     public class CommandContext(string chatId, string input, UserSession session, ITelegramBotClient bot, CancellationToken token)
     {

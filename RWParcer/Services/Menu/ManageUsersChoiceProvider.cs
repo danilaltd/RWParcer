@@ -1,8 +1,9 @@
 ﻿using RWParcer.Interfaces;
+using RWParcer.Services.Commands;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.InterfaceAdapters.Facades;
 
-namespace RWParcer.MenuProviders
+namespace RWParcer.Services.Menu
 {
     public class ManageUsersChoiceProvider(IFacade facade) : IMenuProvider
     {

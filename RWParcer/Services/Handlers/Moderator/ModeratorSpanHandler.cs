@@ -1,6 +1,7 @@
 ﻿using RWParcer.Interfaces;
+using RWParcer.Services.Commands;
 
-namespace RWParcer.Handlers.Moderator
+namespace RWParcer.Services.Handlers.Moderator
 {
     public class ModeratorSpanHandler(ICommandRouter router, TimeSpan span) : ICommandHandler
     {

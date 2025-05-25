@@ -1,8 +1,9 @@
 ﻿using RWParcer.Interfaces;
+using RWParcer.Services.Commands;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.InterfaceAdapters.Facades;
 
-namespace RWParcer.Handlers.TrainsMenu.Subscribe
+namespace RWParcer.Services.Handlers.TrainsMenu.Subscribe
 {
     public class SubscribeEnterDateRnageHandler(IFacade facade, ICommandRouter router) : ICommandHandler
     {
@@ -28,7 +29,7 @@ namespace RWParcer.Handlers.TrainsMenu.Subscribe
                 return;
             }
 
-            if ((endDate.DayNumber - startDate.DayNumber) >= 60)
+            if (endDate.DayNumber - startDate.DayNumber >= 60)
             {
                 await ctx.SendMessage("Слишком большой диапазон");
                 return;
@@ -67,7 +68,7 @@ namespace RWParcer.Handlers.TrainsMenu.Subscribe
                     break;
                 }
             }
-            await ctx.SendMessage($"Подписка выполнена выполнена на {startDate:dd.MM.yyyy} - {endDate:dd.MM.yyyy}" + (string.IsNullOrEmpty(ans) ? "" : ("\n" + ans)));
+            await ctx.SendMessage($"Подписка выполнена выполнена на {startDate:dd.MM.yyyy} - {endDate:dd.MM.yyyy}" + (string.IsNullOrEmpty(ans) ? "" : "\n" + ans));
 
 
             ctx.Session.SetCommand(CommandNames.MainMenuSelect);

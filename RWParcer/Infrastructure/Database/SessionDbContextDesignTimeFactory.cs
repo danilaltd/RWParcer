@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using RWParcer.Settings;
+using RWParcer.Configuration;
 
-namespace RWParcer
+namespace RWParcer.Infrastructure.Database
 {
     public class SessionDbContextDesignTimeFactory : IDesignTimeDbContextFactory<SessionDbContext>
     {

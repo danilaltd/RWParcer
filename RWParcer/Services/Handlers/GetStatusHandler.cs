@@ -1,8 +1,9 @@
 ﻿using RWParcer.Converters;
 using RWParcer.Interfaces;
+using RWParcer.Services.Commands;
 using RWParcerCore.InterfaceAdapters.Facades;
 
-namespace RWParcer.Handlers
+namespace RWParcer.Services.Handlers
 {
     public class GetStatusHandler(IFacade facade, ICommandRouter router) : ICommandHandler
     {

@@ -1,4 +1,4 @@
-﻿namespace RWParcer
+﻿namespace RWParcer.Models
 {
     public class UserSession
     {

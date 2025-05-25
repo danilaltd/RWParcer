@@ -1,8 +1,9 @@
 ﻿using RWParcer.Interfaces;
+using RWParcer.Services.Commands;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.InterfaceAdapters.Facades;
 
-namespace RWParcer.Handlers.Search
+namespace RWParcer.Services.Handlers.Search
 {
     public abstract class StationSelectHandler(IFacade facade, ICommandRouter router, CommandNames nextCommand, string promptText, string keyboardText) : ICommandHandler
     {

@@ -1,8 +1,9 @@
 ﻿using RWParcer.Interfaces;
+using RWParcer.Services.Commands;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.InterfaceAdapters.Facades;
 
-namespace RWParcer.Handlers.TrainsMenu.Unsubscribe
+namespace RWParcer.Services.Handlers.TrainsMenu.Unsubscribe
 {
     public class UnsubscribeEnterDateRangeHandler(IFacade facade, ICommandRouter router) : ICommandHandler
     {
@@ -28,7 +29,7 @@ namespace RWParcer.Handlers.TrainsMenu.Unsubscribe
                 return;
             }
 
-            if ((endDate.DayNumber - startDate.DayNumber) >= 60)
+            if (endDate.DayNumber - startDate.DayNumber >= 60)
             {
                 await ctx.SendMessage("Слишком большой диапазон");
                 return;
@@ -60,7 +61,7 @@ namespace RWParcer.Handlers.TrainsMenu.Unsubscribe
                     ans += $"Подписка на дату {date:dd.MM.yyyy} не существует\n";
                 }
             }
-            await ctx.SendMessage($"Отписка выполнена на {startDate:dd.MM.yyyy} - {endDate:dd.MM.yyyy}" + (string.IsNullOrEmpty(ans) ? "" : ("\n" + ans)));
+            await ctx.SendMessage($"Отписка выполнена на {startDate:dd.MM.yyyy} - {endDate:dd.MM.yyyy}" + (string.IsNullOrEmpty(ans) ? "" : "\n" + ans));
 
             ctx.Session.SetCommand(CommandNames.MainMenuSelect);
             await _router.RouteAsync(CommandNames.MainMenuSelect, ctx);

@@ -1,4 +1,6 @@
-﻿namespace RWParcer.Interfaces
+﻿using RWParcer.Models;
+
+namespace RWParcer.Interfaces
 {
     public interface ISessionManager
     {

@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.Extensions.Options;
+using RWParcer.Infrastructure.Database;
 using RWParcer.Interfaces;
+using RWParcer.Models;
+using RWParcer.Services;
 using RWParcerCore.InterfaceAdapters.Facades;
 using System.Collections.Concurrent;
 using System.Text.Json;
 
-namespace RWParcer
+namespace RWParcer.Infrastructure.Session
 {
     public class SqliteSessionStore : ISessionStore
     {

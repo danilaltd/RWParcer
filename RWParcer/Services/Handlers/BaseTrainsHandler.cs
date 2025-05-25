@@ -1,9 +1,10 @@
 ﻿using RWParcer.Converters;
 using RWParcer.Interfaces;
+using RWParcer.Services.Commands;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.InterfaceAdapters.Facades;
 
-namespace RWParcer.Handlers
+namespace RWParcer.Services.Handlers
 {
     public abstract class BaseTrainsHandler(ICommandRouter router, IFacade facade) : ICommandHandler
     {

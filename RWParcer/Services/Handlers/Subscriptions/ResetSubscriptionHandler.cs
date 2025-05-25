@@ -1,8 +1,9 @@
 ﻿using RWParcer.Interfaces;
+using RWParcer.Services.Commands;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.InterfaceAdapters.Facades;
 
-namespace RWParcer.Handlers.Subscriptions
+namespace RWParcer.Services.Handlers.Subscriptions
 {
     class ResetSubscriptionHandler(IFacade facade, ICommandRouter router) : ICommandHandler
     {

@@ -1,8 +1,9 @@
 ﻿using RWParcer.Converters;
 using RWParcer.Interfaces;
+using RWParcer.Services.Commands;
 using RWParcerCore.InterfaceAdapters.Facades;
 
-namespace RWParcer.Handlers.Favorites
+namespace RWParcer.Services.Handlers.Favorites
 {
     public class FavoritesSelectHandler(ICommandRouter router, IFacade facade) : BaseTrainsHandler(router, facade)
     {

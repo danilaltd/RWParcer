@@ -1,13 +1,15 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using RWParcer.Configuration;
 using RWParcer.Interfaces;
+using RWParcer.Services.Commands;
 using RWParcerCore.InterfaceAdapters.Facades;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace RWParcer
+namespace RWParcer.Services
 {
     public class BotService : BackgroundService
     {

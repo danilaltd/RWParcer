@@ -1,16 +1,16 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using RWParcer.Handlers;
-using RWParcer.Handlers.Favorites;
-using RWParcer.Handlers.Moderator;
-using RWParcer.Handlers.Search;
-using RWParcer.Handlers.Subscriptions;
-using RWParcer.Handlers.TrainsMenu.Favorites;
-using RWParcer.Handlers.TrainsMenu.Subscribe;
-using RWParcer.Handlers.TrainsMenu.Unsubscribe;
 using RWParcer.Interfaces;
-using RWParcer.MenuProviders;
+using RWParcer.Services.Handlers;
+using RWParcer.Services.Handlers.Favorites;
+using RWParcer.Services.Handlers.Moderator;
+using RWParcer.Services.Handlers.Search;
+using RWParcer.Services.Handlers.Subscriptions;
+using RWParcer.Services.Handlers.TrainsMenu.Favorites;
+using RWParcer.Services.Handlers.TrainsMenu.Subscribe;
+using RWParcer.Services.Handlers.TrainsMenu.Unsubscribe;
+using RWParcer.Services.Menu;
 
-namespace RWParcer
+namespace RWParcer.Services.Commands
 {
     public class CommandRouter : ICommandRouter
     {

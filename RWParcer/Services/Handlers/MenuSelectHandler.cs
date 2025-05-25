@@ -1,6 +1,7 @@
 ﻿using RWParcer.Interfaces;
+using RWParcer.Services.Commands;
 
-namespace RWParcer.Handlers
+namespace RWParcer.Services.Handlers
 {
     public class MenuSelectHandler(
         ICommandRouter router,

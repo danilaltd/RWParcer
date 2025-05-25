@@ -1,7 +1,8 @@
 ﻿using RWParcer.Interfaces;
+using RWParcer.Models;
 using System.Collections.Concurrent;
 
-namespace RWParcer
+namespace RWParcer.Services
 {
     public class SessionManager : ISessionManager
     {

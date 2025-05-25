@@ -1,7 +1,8 @@
 ﻿using RWParcer.Interfaces;
+using RWParcer.Services.Commands;
 using RWParcerCore.InterfaceAdapters.Facades;
 
-namespace RWParcer.Handlers
+namespace RWParcer.Services.Handlers
 {
     public class StartHandler(IFacade facade, ICommandRouter router) : ICommandHandler
     {

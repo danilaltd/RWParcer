@@ -1,8 +1,9 @@
 ﻿using RWParcer.Interfaces;
+using RWParcer.Services.Commands;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.InterfaceAdapters.Facades;
 
-namespace RWParcer.Handlers.TrainsMenu.Subscribe
+namespace RWParcer.Services.Handlers.TrainsMenu.Subscribe
 {
     public class SubscribeUseLastDateHandler(IFacade facade, ICommandRouter router) : ICommandHandler
     {

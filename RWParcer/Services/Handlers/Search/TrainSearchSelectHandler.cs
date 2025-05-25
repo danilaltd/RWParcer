@@ -1,9 +1,10 @@
 ﻿using RWParcer.Converters;
 using RWParcer.Interfaces;
+using RWParcer.Services.Commands;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.InterfaceAdapters.Facades;
 
-namespace RWParcer.Handlers.Search
+namespace RWParcer.Services.Handlers.Search
 {
     public class TrainSearchSelectHandler(ICommandRouter router, IFacade facade) : BaseTrainsHandler(router, facade)
     {

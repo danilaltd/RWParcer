@@ -1,7 +1,7 @@
 ﻿using RWParcer.Interfaces;
 using RWParcerCore.InterfaceAdapters.Facades;
 
-namespace RWParcer.Handlers.Search
+namespace RWParcer.Services.Handlers.Search
 {
     public class ToSelectHandler(IFacade facade, ICommandRouter router) : StationSelectHandler(facade,
                router,

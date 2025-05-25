@@ -1,6 +1,6 @@
 ﻿using Telegram.Bot.Types.Enums;
 
-namespace RWParcer
+namespace RWParcer.Configuration
 {
     public class BotSettings
     {
