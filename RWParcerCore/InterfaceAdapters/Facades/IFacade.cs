@@ -31,5 +31,9 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         Task ResetSubscribeAsync(string userId, SubscriptionVO subscription);
         Task<bool> IsUserBannedAsync(string userId, string targetId);
         Task<UserVO> GetUserByIdAsync(string userId, string targetId);
+
+        // New serialization methods
+        string SerializeToJson(object obj);
+        T? DeserializeFromJson<T>(string json);
     }
 }

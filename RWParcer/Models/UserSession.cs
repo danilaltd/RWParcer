@@ -1,11 +1,8 @@
-﻿using Newtonsoft.Json;
-
-namespace RWParcer
+﻿namespace RWParcer
 {
-    [JsonObject(MemberSerialization.Fields)]
     public class UserSession
     {
-        public UserSession(CommandNames? currentCommand, bool initState, List<object> data)
+        public UserSession(CommandNames? currentCommand, bool initState, List<object>? data)
         {
             CurrentCommand = currentCommand;
             InitState = initState;

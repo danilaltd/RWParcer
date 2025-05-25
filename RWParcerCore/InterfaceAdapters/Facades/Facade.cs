@@ -6,6 +6,7 @@ using RWParcerCore.Application.Interfaces.INotificationService;
 using RWParcerCore.Application.Interfaces.IRWService;
 using RWParcerCore.Application.Interfaces.ISubscriptionService;
 using RWParcerCore.Application.Interfaces.IUserService;
+using RWParcerCore.Application.UseCases;
 using RWParcerCore.Application.UseCases.FavoritesService;
 using RWParcerCore.Application.UseCases.FeedbackService;
 using RWParcerCore.Application.UseCases.ModeratorUseCases;
@@ -18,7 +19,6 @@ using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.IServices;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.Infrastructure;
-using RWParcerCore.Infrastructure.InMemoryRepositories;
 using RWParcerCore.Infrastructure.Logging;
 using RWParcerCore.Infrastructure.Repositories;
 using RWParcerCore.Infrastructure.Services;
@@ -61,6 +61,8 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         private readonly IGetSubscriptions _getSubscriptions;
 
         private readonly IPopNotifications _popNotifications;
+        
+        private readonly IJsonOperationsUseCase _jsonOperations;
 
         public Facade(string connectionString, string[] proxies)
         {
@@ -113,6 +115,8 @@ namespace RWParcerCore.InterfaceAdapters.Facades
             _getSubscriptions = new GetSubscriptionsUseCase(userRepository, subscriptionRepository);
 
             _popNotifications = new PopNotificationsUseCase(notificationRepository, userRepository);
+
+            _jsonOperations = new JsonOperationsUseCase();
 
             _ = Task.Run(() => StartAsync());
         }
@@ -243,6 +247,17 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         public async Task<UserVO> GetUserByIdAsync(string userId, string targetId)
         {
             return await _getUserById.GetUserByIdAsync(userId, targetId);
+        }
+
+        public string SerializeToJson(object obj)
+        {
+            return _jsonOperations.SerializeToJson(obj);
+        }
+
+        public T? DeserializeFromJson<T>(string json)
+        {
+            Console.WriteLine($"Тип при вызове: {typeof(T)}");
+            return _jsonOperations.DeserializeFromJson<T>(json);
         }
     }
 

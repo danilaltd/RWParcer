@@ -9,19 +9,30 @@ using Telegram.Bot.Types.Enums;
 
 namespace RWParcer
 {
-    public class BotService(
-        ITelegramBotClient bot,
-        ICommandRouter router,
-        ISessionStore store,
-        IOptions<BotSettings> options,
-        IFacade facade) : BackgroundService
+    public class BotService : BackgroundService
     {
-        private readonly ITelegramBotClient _bot = bot;
-        private readonly ICommandRouter _router = router;
-        private readonly ISessionManager _sessions = new SessionManager();
-        private readonly BotSettings _settings = options.Value;
-        private readonly ISessionStore _store = store;
-        private readonly IFacade _facade = facade;
+        private readonly ITelegramBotClient _bot;
+        private readonly ICommandRouter _router;
+        private readonly ISessionManager _sessions;
+        private readonly BotSettings _settings;
+        private readonly ISessionStore _store;
+        private readonly IFacade _facade;
+
+        public BotService(
+            ITelegramBotClient bot,
+            ICommandRouter router,
+            ISessionStore store,
+            IOptions<BotSettings> options,
+            IFacade facade)
+        {
+            _bot = bot;
+            _router = router;
+            _settings = options.Value;
+            _store = store;
+            _facade = facade;
+            //_sessions = new SessionManager();
+            _sessions = store.Load();
+        }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {

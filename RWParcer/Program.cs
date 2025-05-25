@@ -50,13 +50,15 @@ namespace RWParcer
                 return new TelegramBotClient(settings.ApiToken);
             });
 
-            builder.Services.AddSingleton<ISessionStore, JsonSessionStore>();
-            builder.Services.AddSingleton<IFacade>(sp =>
-            {
-                var dbSettings = sp.GetRequiredService<IOptions<DatabaseSettings>>().Value;
-                var proxySettings = sp.GetRequiredService<IOptions<ProxySettings>>().Value;
-                return new Facade(dbSettings.ConnectionString, proxySettings.ProxyAddresses);
-            });
+            var facade = new Facade(
+                builder.Services.BuildServiceProvider().GetRequiredService<IOptions<DatabaseSettings>>().Value.ConnectionString,
+                builder.Services.BuildServiceProvider().GetRequiredService<IOptions<ProxySettings>>().Value.ProxyAddresses
+            );
+            builder.Services.AddSingleton<IFacade>(facade);
+            builder.Services.AddSingleton<ISessionStore>(sp => new SqliteSessionStore(
+                sp.GetRequiredService<IOptions<BotSettings>>(),
+                sp.GetRequiredService<IFacade>()
+            ));
             builder.Services.AddTransient<ICommandRouter, CommandRouter>();
 
             builder.Services.AddSingleton<MainMenuProvider>();
