@@ -12,7 +12,7 @@ namespace RWParcer.Converters
             string minUpdateInterval = $"Минимальный интервал обновления {user.MinUpdateInterval}";
             string maxSubscriptions = $"Максимальное количество подписок {user.MaxSubscriptions}";
             string isBlocked = user.IsBlocked ? "Заблокирован" : "";
-            string lastActivity = $"Последняя активность: {user.LastActivity.ToString()}";
+            string lastActivity = $"Последняя активность: {user.LastActivity.AddHours(3)}";
             return string.Join("\n", new[] { name, id, link, minUpdateInterval, maxSubscriptions, isBlocked, lastActivity }.Where(s => !string.IsNullOrEmpty(s)));
         }
     }
