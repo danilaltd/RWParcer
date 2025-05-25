@@ -62,9 +62,14 @@ namespace RWParcer
                 options.UseNpgsql(builder.Services.BuildServiceProvider()
                     .GetRequiredService<IOptions<DatabaseSettings>>()
                     .Value.SessionConnectionString));
+            //builder.Services.AddDbContext<SessionDbContext>(options =>
+            //    options.UseSqlite(builder.Services.BuildServiceProvider()
+            //        .GetRequiredService<IOptions<DatabaseSettings>>()
+            //        .Value.SessionConnectionString));
 
             builder.Services.AddSingleton<SessionDbContextFactory>();
             builder.Services.AddSingleton<ISessionStore, PostgresSessionStore>();
+            //builder.Services.AddSingleton<ISessionStore, SqliteSessionStore>();
             builder.Services.AddTransient<ICommandRouter, CommandRouter>();
 
             builder.Services.AddSingleton<MainMenuProvider>();

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Options;
 using RWParcer.Interfaces;
 using RWParcerCore.InterfaceAdapters.Facades;
@@ -9,14 +10,14 @@ namespace RWParcer
 {
     public class SqliteSessionStore : ISessionStore
     {
-        private readonly string _connectionString;
         private readonly IFacade _facade;
         private readonly SemaphoreSlim _saveLock = new(1, 1);
+        private readonly SessionDbContextFactory _dbContextFactory;
 
-        public SqliteSessionStore(IOptions<BotSettings> options, IFacade facade)
+        public SqliteSessionStore(IFacade facade, SessionDbContextFactory dbContextFactory)
         {
-            _connectionString = options.Value.SessionDbConnectionString;
             _facade = facade;
+            _dbContextFactory = dbContextFactory;
         }
 
         public ISessionManager Load()
@@ -126,10 +127,7 @@ namespace RWParcer
 
         private SessionDbContext CreateContext()
         {
-            var options = new DbContextOptionsBuilder<SessionDbContext>()
-                .UseSqlite(_connectionString)
-                .Options;
-            return new SessionDbContext(options);
+            return _dbContextFactory.CreateDbContext();
         }
     }
 } 
