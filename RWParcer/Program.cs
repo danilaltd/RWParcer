@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -11,6 +12,7 @@ using RWParcer.Handlers.Subscriptions;
 using RWParcer.Handlers.TrainsMenu.Favorites;
 using RWParcer.Handlers.TrainsMenu.Subscribe;
 using RWParcer.Handlers.TrainsMenu.Unsubscribe;
+using RWParcer.Infrastructure.Session;
 using RWParcer.Interfaces;
 using RWParcer.MenuProviders;
 using RWParcer.Settings;
@@ -55,10 +57,14 @@ namespace RWParcer
                 builder.Services.BuildServiceProvider().GetRequiredService<IOptions<ProxySettings>>().Value.ProxyAddresses
             );
             builder.Services.AddSingleton<IFacade>(facade);
-            builder.Services.AddSingleton<ISessionStore>(sp => new SqliteSessionStore(
-                sp.GetRequiredService<IOptions<BotSettings>>(),
-                sp.GetRequiredService<IFacade>()
-            ));
+            
+            builder.Services.AddDbContext<SessionDbContext>(options =>
+                options.UseNpgsql(builder.Services.BuildServiceProvider()
+                    .GetRequiredService<IOptions<DatabaseSettings>>()
+                    .Value.SessionConnectionString));
+
+            builder.Services.AddSingleton<SessionDbContextFactory>();
+            builder.Services.AddSingleton<ISessionStore, PostgresSessionStore>();
             builder.Services.AddTransient<ICommandRouter, CommandRouter>();
 
             builder.Services.AddSingleton<MainMenuProvider>();
