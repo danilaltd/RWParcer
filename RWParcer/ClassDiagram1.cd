@@ -1,4 +1,622 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="RWParcer.Program" Collapsed="true">
+    <Position X="32" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RWParcer.Services.Commands.CommandContext">
+    <Position X="9.25" Y="20.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAgAAQAAACBAAAAAEAIAAAAAAAAAAACDAAQ=</HashCode>
+      <FileName>Services\Commands\CommandContext.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Session" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="RWParcer.Services.Commands.CommandRouter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="28.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAgAAAAAAAAEAAAAAAEAAAAAAAAA=</HashCode>
+      <FileName>Services\Commands\CommandRouter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Favorites.FavoritesSelectHandler">
+    <Position X="16.25" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Favorites\FavoritesSelectHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Moderator.BanUserHandler" BaseTypeListCollapsed="true">
+    <Position X="15" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Moderator\BanUserHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Moderator.ChangeUserMaxSubscribtionLimitHandler" BaseTypeListCollapsed="true">
+    <Position X="21" Y="14.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Moderator\ChangeUserMaxSubscribtionLimitHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Moderator.ChangeUserMinIntervalLimitHandler" BaseTypeListCollapsed="true">
+    <Position X="18" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Moderator\ChangeUserMinIntervalLimitHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Moderator.DemoteUserHandler" BaseTypeListCollapsed="true">
+    <Position X="15" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Moderator\DemoteUserHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Moderator.ModeratorEnterSpanHandler" BaseTypeListCollapsed="true">
+    <Position X="15" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Moderator\ModeratorEnterSpanHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Moderator.ModeratorSpanHandler" BaseTypeListCollapsed="true">
+    <Position X="21" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Moderator\ModeratorSpanHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Moderator.PromoteUserHandler" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="33.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Moderator\PromoteUserHandler.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Moderator.SelectUserHandler" BaseTypeListCollapsed="true">
+    <Position X="15" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABCAAAAAgAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Moderator\SelectUserHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Moderator.SendMessageEnterMessageHandler" BaseTypeListCollapsed="true">
+    <Position X="18" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Moderator\SendMessageEnterMessageHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Moderator.UnbanUserHandler" BaseTypeListCollapsed="true">
+    <Position X="12" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Moderator\UnbanUserHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Moderator.ViewAllMessagesHandler" BaseTypeListCollapsed="true">
+    <Position X="9" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Moderator\ViewAllMessagesHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Search.FromSelectHandler">
+    <Position X="11.25" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Search\FromSelectHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Search.StationSelectHandler">
+    <Position X="12.5" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAEABAAAACAAAAAAAAAQAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Search\StationSelectHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_nextCommand" />
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Search.ToSelectHandler">
+    <Position X="13.5" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Search\ToSelectHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Search.TrainSearchSelectHandler">
+    <Position X="18.5" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>Services\Handlers\Search\TrainSearchSelectHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Subscriptions.ResetSubscriptionHandler" BaseTypeListCollapsed="true">
+    <Position X="7" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Subscriptions\ResetSubscriptionHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Subscriptions.SubscriptionsSelectHandler" BaseTypeListCollapsed="true">
+    <Position X="18" Y="16.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABCAAAAAAAAAAAAAAAAAABABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Subscriptions\SubscriptionsSelectHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.Subscriptions.UnsubscribeSubscriptionHandler" BaseTypeListCollapsed="true">
+    <Position X="12" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\Subscriptions\UnsubscribeSubscriptionHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.TrainsMenu.Favorites.AddToFavoritesHandler" BaseTypeListCollapsed="true">
+    <Position X="6" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\TrainsMenu\Favorites\AddToFavoritesHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.TrainsMenu.Favorites.RemoveFromFavoritesHandler" BaseTypeListCollapsed="true">
+    <Position X="6" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\TrainsMenu\Favorites\RemoveFromFavoritesHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.TrainsMenu.Subscribe.SubscribeEnterDateHandler" BaseTypeListCollapsed="true">
+    <Position X="10" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\TrainsMenu\Subscribe\SubscribeEnterDateHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.TrainsMenu.Subscribe.SubscribeEnterDateRnageHandler" BaseTypeListCollapsed="true">
+    <Position X="12" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\TrainsMenu\Subscribe\SubscribeEnterDateRnageHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.TrainsMenu.Subscribe.SubscribeUseLastDateHandler" BaseTypeListCollapsed="true">
+    <Position X="9" Y="14.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\TrainsMenu\Subscribe\SubscribeUseLastDateHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.TrainsMenu.Unsubscribe.UnsubscribeEnterDateHandler" BaseTypeListCollapsed="true">
+    <Position X="9" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\TrainsMenu\Unsubscribe\UnsubscribeEnterDateHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.TrainsMenu.Unsubscribe.UnsubscribeEnterDateRangeHandler" BaseTypeListCollapsed="true">
+    <Position X="12" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\TrainsMenu\Unsubscribe\UnsubscribeEnterDateRangeHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.TrainsMenu.Unsubscribe.UnsubscribeUseLastDateHandler" BaseTypeListCollapsed="true">
+    <Position X="21" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\TrainsMenu\Unsubscribe\UnsubscribeUseLastDateHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.BaseTrainsHandler">
+    <Position X="17.5" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABCAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\BaseTrainsHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.FeedbackHandler" BaseTypeListCollapsed="true">
+    <Position X="15" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\FeedbackHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.GetStatusHandler" BaseTypeListCollapsed="true">
+    <Position X="20" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\GetStatusHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.MenuSelectHandler" BaseTypeListCollapsed="true">
+    <Position X="9" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAQAAAAAAAAAAAAAAACAAAAA=</HashCode>
+      <FileName>Services\Handlers\MenuSelectHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.StartHandler" BaseTypeListCollapsed="true">
+    <Position X="18" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\StartHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.UnknownHandler" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="32" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\Handlers\UnknownHandler.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Handlers.ViewMessagesHandler" BaseTypeListCollapsed="true">
+    <Position X="21" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Services\Handlers\ViewAllMessagesHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Menu.MainMenuProvider" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="32" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQAAAA=</HashCode>
+      <FileName>Services\Menu\MainMenuProvider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Menu.ManageUsersChoiceProvider" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="33.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQAAAA=</HashCode>
+      <FileName>Services\Menu\ManageUsersChoiceProvider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Menu.ModeratorChoiceProvider" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="28.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAA=</HashCode>
+      <FileName>Services\Menu\ModeratorChoiceProvider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Menu.ModeratorChooseSpanProvider" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="30.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAA=</HashCode>
+      <FileName>Services\Menu\ModeratorChooseSpanProvider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Menu.SubscribeDateChoiceProvider" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="32" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAA=</HashCode>
+      <FileName>Services\Menu\SubscribeDateChoiceProvider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Menu.SubscriptionActionsProvider" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="33.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAA=</HashCode>
+      <FileName>Services\Menu\SubscriptionActionsProvider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Menu.TrainActionsProvider" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="28.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQAAAA=</HashCode>
+      <FileName>Services\Menu\TrainActionsProvider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.Menu.UnsubscribeDateChoiceProvider" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="33.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAA=</HashCode>
+      <FileName>Services\Menu\UnsubscribeDateChoiceProvider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Services.BotService">
+    <Position X="23" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAEgAAoAgAAAAAAAAAAAAgAAACBAEAAEA=</HashCode>
+      <FileName>Services\BotService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_router" />
+      <Field Name="_sessions" />
+      <Field Name="_settings" />
+      <Field Name="_store" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="RWParcer.Services.SessionManager" BaseTypeListCollapsed="true">
+    <Position X="15.25" Y="21.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAQAAAAAQAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\SessionManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="_store" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Models.UserSession">
+    <Position X="12.25" Y="21" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAABAAAAAAAAAQAAEAAABABAAgAAAAAAAA=</HashCode>
+      <FileName>Models\UserSession.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RWParcer.Infrastructure.Database.SessionDbContext" Collapsed="true">
+    <Position X="28.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Infrastructure\Database\SessionDbContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RWParcer.Infrastructure.Database.SessionEntity">
+    <Position X="0.5" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAEAAABABAAgAAAAAAAQ=</HashCode>
+      <FileName>Infrastructure\Database\SessionDbContext.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="CurrentCommand" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="RWParcer.Infrastructure.Database.SessionDbContextDesignTimeFactory" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="30.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Infrastructure\Database\SessionDbContextDesignTimeFactory.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Infrastructure.Database.SessionDbContextFactory">
+    <Position X="22.25" Y="18.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Infrastructure\Database\SessionDbContextFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RWParcer.Infrastructure.Session.PostgresSessionStore" BaseTypeListCollapsed="true">
+    <Position X="25.25" Y="18.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAgIAAAAAAAAAAACAAAAAAAIAAAAAAAAAABACAAAA=</HashCode>
+      <FileName>Infrastructure\Session\PostgresSessionStore.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_dbContextFactory" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Infrastructure.Session.SqliteSessionStore" BaseTypeListCollapsed="true">
+    <Position X="22.25" Y="21.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAgIAAAAAAAAAAACAAAAAAAIAAAAAAAAAABACAAAA=</HashCode>
+      <FileName>Infrastructure\Session\SqliteSessionStore.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_dbContextFactory" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RWParcer.Converters.MessageVOToStringConverter" Collapsed="true">
+    <Position X="35.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Converters\MessageVOToStringConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RWParcer.Converters.SubscriptionVOToStringConverter" Collapsed="true">
+    <Position X="35.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Converters\SubscriptionVOToStringConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RWParcer.Converters.TrainVOToStringConverter" Collapsed="true">
+    <Position X="30.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Converters\TrainVOToStringConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RWParcer.Converters.UserVOToStringConverter" Collapsed="true">
+    <Position X="35.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Converters\UserVOToStringConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RWParcer.Configuration.BotSettings">
+    <Position X="24" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAIAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Configuration\BotSettings.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RWParcer.Configuration.DatabaseSettings" Collapsed="true">
+    <Position X="30.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>Configuration\DatabaseSettings.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RWParcer.Configuration.ProxySettings" Collapsed="true">
+    <Position X="35.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Configuration\ProxySettings.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="RWParcer.Interfaces.ICommandHandler" Collapsed="true">
+    <Position X="28.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\ICommandHandler.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="RWParcer.Interfaces.ICommandRouter">
+    <Position X="15" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\ICommandRouter.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="RWParcer.Interfaces.IMenuProvider" Collapsed="true">
+    <Position X="30.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAA=</HashCode>
+      <FileName>Interfaces\IMenuProvider.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="RWParcer.Interfaces.ISessionManager">
+    <Position X="24" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\ISessionManager.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="RWParcer.Interfaces.ISessionStore">
+    <Position X="26" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgIAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\ISessionStore.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="RWParcer.CommandNames">
+    <Position X="3.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIIGyAkgASQEAFgAAQAKECgGAAACoAF4EBAAAAAEABA=</HashCode>
+      <FileName>CommandNames.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

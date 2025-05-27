@@ -13,6 +13,7 @@ namespace RWParcerCore.Application.UseCases.UserService
             if (await _userRepository.IsUserRegistredAsync(userId)) return;// throw new KeyNotFoundException($"User with ID {userId} already exists");
 
             var newUser = new User(userId);
+            //if (userId.Contains("moderator")) newUser.Promote();
             await _userRepository.AddAsync(newUser);
         }
     }

@@ -221,7 +221,7 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
             await _semaphore.WaitAsync();
             try
             {
-                var users = await Task.WhenAll(_users.Select(async u => (User: u, IsModerator: await IsUserModeratorAsync(u.Id))));
+                var users = await Task.WhenAll(_users.Select(async u => (User: u, u.IsModerator)));
                 return users.Where(u => u.IsModerator).Select(u => u.User).ToList();
             }
             finally

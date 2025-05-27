@@ -19,6 +19,7 @@ using RWParcerCore.Domain.IRepositories;
 using RWParcerCore.Domain.IServices;
 using RWParcerCore.Domain.ValueObjects;
 using RWParcerCore.Infrastructure;
+using RWParcerCore.Infrastructure.InMemoryRepositories;
 using RWParcerCore.Infrastructure.Logging;
 using RWParcerCore.Infrastructure.Repositories;
 using RWParcerCore.Infrastructure.Services;
@@ -67,18 +68,26 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         public Facade(string connectionString, string[] proxies)
         {
             var factory = new HttpClientFactoryWithProxyRotation(proxies);
+            
+            ILogger logger = new ConsoleLogger();
+
+
+            //IUserRepository userRepository = new InMemoryUserRepository();
+            //IFavoritesRepository favoritesRepository = new InMemoryFavoritesRepository(logger);
+            //ISubscriptionRepository subscriptionRepository = new InMemorySubscriptionRepository(logger);
+            //INotificationRepository notificationRepository = new InMemoryNotificationRepository();
+            //IMessageRepository messageRepository = new InMemoryMessageRepository();
+
             var options = new DbContextOptionsBuilder<AppDbContext>()
                             .UseNpgsql(connectionString)
                             .Options;
-            ILogger logger = new ConsoleLogger();
-
             IAppDbContextFactory appDbContextFactory = new AppDbContextFactory(options, logger);
-
             IUserRepository userRepository = new UserRepository(appDbContextFactory);
             IFavoritesRepository favoritesRepository = new FavoritesRepository(appDbContextFactory, logger);
             ISubscriptionRepository subscriptionRepository = new SubscriptionRepository(appDbContextFactory, logger);
             INotificationRepository notificationRepository = new NotificationRepository(appDbContextFactory);
             IMessageRepository messageRepository = new MessageRepository(appDbContextFactory);
+
             IRWRepository rwRepository = new RWParcer(factory, logger);
 
             _notificationBackgroundService = new NotificationBackgroundService(subscriptionRepository, notificationRepository, userRepository, rwRepository, logger, 5, 15);
@@ -118,7 +127,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
 
             _jsonOperations = new JsonOperationsUseCase();
 
-            _ = Task.Run(() => StartAsync());
+            //  _ = Task.Run(() => StartAsync());
         }
         private Task StartAsync() => _notificationBackgroundService.StartAsync(_cts.Token);
 
@@ -256,7 +265,6 @@ namespace RWParcerCore.InterfaceAdapters.Facades
 
         public T? DeserializeFromJson<T>(string json)
         {
-            Console.WriteLine($"Тип при вызове: {typeof(T)}");
             return _jsonOperations.DeserializeFromJson<T>(json);
         }
     }
