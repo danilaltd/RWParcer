@@ -10,6 +10,6 @@ namespace RWParcerCore.Infrastructure
         private readonly ILogger _logger = logger;
 
         public AppDbContext CreateDbContext()
-            => new AppDbContext(_options, _logger);
+            => new(_options, _logger);
     }
 }

@@ -12,9 +12,9 @@ namespace RWParcerCore.Tests
     [Collection("FacadeTests")] // This ensures tests run sequentially within this collection
     public class FacadeTests : IAsyncLifetime
     {
-        private readonly string[] _testProxies = new string[] { };
+        private readonly string[] _testProxies = [];
         private Facade _facade;
-        private readonly CancellationTokenSource _cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)); // 30 second timeout
+        private readonly CancellationTokenSource _cts = new(TimeSpan.FromSeconds(30)); // 30 second timeout
 
         public FacadeTests()
         {

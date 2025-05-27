@@ -77,7 +77,7 @@ namespace RWParcer.Services.Commands
             if (chosenDelim != null)
             {
                 blocks = message
-                    .Split(new[] { chosenDelim }, StringSplitOptions.None)
+                    .Split([chosenDelim], StringSplitOptions.None)
                     .Select(s => s.Trim())
                     .Where(s => s.Length > 0)
                     .ToList();

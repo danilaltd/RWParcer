@@ -55,7 +55,7 @@ namespace RWParcer.Infrastructure.Session
                                 {
                                     var deserializeMethod = typeof(IFacade).GetMethod("DeserializeFromJson")
                                         ?.MakeGenericMethod(type);
-                                    var item = deserializeMethod?.Invoke(_facade, new object[] { jsonData });
+                                    var item = deserializeMethod?.Invoke(_facade, [jsonData]);
                                     if (item != null)
                                     {
                                         data.Add(item);
