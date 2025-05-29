@@ -76,7 +76,7 @@ namespace RWParcer.Services
                     await _router.RouteAsync(session.CurrentCommand ?? CommandNames.Unknown, ctx);
                 }
             }
-            catch (Exception ex) when (!(ex is UnauthorizedAccessException))
+            catch (Exception ex) when (ex is not UnauthorizedAccessException)
             {
                 await ctx.ResetSessionAsync("Backend Error. Попробуйте снова", _router);
                 Console.WriteLine(ex.Message);

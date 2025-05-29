@@ -127,7 +127,7 @@ namespace RWParcerCore.InterfaceAdapters.Facades
 
             _jsonOperations = new JsonOperationsUseCase();
 
-            //  _ = Task.Run(() => StartAsync());
+              _ = Task.Run(() => StartAsync());
         }
         private Task StartAsync() => _notificationBackgroundService.StartAsync(_cts.Token);
 
