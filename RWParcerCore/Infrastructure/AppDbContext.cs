@@ -68,6 +68,15 @@ namespace RWParcerCore.Infrastructure
             modelBuilder.Entity<Favorite>()
                 .HasIndex(f => f.UserId);
 
+            modelBuilder.Entity<Notification>()
+                .HasIndex(n => n.UserId);
+
+            modelBuilder.Entity<Message>()
+                .HasIndex(m => m.SenderId);
+            
+            modelBuilder.Entity<Message>()
+                .HasIndex(m => m.ReceiverId);
+
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
             {
                 var tableName = entity.GetTableName();

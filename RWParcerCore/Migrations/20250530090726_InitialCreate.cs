@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -31,8 +32,7 @@ namespace RWParcerCore.Migrations
                     sender_id = table.Column<string>(type: "text", nullable: false),
                     receiver_id = table.Column<string>(type: "text", nullable: false),
                     content = table.Column<string>(type: "text", nullable: false),
-                    sent_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    read_by = table.Column<List<string>>(type: "text[]", nullable: false)
+                    sent_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -86,6 +86,21 @@ namespace RWParcerCore.Migrations
             migrationBuilder.CreateIndex(
                 name: "i_x_favorites_user_id",
                 table: "favorites",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "i_x_messages_receiver_id",
+                table: "messages",
+                column: "receiver_id");
+
+            migrationBuilder.CreateIndex(
+                name: "i_x_messages_sender_id",
+                table: "messages",
+                column: "sender_id");
+
+            migrationBuilder.CreateIndex(
+                name: "i_x_notifications_user_id",
+                table: "notifications",
                 column: "user_id");
 
             migrationBuilder.CreateIndex(

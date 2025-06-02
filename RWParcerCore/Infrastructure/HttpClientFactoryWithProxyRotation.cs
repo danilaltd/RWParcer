@@ -25,15 +25,19 @@ namespace RWParcerCore.Infrastructure
                 UseProxy = true
             };
 
-            HttpClient httpClient = new(handler, disposeHandler: true);
-            //httpClient.DefaultRequestHeaders.Add("Cookie", "hg-client-security=2wYWCwYjyj7EbcjAw98T7DTE4GQ; hg-security=jSvnyAzRO13rHxzxDQofaNhudTzZhdMLWREbC5iPNPrQbWMqaYq3EQPi1vGNz_rCZZ5FJBk9B9T1V401kT7hxaNLwppBih0=");
+            HttpClient httpClient = new(handler, disposeHandler: true)
+            {
+                Timeout = TimeSpan.FromSeconds(10)
+            };
             return httpClient;
         }
 
-        private HttpClient CreateClientNoProxy()
+        private static HttpClient CreateClientNoProxy()
         {
-            HttpClient httpClient = new();
-            //httpClient.DefaultRequestHeaders.Add("Cookie", "hg-client-security=2wYWCwYjyj7EbcjAw98T7DTE4GQ; hg-security=jSvnyAzRO13rHxzxDQofaNhudTzZhdMLWREbC5iPNPrQbWMqaYq3EQPi1vGNz_rCZZ5FJBk9B9T1V401kT7hxaNLwppBih0=");
+            HttpClient httpClient = new()
+            {
+                Timeout = TimeSpan.FromSeconds(10)
+            };
             return httpClient;
         }
 

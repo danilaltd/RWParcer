@@ -14,16 +14,41 @@ namespace RWParcerCore.Infrastructure.Repositories
         private readonly HttpClientFactoryWithProxyRotation HttpFactory = httpFactory;
         private readonly string GetStationsUrl = "https://pass.rw.by/ru/ajax/autocomplete/search/?term=";
         private readonly string GetTrainsBaseUrl = "https://apicast.rw.by/v1/rasp/ru/index/route";
-        private readonly string GetSeatsBaseUrl = "https://pass.rw.by/ru/ajax/route/car_places";
+        //private readonly string GetSeatsBaseUrl = "https://pass.rw.by/ru/ajax/route/car_places";
+        private readonly string GetSeatsBaseUrl = "https://apicast.rw.by/v1/rasp/ru/index/car_places";
 
         public async Task<List<RepoStation>> GetStationsAsync(string pref)
         {
             string fullUrl = GetStationsUrl + pref;
-            HttpResponseMessage response = await HttpFactory.GetAsyncNoProxy(fullUrl);
+            const int maxRetries = 5;
+            int attempt = 0;
+            HttpResponseMessage? response = null;
 
-            if (!response.IsSuccessStatusCode)
+            while (attempt < maxRetries)
             {
-                _logger.LogDebug($"Ошибка: {response.StatusCode}");
+                attempt++;
+                try
+                {
+                    response = await HttpFactory.GetAsyncNoProxy(fullUrl);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        break;
+                    }
+
+                    _logger.LogDebug($"Попытка {attempt}: Ошибка {response.StatusCode}");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogDebug($"Попытка {attempt}: Ошибка {ex.Message}");
+                }
+
+                await Task.Delay(TimeSpan.FromMilliseconds(10));
+            }
+
+            if (response == null || !response.IsSuccessStatusCode)
+            {
+                _logger.LogDebug("Все попытки исчерпаны, возвращаем пустой массив.");
                 return [];
             }
 
@@ -44,11 +69,35 @@ namespace RWParcerCore.Infrastructure.Repositories
             query["user_key"] = "c2a3d81674b7f4c9e4af16bdba110d53";
             builder.Query = query.ToString();
 
-            HttpResponseMessage response = await HttpFactory.GetAsyncNoProxy(builder.ToString());
+            const int maxRetries = 5;
+            int attempt = 0;
+            HttpResponseMessage? response = null;
 
-            if (!response.IsSuccessStatusCode)
+            while (attempt < maxRetries)
             {
-                _logger.LogDebug($"Ошибка: {response.StatusCode}");
+                attempt++;
+                try
+                {
+                    response = await HttpFactory.GetAsyncNoProxy(builder.ToString());
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        break;
+                    }
+
+                    _logger.LogDebug($"Попытка {attempt}: Ошибка {response.StatusCode}");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogDebug($"Попытка {attempt}: Ошибка {ex.Message}");
+                }
+
+                await Task.Delay(TimeSpan.FromMilliseconds(10));
+            }
+
+            if (response == null || !response.IsSuccessStatusCode)
+            {
+                _logger.LogDebug("Все попытки исчерпаны, возвращаем пустой массив.");
                 return [];
             }
 
@@ -84,23 +133,49 @@ namespace RWParcerCore.Infrastructure.Repositories
             for (int carType = 1; carType <= 6; carType++)
             {
                 var query = HttpUtility.ParseQueryString(builder.Query);
+                query["format"] = "json";
                 query["from"] = subscription.Train.StationFrom.Exp;
                 query["to"] = subscription.Train.StationTo.Exp;
                 query["date"] = subscription.Date.ToString("yyyy-MM-dd");
                 query["train_number"] = subscription.Train.TrainNumber;
                 query["car_type"] = carType.ToString();
+                query["user_key"] = "c2a3d81674b7f4c9e4af16bdba110d53";
                 builder.Query = query.ToString();
 
-                HttpResponseMessage response = await HttpFactory.GetAsyncWithProxy(builder.ToString());
+                const int maxRetries = 5;
+                int attempt = 0;
+                HttpResponseMessage? response = null;
 
-                if (!response.IsSuccessStatusCode)
+                while (attempt < maxRetries)
                 {
-                    throw new Exception($"{response.StatusCode}");
+                    attempt++;
+                    try
+                    {
+                        response = await HttpFactory.GetAsyncWithProxy(builder.ToString());
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            break;
+                        }
+
+                        _logger.LogDebug($"Попытка {attempt}: Ошибка {response.StatusCode}");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogDebug($"Попытка {attempt}: Ошибка {ex.Message}");
+                    }
+
+                    await Task.Delay(TimeSpan.FromMilliseconds(10));
+                }
+
+                if (response == null || !response.IsSuccessStatusCode)
+                {
+                    _logger.LogDebug("Все попытки исчерпаны, throw new exception.");
+                    throw new Exception("max_retries");
                 }
 
                 string json = await response.Content.ReadAsStringAsync();
-                JsonDocument? doc = null;
-
+                JsonDocument? doc;
                 try
                 {
                     doc = JsonDocument.Parse(json);

@@ -14,7 +14,9 @@ namespace RWParcer.Services.Handlers.TrainsMenu.Subscribe
         {
             if (ctx.Session.Date < DateOnly.FromDateTime(DateTime.Today))
             {
-                await ctx.SendMessage("Эта дата уже прошла. Укажите актуальную дату");
+                await ctx.SendMessage("Эта дата уже прошла. Возврат в главное меню");
+                ctx.Session.SetCommand(CommandNames.MainMenuSelect);
+                await _router.RouteAsync(CommandNames.MainMenuSelect, ctx);
                 return;
             }
 
