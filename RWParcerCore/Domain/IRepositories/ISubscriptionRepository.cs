@@ -7,6 +7,7 @@ namespace RWParcerCore.Domain.IRepositories
     {
         Task<IEnumerable<Subscription>> GetUserSubscriptionsAsync(string userId);
         Task<IEnumerable<Subscription>> GetAllSubscriptionsAsync();
+        Task<Subscription?> GetByIdAsync(Guid id);
         Task AddAsync(Subscription subscriptionItem);
         Task RemoveAsync(Subscription subscription);
         Task<bool> SubscriptionExistsAsync(string userId, SubscriptionVO subscription);

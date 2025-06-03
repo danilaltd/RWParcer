@@ -145,8 +145,18 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
                 _semaphore.Release();
             }
         }
+
+        public async Task<Subscription?> GetByIdAsync(Guid id)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                return _subscriptions.FirstOrDefault(s => s.Id == id);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
     }
-
-
-
 }

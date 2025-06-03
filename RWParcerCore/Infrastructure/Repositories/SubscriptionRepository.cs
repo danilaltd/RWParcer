@@ -121,5 +121,12 @@ namespace RWParcerCore.Infrastructure.Repositories
                             )
                     );
         }
+
+        public Task<Subscription?> GetByIdAsync(Guid id)
+        {
+            return QueryAsync(ctx =>
+                ctx.Subscriptions.FirstOrDefaultAsync(s => s.Id == id)
+            );
+        }
     }
 }

@@ -70,24 +70,26 @@ namespace RWParcerCore.Infrastructure.Services
                         if (DateTime.UtcNow - subscription.LastUpdate < TimeSpan.FromSeconds(await _userRepository.GetUserMinIntervalAsync(subscription.UserId))) break;
                         _logger.LogDebug($"Попытка {attempt}: Запрос {subscription.Id}");
                         var response = await _rwRepository.GetSeatsAsync(subscription.Details);
-                        if (!AreStatesEqual(response, subscription.LastState))
+                        var actualSubscription = await _subscriptionRepository.GetByIdAsync(subscription.Id);
+                        if (actualSubscription == null) break;
+                        if (!AreStatesEqual(response, actualSubscription.LastState))
                         {
                             _logger.LogDebug($"Изменение данных для {subscription.Id}\n");
-                            var changes = FindSeatChanges(subscription.LastState, response);
+                            var changes = FindSeatChanges(actualSubscription.LastState, response);
                             if (changes.Count > 0)
                             {
-                                string changeMessage = $"{subscription.Details.Date:dd.MM.yyyy}\n{Convert(subscription.Details.Train)}\n{(subscription.LastState is not null ? "Изменены места" : "Свободные места")}: \n{string.Join("\n", changes)}";
+                                string changeMessage = $"{subscription.Details.Date:dd.MM.yyyy}\n{Convert(subscription.Details.Train)}\n{(actualSubscription.LastState is not null ? "Изменены места" : "Свободные места")}: \n{string.Join("\n", changes)}";
                                 await _notificationRepository.AddAsync(new(Guid.NewGuid(), subscription.UserId, changeMessage));
                             }
                             else if (response.Count != 0)
                             {
                                 throw new Exception($"unsupported changes {subscription.Id}");
                             }
-                            subscription.LastState = response;
-
+                            actualSubscription.LastState = response;
+                            await _subscriptionRepository.UpdateAsync(actualSubscription);
                         }
-                        subscription.LastUpdate = DateTime.UtcNow;
-                        await _subscriptionRepository.UpdateAsync(subscription);
+                        actualSubscription.LastUpdate = DateTime.UtcNow;
+                        await _subscriptionRepository.UpdateAsync(actualSubscription);
                         break;
                     }
                     catch (TaskCanceledException)
