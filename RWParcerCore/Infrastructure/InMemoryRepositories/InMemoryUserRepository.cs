@@ -221,14 +221,13 @@ namespace RWParcerCore.Infrastructure.InMemoryRepositories
             await _semaphore.WaitAsync();
             try
             {
-                var users = await Task.WhenAll(_users.Select(async u => (User: u, u.IsModerator)));
+                var users = _users.Select(u => (User: u, u.IsModerator));
                 return users.Where(u => u.IsModerator).Select(u => u.User).ToList();
             }
             finally
             {
                 _semaphore.Release();
             }
-
         }
     }
 
