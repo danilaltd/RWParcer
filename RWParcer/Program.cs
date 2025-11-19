@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -129,6 +130,7 @@ namespace RWParcer
 
             var app = builder.Build();
             app.MapGet("/", () => "Bot is running");
+            app.MapMethods("/", ["HEAD"], () => Results.Ok());
 
             await app.RunAsync();
         }
