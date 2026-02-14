@@ -1,48 +1,41 @@
 #!/usr/bin/env bash
 set -eu
 
-# Количество инстансов, портов и сдвиг при перезапуске
 NUM_INSTANCES=10
 HTTP_PORTS=(8090 8091 8092 8093 8094 8095 8096 8097 8098 8099)
 SOCKS_PORTS=(1080 1081 1082 1083 1084 1085 1086 1087 1088 1089)
 PSIPHON_BIN="./psiphon"
 
-# С какого токена начинать (можно менять в коде или задавать через env)
 START_INDEX=${START_INDEX:-0}
 
-# Загрузка и разбор списка токенов
 load_tokens() {
-  echo "Шаг 1: Загрузка списка серверов..."
+  echo "1. Psiphon servers loading..."
   if ! curl -sL -o server_list_compressed \
     "https://s3.amazonaws.com//psiphon/web/mjr4-p23r-puwl/server_list_compressed"; then
     echo "Ошибка при загрузке server_list_compressed"
     exit 1
   fi
   
-  echo "Шаг 2: Извлечение токенов..."
+  echo "2. Extract tokens..."
   printf "\x1f\x8b\x08\x00\x00\x00\x00\x00" | \
   cat - server_list_compressed | gzip -dc 2>/dev/null | \
-  json_xs | grep '"data"' | awk -F\" '{print $4}' | \
-  sed "s@\\\n@\n\n\n\n@g" > server_tokens.txt
-  sed -i '/^$/d' server_tokens.txt
+  jq -r '.data' | sed 's/\\n/\n/g' > server_tokens.txt
   
   TOKENS=( $(< server_tokens.txt) )
   TOTAL_TOKENS=${#TOKENS[@]}
-  echo "Найдено токенов: $TOTAL_TOKENS"
+  echo "Tokens found: $TOTAL_TOKENS"
   if (( TOTAL_TOKENS < NUM_INSTANCES )); then
-    echo "Ошибка: токенов меньше, чем инстансов ($NUM_INSTANCES)"
+    echo "Error: not enoght tokens: ($TOTAL_TOKENS)<($NUM_INSTANCES)"
     exit 1
   fi
 }
 
-# Остановка одного инстанса по номеру
 stop_instance() {
   local i=$1
   pkill -f "psiphon-${i}\.conf" || true
-  echo "Остановлен instance-$i (порты HTTP ${HTTP_PORTS[i]}, SOCKS ${SOCKS_PORTS[i]})"
+  echo "instance-$i stopped (ports: HTTP ${HTTP_PORTS[i]}, SOCKS ${SOCKS_PORTS[i]})"
 }
 
-# Запуск одного инстанса по номеру, с учётом текущего базового смещения
 start_instance() {
   local i=$1
   local token_index=$(( (BASE_INDEX + i) % TOTAL_TOKENS ))
@@ -68,53 +61,47 @@ CONFIG
     cd "$inst_dir"
     nohup "../$PSIPHON_BIN" --config "psiphon-${i}.conf" &>/dev/null &
   )
-  echo "Запущен instance-$i → токен #$token_index (HTTP ${HTTP_PORTS[i]}, SOCKS ${SOCKS_PORTS[i]})"
+  echo "instance-$i started - token #$token_index (HTTP ${HTTP_PORTS[i]}, SOCKS ${SOCKS_PORTS[i]})"
 }
 
-# Основной цикл перезапуска
 psiphon_loop() {
-  # Начальное базовое смещение
   BASE_INDEX=$START_INDEX
 
-  trap 'echo "Получен SIGTERM, завершаю."; exit 0' TERM
+  trap 'echo "got SIGTERM, psiphon_loop stops."; exit 0' TERM
 
   while true; do
-    echo "=== Обход инстансов, BASE_INDEX=$BASE_INDEX ==="
+    echo "Iterating on instances, BASE_INDEX=$BASE_INDEX"
     for (( i=0; i<NUM_INSTANCES; i++ )); do
       stop_instance "$i"
       start_instance "$i"
-      # Небольшая пауза между перезапусками, чтобы не давить одновременно
       sleep 2
     done
 
-    # После того как все инстансы подняты — сдвигаем базовый индекс
     BASE_INDEX=$(( (BASE_INDEX + NUM_INSTANCES) % TOTAL_TOKENS ))
 
-    # Ждём перед следующим циклом (например, 60 минут)
     for (( m=30; m>0; m-- )); do
-      echo "Ждём $m минут до следующего обновления..."
+      echo "Wait $m minutes untill psiphon restart..."
       sleep 60
     done
   done
 }
 
-# Точка входа
 main() {
   if [[ ! -x "$PSIPHON_BIN" ]]; then
-    echo "Не найден исполняемый файл $PSIPHON_BIN"
+    echo "Not found $PSIPHON_BIN"
     exit 1
   fi
 
   load_tokens
   psiphon_loop &
   
-  echo "Ожидаем, пока откроется последний HTTP-порт ${HTTP_PORTS[NUM_INSTANCES-1]}…"
-  while ! netstat -tulnp | grep -q "${HTTP_PORTS[NUM_INSTANCES-1]}"; do
+  echo "Wait untill the lastest port (${HTTP_PORTS[NUM_INSTANCES-1]}...)"
+  while ! timeout 1 bash -c "cat < /dev/null > /dev/tcp/127.0.0.1/${HTTP_PORTS[NUM_INSTANCES-1]}" 2>/dev/null; do
     sleep 2
   done
   sleep 3
 
-  echo "✅ Все прокси подняты, запускаем .NET..."
+  echo "All proxies up. Good to start .NET"
   exec dotnet RWParcer.dll
 }
 
