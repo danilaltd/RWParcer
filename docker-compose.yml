@@ -1,8 +1,19 @@
 services:
+  psiphon:
+    build: 
+      context: .
+      dockerfile: Dockerfile.psiphon
+    volumes:
+      - ./env/data:/app/data
+    environment:
+      NODE_ID_FROM_HOSTNAME: "1"
+    restart: always
+
+
   parcer:
-    build: .
-    image: rwparcer-local
-    container_name: rwparcer-app
+    build: 
+      context: .
+      dockerfile: Dockerfile
     volumes:
       - ./env/appsettings.json:/etc/secrets/appsettings.json:ro
       - ./env/data:/app/data

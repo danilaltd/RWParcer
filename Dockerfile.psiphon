@@ -1,0 +1,13 @@
+FROM debian:bookworm-slim
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    curl wget jq ca-certificates gzip socat \
+    && rm -rf /var/lib/apt/lists/* \
+    && wget -O psiphon https://github.com/Psiphon-Labs/psiphon-tunnel-core-binaries/raw/master/linux/psiphon-tunnel-core-x86_64 \
+    && chmod +x psiphon
+
+COPY psiphon.sh ./
+RUN chmod +x psiphon.sh
+
+ENTRYPOINT ["./psiphon.sh"]
