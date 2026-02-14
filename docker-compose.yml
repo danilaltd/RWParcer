@@ -5,5 +5,5 @@ services:
     container_name: rwparcer-app
     volumes:
       - ./env/appsettings.json:/etc/secrets/appsettings.json:ro
-      - ./env/index.state:/app/data/index.state
+      - ./env/data:/app/data
     restart: unless-stopped

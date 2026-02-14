@@ -6,6 +6,7 @@ HTTP_PORTS=(8090 8091 8092 8093 8094 8095 8096 8097 8098 8099)
 SOCKS_PORTS=(1080 1081 1082 1083 1084 1085 1086 1087 1088 1089)
 PSIPHON_BIN="./psiphon"
 STATE_FILE="/app/data/index.state"
+LOG_DIR="/app/data/logs"
 
 load_index() {
   if [[ -f "$STATE_FILE" ]]; then
@@ -61,7 +62,9 @@ start_instance() {
   local token_index=$(( (BASE_INDEX + i) % TOTAL_TOKENS ))
   local token="${TOKENS[token_index]}"
   local inst_dir="instance-${i}"
-  mkdir -p "$inst_dir"
+  mkdir -p "$inst_dir" 
+  mkdir -p "$LOG_DIR"
+  local logfile="$LOG_DIR/${TS}-psiphon-${token_index}.log"
 
   cat > "$inst_dir/psiphon-${i}.conf" <<CONFIG
 {
@@ -79,16 +82,23 @@ CONFIG
 
   (
     cd "$inst_dir"
-    nohup "../$PSIPHON_BIN" --config "psiphon-${i}.conf" &>/dev/null &
+    touch "$logfile"
+    nohup "../$PSIPHON_BIN" --config "psiphon-${i}.conf" > "$logfile" 2>&1 &
   )
   echo "instance-$i started - token #$token_index (HTTP ${HTTP_PORTS[i]}, SOCKS ${SOCKS_PORTS[i]})"
 }
+
+cleanup() {
+  echo "Shutting down Psiphon instances..."
+  pkill -P $$ || true
+}
+trap cleanup EXIT
 
 psiphon_loop() {
   load_index
 
   trap 'echo "got SIGTERM, psiphon_loop stops."; exit 0' TERM
-
+  TS=$(date +%Y%m%d-%H%M%S)
   while true; do
     echo "Iterating on instances, BASE_INDEX=$BASE_INDEX"
     for (( i=0; i<NUM_INSTANCES; i++ )); do
