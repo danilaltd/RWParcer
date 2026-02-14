@@ -1,5 +1,6 @@
 **/.vs/
 **/obj/
 **/bin/
+**/env/
 **/appsettings.json
 **/DesignTimeDbContextFactory.cs

@@ -5,14 +5,34 @@ NUM_INSTANCES=10
 HTTP_PORTS=(8090 8091 8092 8093 8094 8095 8096 8097 8098 8099)
 SOCKS_PORTS=(1080 1081 1082 1083 1084 1085 1086 1087 1088 1089)
 PSIPHON_BIN="./psiphon"
+STATE_FILE="/app/data/index.state"
 
-START_INDEX=${START_INDEX:-0}
+load_index() {
+  if [[ -f "$STATE_FILE" ]]; then
+    BASE_INDEX=$(cat "$STATE_FILE")
+    
+    if [[ -z "$BASE_INDEX" || ! "$BASE_INDEX" =~ ^[0-9]+$ ]]; then
+      echo "ERROR: State file $STATE_FILE is corrupt or empty (value: '$BASE_INDEX')" >&2
+      exit 1
+    fi
+    
+    echo "Restored BASE_INDEX from file: $BASE_INDEX"
+  else
+    echo "ERROR: State file $STATE_FILE not found!" >&2
+    echo "Check your docker-compose volumes or create the file manually." >&2
+    exit 1
+  fi
+}
+
+save_index() {
+  echo "$BASE_INDEX" > "$STATE_FILE"
+}
 
 load_tokens() {
   echo "1. Psiphon servers loading..."
   if ! curl -sL -o server_list_compressed \
     "https://s3.amazonaws.com//psiphon/web/mjr4-p23r-puwl/server_list_compressed"; then
-    echo "Ошибка при загрузке server_list_compressed"
+    echo "Error when load server_list_compressed"
     exit 1
   fi
   
@@ -65,7 +85,7 @@ CONFIG
 }
 
 psiphon_loop() {
-  BASE_INDEX=$START_INDEX
+  load_index
 
   trap 'echo "got SIGTERM, psiphon_loop stops."; exit 0' TERM
 
@@ -78,6 +98,7 @@ psiphon_loop() {
     done
 
     BASE_INDEX=$(( (BASE_INDEX + NUM_INSTANCES) % TOTAL_TOKENS ))
+    save_index
 
     for (( m=30; m>0; m-- )); do
       echo "Wait $m minutes untill psiphon restart..."

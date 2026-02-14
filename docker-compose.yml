@@ -1,10 +1,9 @@
 services:
   parcer:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     image: rwparcer-local
     container_name: rwparcer-app
     volumes:
-      - /etc/secrets/appsettings.json:/etc/secrets/appsettings.json:ro
-    restart: always
+      - ./env/appsettings.json:/etc/secrets/appsettings.json:ro
+      - ./env/index.state:/app/data/index.state
+    restart: unless-stopped
