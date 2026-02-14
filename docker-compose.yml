@@ -4,8 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: rwparcer-local
-    ports:
-      - "8081:8080"
+    container_name: rwparcer-app
     volumes:
       - /etc/secrets/appsettings.json:/etc/secrets/appsettings.json:ro
     restart: always

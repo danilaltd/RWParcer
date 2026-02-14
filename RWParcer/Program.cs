@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,10 +27,7 @@ namespace RWParcer
     {
         public static async Task Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
-
-            var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-            builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+            var builder = Host.CreateApplicationBuilder(args);
 
             const string secretPath = "/etc/secrets/appsettings.json";
             if (File.Exists(secretPath))
@@ -128,11 +123,8 @@ namespace RWParcer
 
             builder.Services.AddHostedService<BotService>();
 
-            var app = builder.Build();
-            app.MapGet("/", () => "Bot is running");
-            app.MapMethods("/", ["HEAD"], () => Results.Ok());
-
-            await app.RunAsync();
+            using IHost host = builder.Build();
+            await host.RunAsync();
         }
     }
 }
