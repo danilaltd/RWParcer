@@ -126,7 +126,7 @@ CONFIG
 
 stop_instance() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') Stopping psiphon and socat (if running)..."
-  if [[ -n "$LOGFILE" ]]; then
+  if [[ -n "$LOGFILE:-" ]]; then
     echo "$(date '+%Y-%m-%d %H:%M:%S') Stopping psiphon and socat (if running)..." >> $LOGFILE
   fi
   if [[ -n "${PSIPHON_PID:-}" ]]; then

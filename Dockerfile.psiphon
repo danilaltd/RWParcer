@@ -3,11 +3,19 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
     curl wget jq ca-certificates gzip socat \
-    && rm -rf /var/lib/apt/lists/* \
-    && wget -O psiphon https://github.com/Psiphon-Labs/psiphon-tunnel-core-binaries/raw/master/linux/psiphon-tunnel-core-x86_64 \
-    && chmod +x psiphon
+    && rm -rf /var/lib/apt/lists/*
 
-COPY psiphon.sh ./
+RUN useradd -u 1000 -m appuser
+
+RUN wget -O psiphon https://github.com/Psiphon-Labs/psiphon-tunnel-core-binaries/raw/master/linux/psiphon-tunnel-core-x86_64 \
+    && chmod +x psiphon \
+    && chown appuser:appuser psiphon
+
+COPY --chown=appuser:appuser psiphon.sh ./
 RUN chmod +x psiphon.sh
+
+RUN chown -R appuser:appuser /app
+
+USER appuser
 
 ENTRYPOINT ["./psiphon.sh"]

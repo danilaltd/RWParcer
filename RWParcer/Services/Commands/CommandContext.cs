@@ -53,13 +53,21 @@ namespace RWParcer.Services.Commands
 
         private async Task SendMessageToClient(string message, ReplyMarkup? replyMarkup = null)
         {
-            const int maxLength = 4096;
-            List<string> chunks = SplitMessageSmart(message, maxLength).ToList();
-
-            foreach (var chunk in chunks)
+            try 
             {
-                await Bot.SendMessage(ChatId, chunk, replyMarkup: replyMarkup, cancellationToken: Token);
+                const int maxLength = 4096;
+                List<string> chunks = SplitMessageSmart(message, maxLength).ToList();
+
+                foreach (var chunk in chunks)
+                {
+                    await Bot.SendMessage(ChatId, chunk, replyMarkup: replyMarkup, cancellationToken: Token);
+                }
             }
+            catch (Exception ex) 
+            {
+                Console.WriteLine($"Error sending message for chat {ChatId}: {ex.Message}");
+            }
+
         }
 
 
