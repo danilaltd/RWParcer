@@ -1,10 +1,8 @@
 services:
   psiphon:
-    build: 
-      context: .
-      dockerfile: Dockerfile.psiphon
+    image: ghcr.io/danilaltd/rwparcer-psiphon:latest
     volumes:
-      - ./env/data:/app/data
+      - /var/lib/rwparcer/data:/app/data
     environment:
       NODE_ID_FROM_HOSTNAME: "1"
     deploy:
@@ -13,12 +11,10 @@ services:
 
 
   parcer:
-    build: 
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/danilaltd/rwparcer:latest
     volumes:
       - ./env/appsettings.json:/etc/secrets/appsettings.json:ro
-      - ./env/data:/app/data
+      - /var/lib/rwparcer/data:/app/data
     restart: unless-stopped
     environment:
       PSIPHON_REPLICAS: 10

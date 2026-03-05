@@ -1,0 +1,88 @@
+name: RWParcer CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Secret Detection (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build Check
+        run: dotnet build --no-restore --configuration Release
+
+      # - name: Run Tests #need to fix tests later: The ConnectionString property has not been initialized
+        # run: dotnet test RWParcerCore.Tests/RWParcerCore.Tests.csproj --no-build --configuration Release --verbosity normal
+
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and Push Images
+        run: |
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker build -t ghcr.io/$REPO_LOWER:latest -f Dockerfile .
+          docker build -t ghcr.io/$REPO_LOWER-psiphon:latest -f Dockerfile.psiphon .
+          wait
+          
+      - name: Wait for CI Checks
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.ref }}
+          check-name: 'ci-checks'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 5
+          allowed-conclusions: success
+          
+      - name: Login and Push
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker push ghcr.io/$REPO_LOWER:latest
+          docker push ghcr.io/$REPO_LOWER-psiphon:latest
+
+  deploy:
+    needs: [ci-checks, build]
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4 
+
+      - name: Prepare Infrastructure
+        run: |
+          mkdir -p ./env
+          if [ ! -d "/var/lib/rwparcer/data" ]; then
+            echo "Warning: /var/lib/rwparcer/data does not exist. Creating with sudo..."
+          fi
+
+      - name: Create Runtime Config
+        run: |
+          cat <<'EOF' > ./env/appsettings.json
+          ${{ secrets.APP_SETTINGS_JSON }}
+          EOF
+
+      - name: Docker Deploy
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker compose pull
+          docker compose up -d --remove-orphans

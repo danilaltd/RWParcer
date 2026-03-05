@@ -18,6 +18,16 @@ SERVER_LIST_URL="${SERVER_LIST_URL:-https://s3.amazonaws.com//psiphon/web/mjr4-p
 ROTATE_MINUTES="${ROTATE_MINUTES:-30}"
 
 mkdir -p "$LOG_DIR"
+mkdir -p "$(dirname "$STATE_FILE")"
+touch $STATE_LOCK
+exec 9>"$STATE_LOCK"
+flock -x 9
+if [[ ! -f "$STATE_FILE" ]]; then
+    echo "State file not found. Creating a fresh one..."
+    echo "0" > "$STATE_FILE"
+fi
+flock -u 9
+exec 9>&-
 
 TOKENS=()
 TOTAL_TOKENS=0
