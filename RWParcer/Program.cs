@@ -51,9 +51,14 @@ namespace RWParcer
                 return new TelegramBotClient(settings.ApiToken);
             });
 
+            var replicaCount = builder.Configuration.GetValue<int>("PSIPHON_REPLICAS");
+            var proxyAddresses = Enumerable.Range(1, replicaCount)
+                .Select(i => $"http://rwparcer-psiphon-{i}:8080")
+                .ToArray();
+
             var facade = new Facade(
                 builder.Services.BuildServiceProvider().GetRequiredService<IOptions<DatabaseSettings>>().Value.ConnectionString,
-                builder.Services.BuildServiceProvider().GetRequiredService<IOptions<ProxySettings>>().Value.ProxyAddresses
+                proxyAddresses
             );
             builder.Services.AddSingleton<IFacade>(facade);
             

@@ -7,6 +7,8 @@ services:
       - ./env/data:/app/data
     environment:
       NODE_ID_FROM_HOSTNAME: "1"
+    deploy:
+      replicas: 10
     restart: always
 
 
@@ -18,3 +20,5 @@ services:
       - ./env/appsettings.json:/etc/secrets/appsettings.json:ro
       - ./env/data:/app/data
     restart: unless-stopped
+    environment:
+      PSIPHON_REPLICAS: 10

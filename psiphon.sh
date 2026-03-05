@@ -13,7 +13,7 @@ LOCALHOST="127.0.0.1"
 PSIPHON_BIN="${PSIPHON_BIN:-./psiphon}"
 STATE_FILE="${STATE_FILE:-/app/data/index.state}"
 STATE_LOCK="${STATE_FILE}.lock"
-LOG_DIR="${LOG_DIR:-/app/data/logs}"
+LOG_DIR="${LOG_DIR:-/app/data/logs/$(date +%Y%m%d-%H%M%S)-$ID}"
 SERVER_LIST_URL="${SERVER_LIST_URL:-https://s3.amazonaws.com//psiphon/web/mjr4-p23r-puwl/server_list_compressed}"
 ROTATE_MINUTES="${ROTATE_MINUTES:-30}"
 
@@ -25,8 +25,8 @@ SELECTED_INDEX=
 
 load_index_with_inc() {
   if [[ ! -f "$STATE_FILE" ]]; then
-    echo "ERROR: State file $STATE_FILE not found!" >&2
-    echo "Create it with a number (e.g. '0') or mount correct volume." >&2
+    echo "$ID $(date '+%Y-%m-%d %H:%M:%S') ERROR: State file $STATE_FILE not found!" >&2
+    echo "$ID $(date '+%Y-%m-%d %H:%M:%S') Create it with a number (e.g. '0') or mount correct volume." >&2
     exit 1
   fi
 
@@ -36,7 +36,7 @@ load_index_with_inc() {
   local raw
   raw=$(cat "$STATE_FILE" 2>/dev/null || echo "")
   if [[ -z "$raw" || ! "$raw" =~ ^[0-9]+$ ]]; then
-    echo "ERROR: State file $STATE_FILE is corrupt or empty (value: '$raw')" >&2
+    echo "$ID $(date '+%Y-%m-%d %H:%M:%S') ERROR: State file $STATE_FILE is corrupt or empty (value: '$raw')" >&2
     flock -u 9
     exec 9>&-
     exit 1
@@ -48,19 +48,19 @@ load_index_with_inc() {
 
   flock -u 9
   exec 9>&-
-  echo "Selected index=$SELECTED_INDEX, next saved=$next"
+  echo "$ID $(date '+%Y-%m-%d %H:%M:%S') Selected index=$SELECTED_INDEX, next saved=$next"
 }
 
 load_tokens() {
-  echo "1 Downloading server list..."
+  echo "$ID $(date '+%Y-%m-%d %H:%M:%S') 1 Downloading server list..."
   tmpfile="server_list_compressed"
   if ! curl -sL -o "$tmpfile" "$SERVER_LIST_URL"; then
-    echo "ERROR: failed to download server list" >&2
+    echo "$ID $(date '+%Y-%m-%d %H:%M:%S') ERROR: failed to download server list" >&2
     rm -f "$tmpfile"
     exit 1
   fi
 
-  echo "2 Extracting tokens..."
+  echo "$ID $(date '+%Y-%m-%d %H:%M:%S') 2 Extracting tokens..."
 
   printf "\x1f\x8b\x08\x00\x00\x00\x00\x00" | cat - "$tmpfile" | gzip -dc 2>/dev/null | jq -r '.data' | sed 's/\\n/\n/g' > /tmp/psiphon_tokens.txt
 
@@ -68,9 +68,9 @@ load_tokens() {
 
   TOKENS=( $(< /tmp/psiphon_tokens.txt) )
   TOTAL_TOKENS=${#TOKENS[@]}
-  echo "Tokens found: $TOTAL_TOKENS"
+  echo "$ID $(date '+%Y-%m-%d %H:%M:%S') Tokens found: $TOTAL_TOKENS"
   if (( TOTAL_TOKENS < 1 )); then
-    echo "ERROR: no tokens extracted" >&2
+    echo "$ID $(date '+%Y-%m-%d %H:%M:%S') ERROR: no tokens extracted" >&2
     exit 1
   fi
 }
@@ -86,6 +86,7 @@ start_instance() {
   local TS
   TS=$(date +%Y%m%d-%H%M%S)
   LOGFILE="$LOG_DIR/${TS}-psiphon-${token_index}-${inst_id}.log"
+  find "$LOG_DIR" -type f -mtime +5 -delete
 
   cat > "$inst_dir/psiphon-${inst_id}.conf" <<CONFIG
 {
@@ -112,16 +113,22 @@ CONFIG
   echo "$PSIPHON_PID" > "psiphon.pid" || true
   cd ..
 
-  echo "Starting instance ${inst_id} with token #${token_index} (HTTP ${HTTP_PORT}, SOCKS ${SOCKS_PORT})"
+  echo "$ID $(date '+%Y-%m-%d %H:%M:%S') Starting instance ${inst_id} with token #${token_index} (HTTP ${HTTP_PORT}, SOCKS ${SOCKS_PORT})"
+  echo "$ID $(date '+%Y-%m-%d %H:%M:%S') Starting instance ${inst_id} with token #${token_index} (HTTP ${HTTP_PORT}, SOCKS ${SOCKS_PORT})" >> $LOGFILE
   socat TCP4-LISTEN:${FORWARD_PORT},fork,reuseaddr TCP4:${LOCALHOST}:${HTTP_PORT} >> "$LOGFILE" 2>&1 &
 
   SOCAT_PID=$!
 
-  echo "psiphon pid=${PSIPHON_PID}, socat pid=${SOCAT_PID}, logfile=${LOGFILE}"
+  echo "$ID $(date '+%Y-%m-%d %H:%M:%S') psiphon pid=${PSIPHON_PID}, socat pid=${SOCAT_PID}, logfile=${LOGFILE}"
+  echo "$ID $(date '+%Y-%m-%d %H:%M:%S') psiphon pid=${PSIPHON_PID}, socat pid=${SOCAT_PID}, logfile=${LOGFILE}" >> $LOGFILE
+  
 }
 
 stop_instance() {
-  echo "Stopping psiphon and socat (if running)..."
+  echo "$(date '+%Y-%m-%d %H:%M:%S') Stopping psiphon and socat (if running)..."
+  if [[ -n "$LOGFILE" ]]; then
+    echo "$(date '+%Y-%m-%d %H:%M:%S') Stopping psiphon and socat (if running)..." >> $LOGFILE
+  fi
   if [[ -n "${PSIPHON_PID:-}" ]]; then
     kill "${PSIPHON_PID}" 2>/dev/null || true
     wait "${PSIPHON_PID}" 2>/dev/null || true
@@ -136,7 +143,7 @@ trap stop_instance EXIT
 
 main() {
   if [[ ! -x "$PSIPHON_BIN" ]]; then
-    echo "ERROR: not found or not executable: $PSIPHON_BIN" >&2
+    echo "$ID $(date '+%Y-%m-%d %H:%M:%S') ERROR: not found or not executable: $PSIPHON_BIN" >&2
     exit 1
   fi
 
@@ -149,13 +156,13 @@ main() {
         passed=$((ROTATE_MINUTES - m))
         if (( passed > 2 )); then
             if ! curl -s --max-time 5 -x ${LOCALHOST}:${FORWARD_PORT} https://ifconfig.me >/dev/null; then
-                echo "Proxy check failed — next instance"
-                echo "Proxy check failed — next instance" >> $LOGFILE
+                echo "$(date '+%Y-%m-%d %H:%M:%S') Proxy check failed — next instance"
+                echo "$(date '+%Y-%m-%d %H:%M:%S') Proxy check failed — next instance" >> $LOGFILE
                 break
             fi
         fi
 
-      echo "$ID: Wait $m minute(s) until psiphon restart..." >> $LOGFILE
+      echo "$ID $(date '+%Y-%m-%d %H:%M:%S'): Wait $m minute(s) until psiphon restart..." >> $LOGFILE
       sleep 60
     done
 
