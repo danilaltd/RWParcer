@@ -1,8 +1,8 @@
-name: RWParcer CI/CD (PROD)
+name: RWParcer CI/CD (DEV)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "dev" ]
     paths-ignore:
       - "README.md"
   workflow_dispatch:
@@ -10,7 +10,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  ENVIRONMENT: prod
+  ENVIRONMENT: dev
 
 jobs:
   ci-checks:
@@ -70,28 +70,29 @@ jobs:
           docker push ${{ env.REGISTRY }}/$REPO_LOWER-psiphon:${{ env.ENVIRONMENT }}-latest
           docker push ${{ env.REGISTRY }}/$REPO_LOWER-psiphon:${{ env.ENVIRONMENT }}-${{ github.sha }}
 
-  deploy-prod:
+  deploy-dev:
     needs: [ci-checks, build]
     runs-on: self-hosted
     environment: 
-      name: production
+      name: development
     steps:
       - uses: actions/checkout@v4 
 
       - name: Prepare Infrastructure
         run: |
           mkdir -p ./env
-          if [ ! -d "/var/lib/rwparcer/data" ]; then
-            echo "Warning: /var/lib/rwparcer/data does not exist. Creating with sudo..."
+          if [ ! -d "/var/lib/rwparcer-dev/data" ]; then
+            echo "Creating dev data directory..."
+            mkdir -p /var/lib/rwparcer-dev/data
           fi
 
       - name: Create Runtime Config
         run: |
           cat <<'EOF' > ./env/appsettings.json
-          ${{ secrets.PROD_APP_SETTINGS_JSON }}
+          ${{ secrets.DEV_APP_SETTINGS_JSON }}
           EOF
 
-      - name: Docker Deploy to Production
+      - name: Docker Deploy to Development
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           REPO_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
@@ -99,5 +100,5 @@ jobs:
           export COMPOSE_PROJECT_NAME="rwparcer-${{ env.ENVIRONMENT }}"
           docker pull ghcr.io/$REPO_LOWER:$IMAGE_TAG
           docker pull ghcr.io/$REPO_LOWER-psiphon:$IMAGE_TAG
-          docker compose -f docker-compose.yml pull
-          docker compose -f docker-compose.yml up -d --remove-orphans
+          docker compose -f docker-compose.dev.yml pull
+          docker compose -f docker-compose.dev.yml up -d --remove-orphans
