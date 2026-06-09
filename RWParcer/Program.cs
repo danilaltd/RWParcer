@@ -53,7 +53,7 @@ namespace RWParcer
 
             var replicaCount = builder.Configuration.GetValue<int>("PSIPHON_REPLICAS");
             var proxyAddresses = Enumerable.Range(1, replicaCount)
-                .Select(i => $"http://rwparcer-psiphon-{i}:8080")
+                .Select(i => $"http://rwparcer-prod-psiphon-{i}:8080")
                 .ToArray();
 
             var facade = new Facade(
