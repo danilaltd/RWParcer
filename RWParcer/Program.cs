@@ -29,15 +29,7 @@ namespace RWParcer
         {
             var builder = Host.CreateApplicationBuilder(args);
 
-            const string secretPath = "/etc/secrets/appsettings.json";
-            if (File.Exists(secretPath))
-            {
-                builder.Configuration.AddJsonFile(secretPath, optional: false, reloadOnChange: true);
-            }
-            else
-            {
-                builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-            }
+            builder.Configuration.AddAppSettings();
 
             builder.Services.Configure<BotSettings>(builder.Configuration.GetSection("BotSettings"));
             builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));

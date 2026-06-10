@@ -11,7 +11,7 @@ namespace RWParcer.Infrastructure.Database
         {
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
+                .AddAppSettings()
                 .Build();
 
             var settings = new DatabaseSettings();

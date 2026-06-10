@@ -80,16 +80,9 @@ jobs:
 
       - name: Prepare Infrastructure
         run: |
-          mkdir -p ./env
           if [ ! -d "/var/lib/rwparcer/data" ]; then
             echo "Warning: /var/lib/rwparcer/data does not exist. Creating with sudo..."
           fi
-
-      - name: Create Runtime Config
-        run: |
-          cat <<'EOF' > ./env/appsettings.json
-          ${{ secrets.PROD_APP_SETTINGS_JSON }}
-          EOF
 
       - name: Docker Deploy to Production
         run: |
@@ -97,6 +90,7 @@ jobs:
           REPO_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
           export IMAGE_TAG=${{ env.ENVIRONMENT }}-${{ github.sha }}
           export COMPOSE_PROJECT_NAME="rwparcer-${{ env.ENVIRONMENT }}"
+          export APPSETTINGS_JSON='${{ secrets.PROD_APP_SETTINGS_JSON }}'
           docker pull ghcr.io/$REPO_LOWER:$IMAGE_TAG
           docker pull ghcr.io/$REPO_LOWER-psiphon:$IMAGE_TAG
           docker compose -f docker-compose.yml pull

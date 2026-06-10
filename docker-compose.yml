@@ -13,8 +13,8 @@ services:
   parcer:
     image: ghcr.io/danilaltd/rwparcer:prod-latest
     volumes:
-      - ./env/appsettings.json:/etc/secrets/appsettings.json:ro
       - /var/lib/rwparcer/data:/app/data
     restart: unless-stopped
     environment:
-      PSIPHON_REPLICAS: 10
+      APPSETTINGS_JSON: ${APPSETTINGS_JSON}
+      PSIPHON_REPLICAS: ${PSIPHON_REPLICAS:-10}
