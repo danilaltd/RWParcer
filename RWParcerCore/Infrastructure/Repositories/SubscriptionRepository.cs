@@ -11,14 +11,11 @@ namespace RWParcerCore.Infrastructure.Repositories
         private readonly ILogger _logger = logger;
 
         public Task<IEnumerable<Subscription>> GetUserSubscriptionsAsync(string userId)
-        {
-            return QueryAsync(ctx =>
-                ctx.Subscriptions
-                   .Where(s => s.UserId == userId)
-                   .ToListAsync()
-                   .ContinueWith(t => (IEnumerable<Subscription>)t.Result)
+            => QueryAsync(async ctx =>
+                (IEnumerable<Subscription>)await ctx.Subscriptions
+                    .Where(s => s.UserId == userId)
+                    .ToListAsync()
             );
-        }
 
         public Task AddAsync(Subscription subscriptionItem)
         {
@@ -65,23 +62,17 @@ namespace RWParcerCore.Infrastructure.Repositories
         }
 
         public Task<IEnumerable<Subscription>> GetAllSubscriptionsAsync()
-        {
-            return QueryAsync(ctx =>
-                ctx.Subscriptions
-                   .ToListAsync()
-                   .ContinueWith(t => (IEnumerable<Subscription>)t.Result)
+            => QueryAsync(async ctx =>
+                (IEnumerable<Subscription>)await ctx.Subscriptions
+                    .ToListAsync()
             );
-        }
 
         public Task<uint> GetSubscriptionCountAsync(string userId)
-        {
-            return QueryAsync(ctx =>
-                ctx.Subscriptions
-                   .Where(s => s.UserId == userId)
-                   .CountAsync()
-                   .ContinueWith(t => (uint)t.Result)
+            => QueryAsync(async ctx =>
+                (uint)await ctx.Subscriptions
+                    .Where(s => s.UserId == userId)
+                    .CountAsync()
             );
-        }
 
         public Task UpdateAsync(Subscription subscriptionItem)
         {

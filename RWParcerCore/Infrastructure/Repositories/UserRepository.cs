@@ -118,11 +118,11 @@ namespace RWParcerCore.Infrastructure.Repositories
 
         public Task<List<User>> GetLastUsersAsync(TimeSpan timeSpan)
         {
-            var cutoffTime = DateTime.UtcNow.Subtract(timeSpan); // Вычисляем пороговое время перед запросом
+            var cutoffTime = DateTime.UtcNow.Add(-timeSpan);
 
             return QueryAsync(ctx =>
                 ctx.Users
-                   .Where(u => u.LastActivity >= cutoffTime) // Сравниваем с вычисленным значением
+                   .Where(u => u.LastActivity >= cutoffTime)
                    .ToListAsync());
         }
 
@@ -133,15 +133,11 @@ namespace RWParcerCore.Infrastructure.Repositories
             return user ?? throw new KeyNotFoundException($"User {userId} not found.");
         }
 
-        public async Task<List<User>> GetAllModerators()
-        {
-            var users = await QueryAsync(ctx => ctx.Users.ToListAsync());
-
-            var moderators = await Task.WhenAll(users.Select(async u =>
-                (User: u, IsModerator: await IsUserModeratorAsync(u.Id))));
-
-            return moderators.Where(u => u.IsModerator).Select(u => u.User).ToList();
-        }
+        public Task<List<User>> GetAllModerators()
+            => QueryAsync(ctx =>
+                ctx.Users
+                   .Where(u => u.IsModerator)
+                   .ToListAsync());
 
 
     }
