@@ -18,7 +18,7 @@ namespace RWParcerCore.Tests
 
         public FacadeTests()
         {
-            _facade = new Facade(string.Empty, _testProxies);
+            _facade = new Facade(string.Empty); //proxy manager url
         }
 
         public Task InitializeAsync()
@@ -26,7 +26,7 @@ namespace RWParcerCore.Tests
             try
             {
                 Console.WriteLine($"\n[{DateTime.Now:HH:mm:ss.fff}] === Starting new test initialization ===");
-                _facade = new Facade(string.Empty, _testProxies);
+                _facade = new Facade(string.Empty); //proxy manager url
                 return Task.CompletedTask;
             }
             catch (Exception ex)

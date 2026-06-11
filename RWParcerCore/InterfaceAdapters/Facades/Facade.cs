@@ -65,9 +65,9 @@ namespace RWParcerCore.InterfaceAdapters.Facades
         
         private readonly IJsonOperationsUseCase _jsonOperations;
 
-        public Facade(string connectionString, string[] proxies)
+        public Facade(string connectionString, string? proxyManagerUrl = null)
         {
-            var factory = new HttpClientFactoryWithProxyRotation(proxies);
+            var factory = new HttpClientFactoryWithProxyRotation(proxyManagerUrl);
             
             ILogger logger = new ConsoleLogger();
 

@@ -1,16 +1,19 @@
 services:
   proxy-manager:
-    image: ghcr.io/danilaltd/rwparcer-proxy-manager:dev-latest
+    build:
+      dockerfile: ./proxy-manager/Dockerfile #todo: context
     volumes:
       - /var/lib/rwparcer-dev/proxies.txt:/app/proxies.txt:ro
     environment:
       PROXY_MANAGER_PORT: 8080
       HEALTH_CHECK_INTERVAL: 30
-    restart: always
+    restart: unless-stopped
 
 
   parcer:
-    image: ghcr.io/danilaltd/rwparcer:dev-latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     volumes:
       - /var/lib/rwparcer-dev/data:/app/data
     restart: unless-stopped

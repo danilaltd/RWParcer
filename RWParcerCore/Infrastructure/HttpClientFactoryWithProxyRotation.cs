@@ -2,55 +2,26 @@
 
 namespace RWParcerCore.Infrastructure
 {
-    internal class HttpClientFactoryWithProxyRotation(IEnumerable<string> proxyList)
+    internal class HttpClientFactoryWithProxyRotation(string? proxyManagerUrl = null)
     {
-        private readonly List<string> _proxyList = [.. proxyList];
-        private int _currentIndex = 0;
-        private readonly Lock _lock = new();
-
-        private HttpClient CreateClientWithProxy()
+        private readonly string? _proxyManagerUrl = proxyManagerUrl;
+        private readonly HttpClient _httpClient = new()
         {
-            if (_proxyList.Count == 0) return CreateClientNoProxy();
-            string proxyAddress;
-            lock (_lock)
-            {
-                proxyAddress = _proxyList[_currentIndex];
-                _currentIndex = (_currentIndex + 1) % _proxyList.Count;
-            }
-
-            var proxy = new WebProxy(proxyAddress);
-            var handler = new HttpClientHandler
-            {
-                Proxy = proxy,
-                UseProxy = true
-            };
-
-            HttpClient httpClient = new(handler, disposeHandler: true)
-            {
-                Timeout = TimeSpan.FromSeconds(10)
-            };
-            return httpClient;
-        }
-
-        private static HttpClient CreateClientNoProxy()
-        {
-            HttpClient httpClient = new()
-            {
-                Timeout = TimeSpan.FromSeconds(10)
-            };
-            return httpClient;
-        }
+            Timeout = TimeSpan.FromSeconds(10)
+        };
 
         public async Task<HttpResponseMessage> GetAsyncNoProxy(string url)
         {
-            var client = CreateClientNoProxy();
-            return await client.GetAsync(url);
+            return await _httpClient.GetAsync(url);
         }
 
         public async Task<HttpResponseMessage> GetAsyncWithProxy(string url)
         {
-            var client = CreateClientWithProxy();
-            return await client.GetAsync(url);
+            if (!string.IsNullOrWhiteSpace(_proxyManagerUrl))
+            {
+                url = $"{_proxyManagerUrl.TrimEnd('/')}/proxy?url={Uri.EscapeDataString(url)}";
+            }
+            return await _httpClient.GetAsync(url);
         }
     }
 

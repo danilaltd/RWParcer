@@ -1,12 +1,11 @@
 services:
-  psiphon:
-    image: ghcr.io/danilaltd/rwparcer-psiphon:prod-latest
+  proxy-manager:
+    image: ghcr.io/danilaltd/rwparcer-proxy-manager:prod-latest
     volumes:
-      - /var/lib/rwparcer/data:/app/data
+      - /var/lib/rwparcer/proxies.txt:/app/proxies.txt:ro
     environment:
-      NODE_ID_FROM_HOSTNAME: "1"
-    deploy:
-      replicas: 10
+      PROXY_MANAGER_PORT: 8080
+      HEALTH_CHECK_INTERVAL: 30
     restart: always
 
 
@@ -17,4 +16,4 @@ services:
     restart: unless-stopped
     environment:
       APPSETTINGS_JSON: ${APPSETTINGS_JSON}
-      PSIPHON_REPLICAS: ${PSIPHON_REPLICAS:-10}
+      PROXY_MANAGER_URL: ${PROXY_MANAGER_URL:-http://proxy-manager:8080}
