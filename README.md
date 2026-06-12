@@ -6,11 +6,12 @@
 
 ## Project Structure
 
-- `RWParcer/` — application containing the bot, command routing, configuration, and session store integration.
+- `RWParcer/` — bot application, command routing, configuration, and session integration.
 - `RWParcerCore/` — domain logic, entities, repositories, services, interfaces, and database infrastructure.
 - `RWParcerCore.Tests/` — unit tests.
-- `docker-compose.yml` — environment definition for running app and required proxies.
-- `Dockerfile` / `Dockerfile.psiphon` — application image build instructions.
+- `proxy-manager/` — lightweight proxy health-check and routing service used by the main app.
+- `docker-compose.yml`, `docker-compose.dev.yml`, `docker-compose.local.yml` — deployment variants for production, dev, and local development.
+- `Dockerfile` — main application image build instructions.
 - `env/` — example configuration (appsettings, data, logging).
 
 ---
@@ -35,17 +36,25 @@
 
 ### 2) Run with Docker Compose
 
+For local development:
+
 ```sh
 git clone https://github.com/danilaltd/RWParcer
 cd RWParcer
-docker compose up --build
+docker compose -f docker-compose.local.yml up --build
 ```
 
-This will start:
-- the application service (built from `Dockerfile`)
-- required proxies
+This starts:
+- the main `parcer` service (built from `Dockerfile`)
+- the `proxy-manager` service (built from `proxy-manager/Dockerfile`)
 
-> To stop, run `docker compose down`.
+For production deployment, use:
+
+```sh
+docker compose -f docker-compose.yml up -d
+```
+
+> To stop the local stack, run `docker compose -f docker-compose.local.yml down`.
 
 ---
 
@@ -97,8 +106,8 @@ Builds and publishes Docker images:
 
 ```yaml
 - Builds two images:
-  - ghcr.io/<owner>/rwparcer:latest (main application)
-  - ghcr.io/<owner>/rwparcer-psiphon:latest (proxy service)
+  - ghcr.io/<owner>/rwparcer:<env>-latest (main application)
+  - ghcr.io/<owner>/rwparcer-proxy-manager:<env>-latest (proxy-manager service)
 - Waits for ci-checks job to pass
 - Pushes both images to GitHub Container Registry
 - Requires GITHUB_TOKEN permissions
@@ -112,7 +121,7 @@ Deploys the application to production:
 - Creates `./env/` directory
 - Injects `appsettings.json` from GitHub Secrets
 - Pulls latest images from ghcr.io
-- Runs `docker compose up -d` to deploy/update services
+- Runs `docker compose -f docker-compose.yml up -d` to deploy/update services
 
 ---
 
@@ -129,7 +138,7 @@ The self-hosted runner must be configured on a **production/staging server** wit
 
 Ensure the runner can:
 - Execute `docker` and `docker compose` commands
-- Read/write to `/var/lib/rwparcer/data`
+- Read/write to `/var/lib/rwparcer/data` and `/var/lib/rwparcer/proxies.txt`
 - Access GitHub Container Registry (via `docker login`)
 
 ---
@@ -145,8 +154,8 @@ The CI/CD pipeline requires these secrets configured in **GitHub Settings → Se
   - Container registry authentication
   - Wait-on-check workflow step
 
-#### `APP_SETTINGS_JSON` (manual setup required)
-- Complete `appsettings.json` content as a multiline secret
+#### `PROD_APP_SETTINGS_JSON` / `DEV_APP_SETTINGS_JSON` (manual setup required)
+- Complete `appsettings.json` content as a multiline secret for the corresponding environment
 - Example structure:
   ```json
   {
@@ -172,59 +181,58 @@ The CI/CD pipeline requires these secrets configured in **GitHub Settings → Se
 
 1. Go to **GitHub Repository → Settings → Secrets and variables → Actions**
 2. Click **New repository secret**
-3. Name: `APP_SETTINGS_JSON`
-4. Value: Paste full `appsettings.json` content
+3. Name: `PROD_APP_SETTINGS_JSON` (production) or `DEV_APP_SETTINGS_JSON` (development)
+4. Value: Paste the full `appsettings.json` content for that environment
 5. Save
 
 ---
 
-## Psiphon Proxy Service
+## Proxy Manager Service
 
 ### Role
 
-Psiphon is a **proxy/VPN service** used to:
-- Rotate IP addresses for web scraping (rw.by requires proxy rotation)
-- Distribute requests across multiple proxy instances
-- Bypass IP-based rate limiting
+`proxy-manager` is the current proxy-routing component used to:
+- health-check and score available proxies
+- choose a working proxy for each outgoing request
+- report failures back to the proxy pool
 
 ### Architecture
 
-In `docker-compose.yml`, the Psiphon service is configured with:
+In `docker-compose.yml`, the service is configured as:
 
 ```yaml
 services:
-  psiphon:
-    image: ghcr.io/danilaltd/rwparcer-psiphon:latest
+  proxy-manager:
+    image: ghcr.io/danilaltd/rwparcer-proxy-manager:prod-latest
     volumes:
-      - /var/lib/rwparcer/data:/app/data
+      - /var/lib/rwparcer/proxies.txt:/app/proxies.txt:ro
     environment:
-      NODE_ID_FROM_HOSTNAME: "1"
-      replicas: 10          # 10 parallel proxy instances
+      PROXY_MANAGER_PORT: 8080
+      HEALTH_CHECK_INTERVAL: 30
     restart: always
 ```
 
 ### How It Works
 
-- **10 Replicas** — 10 independent proxy nodes running in parallel
-- **Shared Data Volume** — All replicas share `/var/lib/rwparcer/data` for state/logging
-- **NODE_ID_FROM_HOSTNAME** — Each replica gets a unique ID from its hostname
-- **Always Restart** — Automatically restarts if a replica fails
+- `proxy-manager` loads proxies from `proxy-manager/proxies.txt`.
+- It periodically checks each proxy with TCP health checks and updates scores.
+- The main app reaches it via `PROXY_MANAGER_URL` and uses the returned proxy for HTTP requests.
 
 ### Integration with Main Application
 
-The main `parcer` service communicates with Psiphon replicas:
+The main `parcer` service communicates with the manager through:
 
 ```yaml
 services:
   parcer:
     environment:
-      PSIPHON_REPLICAS: 10     # Number of proxy instances to connect to
+      PROXY_MANAGER_URL: http://proxy-manager:8080
 ```
 
-The application code (in `RWParcerCore/Infrastructure`) uses `HttpClientFactoryWithProxyRotation` to:
-1. Select a random Psiphon replica
-2. Route HTTP requests through it
-3. Rotate to next replica on next request (load balancing)
+The application code in `RWParcerCore/Infrastructure` uses `HttpClientFactoryWithProxyRotation` to:
+1. ask the manager for the next healthy proxy
+2. route the request through it
+3. report success/failure back to the manager for score updates
 
 ---
 
@@ -233,17 +241,17 @@ The application code (in `RWParcerCore/Infrastructure`) uses `HttpClientFactoryW
 ### Local Development
 
 ```bash
-docker compose up --build
+docker compose -f docker-compose.local.yml up --build
 ```
 
-Starts both `psiphon` (10 replicas) and `parcer` (main app) locally.
+Starts both `proxy-manager` and `parcer` locally for development.
 
 ### CI/CD Deployment
 
 1. **Developer** pushes to `main` branch
 2. **GitHub Actions** triggered automatically:
    - Runs `ci-checks` (linting, build)
-   - Builds Docker images (`rwparcer` + `rwparcer-psiphon`)
+   - Builds Docker images (`rwparcer` + `rwparcer-proxy-manager`)
    - Pushes to ghcr.io
 3. **Self-hosted runner** pulls latest images
 4. **Production deployment** via `docker compose pull && docker compose up -d`
