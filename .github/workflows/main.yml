@@ -50,7 +50,7 @@ jobs:
         run: |
           REPO_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
           docker build -t ${{ env.REGISTRY }}/$REPO_LOWER:${{ env.ENVIRONMENT }}-latest -t ${{ env.REGISTRY }}/$REPO_LOWER:${{ env.ENVIRONMENT }}-${{ github.sha }} -f Dockerfile .
-          docker build -t ${{ env.REGISTRY }}/$REPO_LOWER-proxy-manager:${{ env.ENVIRONMENT }}-latest -t ${{ env.REGISTRY }}/$REPO_LOWER-proxy-manager:${{ env.ENVIRONMENT }}-${{ github.sha }} -f proxy-manager/Dockerfile .
+          docker build -t ${{ env.REGISTRY }}/$REPO_LOWER-proxy-manager:${{ env.ENVIRONMENT }}-latest -t ${{ env.REGISTRY }}/$REPO_LOWER-proxy-manager:${{ env.ENVIRONMENT }}-${{ github.sha }} -f proxy-manager/Dockerfile proxy-manager
           
       - name: Wait for CI Checks
         uses: lewagon/wait-on-check-action@v1.3.1
@@ -80,8 +80,8 @@ jobs:
 
       - name: Prepare Infrastructure
         run: |
-          if [ ! -d "/var/lib/rwparcer/data" ]; then
-            echo "Warning: /var/lib/rwparcer/data does not exist. Creating with sudo..."
+          if [ ! -d "/var/lib/rwparcer-prod/data" ]; then
+            echo "Warning: /var/lib/rwparcer-prod/data does not exist. Creating with sudo..."
           fi
 
       - name: Docker Deploy to Production
@@ -91,7 +91,11 @@ jobs:
           export IMAGE_TAG=${{ env.ENVIRONMENT }}-${{ github.sha }}
           export COMPOSE_PROJECT_NAME="rwparcer-${{ env.ENVIRONMENT }}"
           export APPSETTINGS_JSON='${{ secrets.PROD_APP_SETTINGS_JSON }}'
-          docker pull ghcr.io/$REPO_LOWER:$IMAGE_TAG
-          docker pull ghcr.io/$REPO_LOWER-proxy-manager:$IMAGE_TAG
+          export PARSER_IMAGE="ghcr.io/$REPO_LOWER:$IMAGE_TAG"
+          export PROXY_MANAGER_IMAGE="ghcr.io/$REPO_LOWER-proxy-manager:$IMAGE_TAG"
+          export DATA_DIR="/var/lib/rwparcer-prod/data"
+          export PROXY_FILE_PATH="/var/lib/rwparcer-prod/proxies.txt"
+          docker pull "$PARSER_IMAGE"
+          docker pull "$PROXY_MANAGER_IMAGE"
           docker compose -f docker-compose.yml pull
           docker compose -f docker-compose.yml up -d --remove-orphans

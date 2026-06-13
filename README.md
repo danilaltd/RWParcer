@@ -10,7 +10,7 @@
 - `RWParcerCore/` — domain logic, entities, repositories, services, interfaces, and database infrastructure.
 - `RWParcerCore.Tests/` — unit tests.
 - `proxy-manager/` — lightweight proxy health-check and routing service used by the main app.
-- `docker-compose.yml`, `docker-compose.dev.yml`, `docker-compose.local.yml` — deployment variants for production, dev, and local development.
+- `docker-compose.yml` — single deployment file for local, dev, and production environments via environment overrides.
 - `Dockerfile` — main application image build instructions.
 - `env/` — example configuration (appsettings, data, logging).
 
@@ -41,20 +41,24 @@ For local development:
 ```sh
 git clone https://github.com/danilaltd/RWParcer
 cd RWParcer
-docker compose -f docker-compose.local.yml up --build
+docker compose -f docker-compose.yml up --build
 ```
 
 This starts:
 - the main `parcer` service (built from `Dockerfile`)
 - the `proxy-manager` service (built from `proxy-manager/Dockerfile`)
 
-For production deployment, use:
+For dev/prod deployment, set the environment variables you need and run:
 
 ```sh
 docker compose -f docker-compose.yml up -d
 ```
 
-> To stop the local stack, run `docker compose -f docker-compose.local.yml down`.
+Examples:
+- `DATA_DIR=/var/lib/rwparcer-dev/data PROXY_FILE_PATH=/var/lib/rwparcer-dev/proxies.txt docker compose -f docker-compose.yml up -d`
+- `PARSER_IMAGE=ghcr.io/<owner>/rwparcer:dev-latest PROXY_MANAGER_IMAGE=ghcr.io/<owner>/rwparcer-proxy-manager:dev-latest docker compose -f docker-compose.yml up -d`
+
+> To stop the stack, run `docker compose -f docker-compose.yml down`.
 
 ---
 

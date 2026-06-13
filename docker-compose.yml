@@ -1,19 +1,24 @@
 services:
   proxy-manager:
-    image: ghcr.io/danilaltd/rwparcer-proxy-manager:prod-latest
+    image: ${PROXY_MANAGER_IMAGE:-rwparcer-proxy-manager}
+    build:
+      context: ./proxy-manager
+      dockerfile: Dockerfile
     volumes:
-      - /var/lib/rwparcer/proxies.txt:/app/proxies.txt:ro
+      - ${PROXY_FILE_PATH:-/var/lib/rwparcer/proxies.txt}:/app/proxies.txt:ro
     environment:
-      PROXY_MANAGER_PORT: 8080
-      HEALTH_CHECK_INTERVAL: 30
-    restart: always
-
+      PROXY_MANAGER_PORT: ${PROXY_MANAGER_PORT:-8080}
+      HEALTH_CHECK_INTERVAL: ${HEALTH_CHECK_INTERVAL:-30}
+    restart: ${RESTART_POLICY:-always}
 
   parcer:
-    image: ghcr.io/danilaltd/rwparcer:prod-latest
+    image: ${PARSER_IMAGE:-rwparcer}
+    build:
+      context: .
+      dockerfile: Dockerfile
     volumes:
-      - /var/lib/rwparcer/data:/app/data
-    restart: unless-stopped
+      - ${DATA_DIR:-/var/lib/rwparcer/data}:/app/data
+    restart: ${PARSER_RESTART_POLICY:-unless-stopped}
     environment:
       APPSETTINGS_JSON: ${APPSETTINGS_JSON}
       PROXY_MANAGER_URL: ${PROXY_MANAGER_URL:-http://proxy-manager:8080}
