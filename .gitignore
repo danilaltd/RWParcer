@@ -2,5 +2,8 @@
 **/obj/
 **/bin/
 **/env/
+**/.vscode/
+**/venv/
+**/__pycache__/
 **/appsettings.json
 **/DesignTimeDbContextFactory.cs

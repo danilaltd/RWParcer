@@ -5,10 +5,11 @@ services:
       context: ./proxy-manager
       dockerfile: Dockerfile
     volumes:
-      - ${PROXY_FILE_PATH:-/var/lib/rwparcer/proxies.txt}:/app/proxies.txt:ro
+      - ${PROXY_DB_PATH:-/var/lib/rwparcer/proxies.db}:/app/data/proxies.db
     environment:
       PROXY_MANAGER_PORT: ${PROXY_MANAGER_PORT:-8080}
       HEALTH_CHECK_INTERVAL: ${HEALTH_CHECK_INTERVAL:-30}
+      PROXY_DB_PATH: /app/data/proxies.db
     restart: ${RESTART_POLICY:-always}
 
   parcer:

@@ -2,9 +2,9 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY ./app.py ./
+COPY . ./
 
-RUN pip install --no-cache-dir "requests[socks]"
+RUN pip install --no-cache-dir "requests[socks]" aiohttp_socks
 
 ENV PYTHONUNBUFFERED=1 \
     PROXY_MANAGER_PORT=8080
