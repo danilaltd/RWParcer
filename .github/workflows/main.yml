@@ -95,6 +95,7 @@ jobs:
           export PARSER_IMAGE="ghcr.io/$REPO_LOWER:$IMAGE_TAG"
           export PROXY_MANAGER_IMAGE="ghcr.io/$REPO_LOWER-proxy-manager:$IMAGE_TAG"
           export DATA_DIR="/var/lib/rwparcer-prod/data"
+          export PROXY_DB_PATH="/var/lib/rwparcer-prod/proxies.db"
           export PROXY_FILE_PATH="/var/lib/rwparcer-prod/proxies.txt"
           docker pull "$PARSER_IMAGE"
           docker pull "$PROXY_MANAGER_IMAGE"
