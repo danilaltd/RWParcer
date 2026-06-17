@@ -23,3 +23,23 @@ services:
     environment:
       APPSETTINGS_JSON: ${APPSETTINGS_JSON}
       PROXY_MANAGER_URL: ${PROXY_MANAGER_URL:-http://proxy-manager:8080}
+      DatabaseSettings__ConnectionString:        "User Id=${POSTGRES_USER:-rw_user};Password=${POSTGRES_PASSWORD:-test_password};Server=postgres_db;Port=5432;Database=${POSTGRES_DB:-core_db}"
+      DatabaseSettings__SessionConnectionString: "User Id=${POSTGRES_USER:-rw_user};Password=${POSTGRES_PASSWORD:-test_password};Server=postgres_db;Port=5432;Database=sessions_db"
+    depends_on:
+      - postgres_db
+
+  postgres_db:
+    image: postgres:15.8-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-sessions_db}
+      POSTGRES_USER: ${POSTGRES_USER:-rw_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ${DATA_DIR:-/var/lib/rwparcer/data}/pgdata:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          memory: 500M

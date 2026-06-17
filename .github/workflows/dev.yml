@@ -92,6 +92,7 @@ jobs:
           export IMAGE_TAG=${{ env.ENVIRONMENT }}-${{ github.sha }}
           export COMPOSE_PROJECT_NAME="rwparcer-${{ env.ENVIRONMENT }}"
           export APPSETTINGS_JSON='${{ secrets.DEV_APP_SETTINGS_JSON }}'
+          export POSTGRES_PASSWORD='${{ secrets.POSTGRES_PASSWORD }}'
           export PARSER_IMAGE="ghcr.io/$REPO_LOWER:$IMAGE_TAG"
           export PROXY_MANAGER_IMAGE="ghcr.io/$REPO_LOWER-proxy-manager:$IMAGE_TAG"
           export DATA_DIR="/var/lib/rwparcer-dev/data"
