@@ -98,6 +98,7 @@ jobs:
           export DATA_DIR="/var/lib/rwparcer-dev/data"
           export PROXY_DB_PATH="/var/lib/rwparcer-dev/proxies.db"
           export PROXY_FILE_PATH="/var/lib/rwparcer-dev/proxies.txt"
+          export POSTGRES_PORT=5433
           docker pull "$PARSER_IMAGE"
           docker pull "$PROXY_MANAGER_IMAGE"
           docker compose -f docker-compose.yml pull
