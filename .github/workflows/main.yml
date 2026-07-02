@@ -1,103 +1,122 @@
-name: RWParcer CI/CD (PROD)
+name: RWParcer CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - dev
+      - main
+
     paths-ignore:
-      - "README.md"
+      - README.md
+
   workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  ENVIRONMENT: prod
 
 jobs:
-  ci-checks:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Secret Detection (Gitleaks)
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Build Check
-        run: dotnet build --no-restore --configuration Release
-
-      # - name: Run Tests #need to fix tests later: The ConnectionString property has not been initialized
-        # run: dotnet test RWParcerCore.Tests/RWParcerCore.Tests.csproj --no-build --configuration Release --verbosity normal
-
   build:
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
       packages: write
+
+    strategy:
+      matrix:
+        include:
+
+          - image: parser
+            dockerfile: Dockerfile
+            context: .
+
+          - image: proxy-manager
+            dockerfile: proxy-manager/Dockerfile
+            context: proxy-manager
+
     steps:
       - uses: actions/checkout@v4
-      - name: Build and Push Images
-        run: |
-          REPO_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
-          docker build -t ${{ env.REGISTRY }}/$REPO_LOWER:${{ env.ENVIRONMENT }}-latest -t ${{ env.REGISTRY }}/$REPO_LOWER:${{ env.ENVIRONMENT }}-${{ github.sha }} -f Dockerfile .
-          docker build -t ${{ env.REGISTRY }}/$REPO_LOWER-proxy-manager:${{ env.ENVIRONMENT }}-latest -t ${{ env.REGISTRY }}/$REPO_LOWER-proxy-manager:${{ env.ENVIRONMENT }}-${{ github.sha }} -f proxy-manager/Dockerfile proxy-manager
-          
-      - name: Wait for CI Checks
-        uses: lewagon/wait-on-check-action@v1.3.1
+      
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - uses: docker/login-action@v3
         with:
-          ref: ${{ github.ref }}
-          check-name: 'ci-checks'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 5
-          allowed-conclusions: success
-          
-      - name: Login and Push
-        run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
-          REPO_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
-          docker push ${{ env.REGISTRY }}/$REPO_LOWER:${{ env.ENVIRONMENT }}-latest
-          docker push ${{ env.REGISTRY }}/$REPO_LOWER:${{ env.ENVIRONMENT }}-${{ github.sha }}
-          docker push ${{ env.REGISTRY }}/$REPO_LOWER-proxy-manager:${{ env.ENVIRONMENT }}-latest
-          docker push ${{ env.REGISTRY }}/$REPO_LOWER-proxy-manager:${{ env.ENVIRONMENT }}-${{ github.sha }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-  deploy-prod:
-    needs: [ci-checks, build]
-    runs-on: self-hosted
-    environment: 
-      name: production
-    steps:
-      - uses: actions/checkout@v4 
+      - uses: docker/setup-buildx-action@v3
 
-      - name: Prepare Infrastructure
+      - name: Set image tags
+        id: vars
         run: |
-          if [ ! -d "/var/lib/rwparcer-prod/data" ]; then
-            echo "Warning: /var/lib/rwparcer-prod/data does not exist. Creating with sudo..."
+
+          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+
+          if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
+            ENV=prod
+          else
+            ENV=dev
           fi
 
-      - name: Docker Deploy to Production
-        run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          REPO_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
-          export IMAGE_TAG=${{ env.ENVIRONMENT }}-${{ github.sha }}
-          export COMPOSE_PROJECT_NAME="rwparcer-${{ env.ENVIRONMENT }}"
-          export APPSETTINGS_JSON='${{ secrets.PROD_APP_SETTINGS_JSON }}'
-          export POSTGRES_PASSWORD='${{ secrets.POSTGRES_PASSWORD }}'
-          export PARSER_IMAGE="ghcr.io/$REPO_LOWER:$IMAGE_TAG"
-          export PROXY_MANAGER_IMAGE="ghcr.io/$REPO_LOWER-proxy-manager:$IMAGE_TAG"
-          export DATA_DIR="/var/lib/rwparcer-prod/data"
-          export PROXY_DB_PATH="/var/lib/rwparcer-prod/proxies.db"
-          export PROXY_FILE_PATH="/var/lib/rwparcer-prod/proxies.txt"
-          docker pull "$PARSER_IMAGE"
-          docker pull "$PROXY_MANAGER_IMAGE"
-          docker compose -f docker-compose.yml pull
-          docker compose -f docker-compose.yml up -d --remove-orphans
+          echo "repo=$REPO" >> $GITHUB_OUTPUT
+          echo "env=$ENV" >> $GITHUB_OUTPUT
+
+      - uses: docker/build-push-action@v6
+
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: |
+            ghcr.io/${{ steps.vars.outputs.repo }}${{ matrix.image == 'parser' && '' || format('-{0}', matrix.image) }}:${{ steps.vars.outputs.env }}-latest
+            ghcr.io/${{ steps.vars.outputs.repo }}${{ matrix.image == 'parser' && '' || format('-{0}', matrix.image) }}:${{ steps.vars.outputs.env }}-${{ github.sha }}
+
+  deploy-dev:
+    if: github.ref_name == 'dev'
+    needs: build
+    runs-on: self-hosted
+    environment:
+      name: development
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./scripts/deploy.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          IMAGE_TAG: dev-${{ github.sha }}
+          APPSETTINGS_JSON: ${{ secrets.DEV_APP_SETTINGS_JSON }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_PORT: 5433
+          DATA_DIR: "/var/lib/rwparcer-dev/data"
+          PROXY_DB_PATH: "/var/lib/rwparcer-dev/proxies.db"
+
+  deploy-prod:
+    if: github.ref_name == 'main'
+    needs: build
+    runs-on: self-hosted
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./scripts/deploy.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          IMAGE_TAG: prod-${{ github.sha }}
+          APPSETTINGS_JSON: ${{ secrets.PROD_APP_SETTINGS_JSON }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          DATA_DIR: "/var/lib/rwparcer-prod/data"
+          PROXY_DB_PATH: "/var/lib/rwparcer-prod/proxies.db"
+
+          PROXY_FILE_PATH: ${{ secrets.PROXY_FILE_PATH }}
