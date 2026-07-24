@@ -20,7 +20,7 @@ DATA_DIR="/var/lib/rwparcer-${ENVIRONMENT}/data"
 PROXY_DB_PATH="/var/lib/rwparcer-${ENVIRONMENT}/proxies.db"
 
 export REPO=$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')
-export IMAGE_TAG="${ENVIRONMENT}-${GITHUB_SHA}"
+export IMAGE_TAG="${ENVIRONMENT}-${GITHUB_RUN_NUMBER}"
 export DATA_DIR="/var/lib/rwparcer-${ENVIRONMENT}/data"
 export PROXY_DB_PATH="/var/lib/rwparcer-${ENVIRONMENT}/proxies.db"
 

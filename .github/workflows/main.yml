@@ -65,9 +65,8 @@ jobs:
       - name: Set image tags
         id: vars
         run: |
-
           REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-
+          RUN_NUMBER="${{ github.run_number }}"
           if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
             ENV=prod
           else
@@ -76,6 +75,7 @@ jobs:
 
           echo "repo=$REPO" >> $GITHUB_OUTPUT
           echo "env=$ENV" >> $GITHUB_OUTPUT
+          echo "run_number=$RUN_NUMBER" >> $GITHUB_OUTPUT
 
       - uses: docker/build-push-action@v6
 
@@ -88,6 +88,7 @@ jobs:
           tags: |
             ghcr.io/${{ steps.vars.outputs.repo }}${{ matrix.image == 'parser' && '' || format('-{0}', matrix.image) }}:${{ steps.vars.outputs.env }}-latest
             ghcr.io/${{ steps.vars.outputs.repo }}${{ matrix.image == 'parser' && '' || format('-{0}', matrix.image) }}:${{ steps.vars.outputs.env }}-${{ github.sha }}
+            ghcr.io/${{ steps.vars.outputs.repo }}${{ matrix.image == 'parser' && '' || format('-{0}', matrix.image) }}:${{ steps.vars.outputs.env }}-${{ steps.vars.outputs.run_number }}
 
   deploy:
     if: github.ref_name == 'dev' || github.ref_name == 'main'
@@ -103,6 +104,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
           GITHUB_REF_NAME: ${{ github.ref_name }}
           APPSETTINGS_JSON: ${{ github.ref_name == 'dev' && secrets.DEV_APP_SETTINGS_JSON || secrets.PROD_APP_SETTINGS_JSON }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
