@@ -6,6 +6,19 @@ trap 'echo "FAILED at line $LINENO"' ERR
 
 start_time=$(date +%s)
 
+BRANCH_NAME="${GITHUB_REF_NAME:-}"
+
+if [ "$BRANCH_NAME" == "main" ]; then
+    ENVIRONMENT="prod"
+    echo "Deploying to PRODUCTION environment"
+else
+    ENVIRONMENT="dev"
+    echo "Deploying to DEVELOPMENT environment"
+fi
+
+DATA_DIR="/var/lib/rwparcer-${ENVIRONMENT}/data"
+PROXY_DB_PATH="/var/lib/rwparcer-${ENVIRONMENT}/proxies.db"
+
 export REPO=$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')
 export IMAGE_TAG="${ENVIRONMENT}-${GITHUB_SHA}"
 export DATA_DIR="/var/lib/rwparcer-${ENVIRONMENT}/data"

@@ -89,42 +89,22 @@ jobs:
             ghcr.io/${{ steps.vars.outputs.repo }}${{ matrix.image == 'parser' && '' || format('-{0}', matrix.image) }}:${{ steps.vars.outputs.env }}-latest
             ghcr.io/${{ steps.vars.outputs.repo }}${{ matrix.image == 'parser' && '' || format('-{0}', matrix.image) }}:${{ steps.vars.outputs.env }}-${{ github.sha }}
 
-  deploy-dev:
-    if: github.ref_name == 'dev'
+  deploy:
+    if: github.ref_name == 'dev' || github.ref_name == 'main'
     needs: build
     runs-on: self-hosted
     environment:
-      name: development
+      name: ${{ github.ref_name == 'main' && 'production' || 'development' }}
     steps:
       - uses: actions/checkout@v4
-      - run: ./scripts/deploy.sh
+      - name: Deploy
+        run: ./scripts/deploy.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
-          ENVIRONMENT: dev
           GITHUB_SHA: ${{ github.sha }}
-          DATA_DIR: "/var/lib/rwparcer-${{ env.ENVIRONMENT }}/data"
-          PROXY_DB_PATH: "/var/lib/rwparcer-${{ env.ENVIRONMENT }}/proxies.db"
-          APPSETTINGS_JSON: ${{ secrets.DEV_APP_SETTINGS_JSON }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          APPSETTINGS_JSON: ${{ github.ref_name == 'dev' && secrets.DEV_APP_SETTINGS_JSON || secrets.PROD_APP_SETTINGS_JSON }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_PORT: 5433
-
-  deploy-prod:
-    if: github.ref_name == 'main'
-    needs: build
-    runs-on: self-hosted
-    environment:
-      name: production
-    steps:
-      - uses: actions/checkout@v4
-      - run: ./scripts/deploy.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTOR: ${{ github.actor }}
-          ENVIRONMENT: prod
-          GITHUB_SHA: ${{ github.sha }}
-          APPSETTINGS_JSON: ${{ secrets.PROD_APP_SETTINGS_JSON }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
-
-          PROXY_FILE_PATH: ${{ secrets.PROXY_FILE_PATH }}
+          ENV_NAME: ${{ github.ref_name == 'main' && 'production' || 'development' }}
+          POSTGRES_PORT: ${{ github.ref_name == 'dev' && '5433' || '' }}
