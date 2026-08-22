@@ -8,3 +8,4 @@
 **/appsettings.json
 **/DesignTimeDbContextFactory.cs
 **/.kilo/
+**/.venv/
