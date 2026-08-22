@@ -10,7 +10,7 @@ from __future__ import annotations
 from app.bot.command_names import CommandNames
 from app.bot.context import CommandContext
 from app.bot.interfaces import IMenuProvider
-from app.domain.value_objects import Station, SubscriptionDetails, Train, UserInfo
+from app.domain.value_objects import Train, UserInfo
 
 
 class MainMenuProvider(IMenuProvider):
@@ -81,7 +81,9 @@ class SubscribeDateChoiceProvider(IMenuProvider):
     async def get_options(self, ctx: CommandContext) -> dict[str, CommandNames]:
         return {
             "📅 Ввести дату": CommandNames.SUBSCRIBE_ENTER_DATE,
-            f"🕒 Последняя дата: {ctx.session.date}": CommandNames.SUBSCRIBE_USE_LAST_DATE,
+            (
+                f"🕒 Последняя дата: {ctx.session.date.strftime('%d.%m.%Y')}"
+            ): CommandNames.SUBSCRIBE_USE_LAST_DATE,
             "📆 Ввести диапазон": CommandNames.SUBSCRIBE_ENTER_DATE_RANGE,
             "🏠 В главное меню": CommandNames.MAIN_MENU_SELECT,
         }
@@ -91,7 +93,9 @@ class UnsubscribeDateChoiceProvider(IMenuProvider):
     async def get_options(self, ctx: CommandContext) -> dict[str, CommandNames]:
         return {
             "📅 Ввести дату": CommandNames.UNSUBSCRIBE_ENTER_DATE,
-            f"🕒 Использовать последнюю дату: {ctx.session.date}": CommandNames.UNSUBSCRIBE_USE_LAST_DATE,
+            (
+                f"🕒 Использовать последнюю дату: {ctx.session.date.strftime('%d.%m.%Y')}"
+            ): CommandNames.UNSUBSCRIBE_USE_LAST_DATE,
             "Ввести диапазон": CommandNames.UNSUBSCRIBE_ENTER_DATE_RANGE,
             "🏠 В главное меню": CommandNames.MAIN_MENU_SELECT,
         }

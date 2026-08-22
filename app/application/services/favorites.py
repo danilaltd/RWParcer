@@ -51,4 +51,4 @@ async def remove_from_favorites(
     match = next((f for f in existing if f.train_info == train), None)
     if match is None:
         raise KeyNotFoundError(f"{user_id} No such favorite")
-    await favorites.remove_favorite(match.id)
+    await favorites.remove_favorite(match)

@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING
 
 from aiogram import Bot
 from aiogram.types import KeyboardButton, Message, ReplyKeyboardMarkup, ReplyKeyboardRemove
-
 from app.bot.command_names import CommandNames
 from app.bot.session import BotSession
 
@@ -63,21 +62,23 @@ class CommandContext:
     async def send_keyboard(
         self, options: Iterable[str], prompt: str, wrapping: bool = False
     ) -> None:
-        options = list(options)[:174]  # C# ``Take(174)``
+        options = list(options)
         if wrapping:
+            # C# takes 174 entries only for the prompt suffix; all options
+            # become numbered buttons.
             prompt += "\n" + "\n\n".join(
-                f"{index + 1} {label}" for index, label in enumerate(options)
+                f"{index + 1} {label}" for index, label in enumerate(options[:174])
             )
             buttons = [[KeyboardButton(text=str(index + 1))] for index in range(len(options))]
         else:
-            buttons = [[KeyboardButton(text=label)] for label in options]
+            buttons = [[KeyboardButton(text=label)] for label in options[:174]]
 
         keyboard = ReplyKeyboardMarkup(
             keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
         )
         await self._send_to_client(prompt, reply_markup=keyboard)
 
-    async def reset_session(self, message: str, router: "ICommandRouter") -> None:
+    async def reset_session(self, message: str, router: ICommandRouter) -> None:
         """C# ``ResetSessionAsync`` — wipe state and jump to the main menu."""
         self._session.reset()
         await self.send_message(message)

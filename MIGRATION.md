@@ -9,10 +9,10 @@ strings, retry semantics, date rules, seat-diff logic, DB schema) is preserved.
 | Decision | Choice |
 |---|---|
 | Architecture | Modular monolith, not microservices. The bot, application layer and infrastructure are Python packages in one process, sharing in-process calls. No REST contracts, queues or extra network hops between internal components. |
-| Runtime | `app/` is the Python package; `app/main.py` is the composition root. |
-| Bot | `aiogram` 3.x polling (matching `BotService.StartReceiving`). |
+| Runtime | `app/__main__.py` is the composition root; entry `python -m app`. |
+| Bot | `aiogram` 3.x **manual long-polling** — a `Bot.get_updates` loop in `app/bot/service.py` mirrors `BotService.StartReceiving`; no `Dispatcher`. |
 | DB | `SQLAlchemy 2.0` (async) + `asyncpg` + `alembic`. One database `core_db` (the original had `core_db` + `sessions_db`; they are consolidated). |
-| Session/FSM | PostgreSQL-backed FSM (`app/bot/fsm_storage.py`) reusing the `sessions` table. `MemoryStorage` is not used in production. |
+| Session/FSM | PostgreSQL-backed custom storage `app/bot/storage.py` (`SessionStorage` + `BotSessionManager` over the `sessions` table); `MemoryStorage` and aiogram FSM are NOT used. |
 | HTTP client | `httpx`, one shared client, 10 s timeout, proxy for car places only. |
 | Config | `pydantic-settings`, reading `APPSETTINGS_JSON` (like `AppSettingsConfigurationExtensions`) + env overrides. |
 
@@ -27,9 +27,9 @@ strings, retry semantics, date rules, seat-diff logic, DB schema) is preserved.
 | `RWParcerCore/Infrastructure/Converters/` (EF ValueConverters) | `app/domain/json_codecs.py` (exact same JSON shapes) |
 | `RWParcerCore/Infrastructure/Services/NotificationBackgroundService.cs` | `app/application/notifier.py` |
 | `RWParcerCore/InterfaceAdapters/Facades/Facade.cs` | `app/application/facade.py` |
-| `RWParcer/Services/BotService.cs` + `CommandRouter` + Handlers | `app/bot/` (routers) |
-| `RWParcer/Models/UserSession.cs`, `PostgresSessionStore.cs` | `app/bot/session_store.py` (aiogram FSM storage) |
-| `Program.cs` (composition root) | `app/main.py` |
+| `RWParcer/Services/BotService.cs` + `CommandRouter` + Handlers | `app/bot/` — `service.py`, `router.py`, `handlers/*`, `context.py` |
+| `RWParcer/Models/UserSession.cs`, `PostgresSessionStore.cs`, `SessionManager.cs` | `app/bot/session.py` + `app/bot/storage.py` |
+| `Program.cs` (composition root) | `app/__main__.py` |
 
 ### 3. Domain mapping
 
@@ -79,8 +79,20 @@ checks are expressed via small internal helpers that raise the same error types:
   * message: `dd.MM.yyyy` / `{from:Label} - {to:Label} / HH:mm→HH:mm` /
     `"Изменены места"|"Свободные места"`.
   * 5 retry attempts, `timeout` + HTTP + unknown kind catches.
-- `app/bot/fsm_storage.py` implements `aiogram.fsm.storage.base.BaseStorage`
-  over `<base>.<fqdn>.sessions` table (chat_id TEXT PK, state TEXT, data TEXT JSON).
+- `app/bot/storage.py` is the Python twin of `PostgresSessionStore` +
+  `SessionManager`: `SessionStorage.load()` reads the full `sessions` table,
+  `SessionStorage.save_all()` upserts a full snapshot after every update, and
+  `BotSessionManager` is the in-memory `GetOrAdd`-by-chat-id store.
+  `sessions.data` is a JSON array of `{"Type": ..., "Data": ...}` objects —
+  the exact shape `PostgresSessionStore.SaveAsync` produced via
+  `SerializeToJson` — with `Train`/`Station`/`SubscriptionDetails`/`UserInfo`/
+  `TimeSpan` (and list thereof) codecs in `app/bot/storage.py`.
+
+Sessions were consolidated into `core_db.sessions` (the old `sessions_db`
+is gone). Migrations run with `alembic -c alembic.ini upgrade head` inside the
+container before `python -m app`; the URL comes from `DATABASE_URL`/
+`DATABASE_URL_SYNC` (see `app/infrastructure/db/alembic/env.py`). CI runs
+`ruff check app tests` + `.venv/bin/pytest -q` before any image build.
 
 ## 5. Behavior parity checkpoints (must keep identical)
 
@@ -107,8 +119,8 @@ On every non-ignored attempt the log line to stdout is `"Попытка {attempt
 ## 7. Engine/OS parity
 
 - Tests run on `pytest`/`pytest-asyncio`; lint via `ruff`.
-- Build: `app/Dockerfile` (python:3.12-slim, non-root). Compose replaces the old .NET image.
-- CI: `.github/workflows/main.yml` updated: jobs run `ruff check .` + `pytest -q` then build/push images.
+- Build: repo-root `Dockerfile` (`python:3.12-slim`, `alembic upgrade head` then `python -m app`). Compose replaces the old .NET image.
+- CI: `.github/workflows/main.yml` — `lint` (`ruff check app tests`) and `test` (`pytest -q`) jobs gate the image build/push.
 
 ## 8. Known deviations & assumptions
 

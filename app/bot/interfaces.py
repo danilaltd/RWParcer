@@ -19,18 +19,18 @@ if TYPE_CHECKING:
 class IMenuProvider(Protocol):
     """C# ``IMenuProvider.GetOptionsAsync`` — label -> next command."""
 
-    async def get_options(self, ctx: "CommandContext") -> dict[str, CommandNames]: ...
+    async def get_options(self, ctx: CommandContext) -> dict[str, CommandNames]: ...
 
 
 class ICommandHandler(Protocol):
     """C# ``ICommandHandler.HandleAsync``."""
 
-    async def handle(self, ctx: "CommandContext") -> None: ...
+    async def handle(self, ctx: CommandContext) -> None: ...
 
 
 class ICommandRouter(Protocol):
     """C# ``ICommandRouter.RouteAsync``."""
 
     async def route(
-        self, cmd: CommandNames | None, ctx: "CommandContext"
+        self, cmd: CommandNames | None, ctx: CommandContext
     ) -> None: ...
