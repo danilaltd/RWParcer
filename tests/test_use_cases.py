@@ -162,8 +162,11 @@ class InMemoryNotifications:
 
 class NoopMessages:
     async def add_message(self, message) -> None: ...
-    async def get_user_messages(self, user_id: str) -> list: ...
-    async def get_all_messages(self) -> list: ...
+    async def get_user_messages(self, user_id: str) -> list:
+        return []
+
+    async def get_all_messages(self) -> list:
+        return []
 
 
 class NoopRw:

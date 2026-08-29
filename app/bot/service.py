@@ -15,6 +15,7 @@ import logging
 from collections.abc import Sequence
 from typing import Any
 
+from aiogram import Bot
 from aiogram.enums import ContentType
 from app.application.errors import UnauthorizedError
 from app.application.facade import Facade
@@ -33,7 +34,7 @@ class BotService:
 
     def __init__(
         self,
-        bot: Any,
+        bot: Bot,
         store: SessionStorage,
         facade: Facade,
         router: CommandRouter,

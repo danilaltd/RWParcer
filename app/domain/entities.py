@@ -60,7 +60,7 @@ class Subscription:
     user_id: str
     details: SubscriptionDetails
     last_update: datetime.datetime | None = None
-    last_state: list[Car] = field(default_factory=list)
+    last_state: list[Car] | None = None
 
 
 @dataclass(frozen=True)

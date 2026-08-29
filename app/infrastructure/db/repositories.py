@@ -77,7 +77,7 @@ def subscription_to_row(entity: Subscription) -> SubscriptionRow:
         user_id=entity.user_id,
         details=json_codecs.subscription_details_to_json(entity.details),
         last_update=entity.last_update,
-        last_state=[json_codecs.car_to_json(car) for car in entity.last_state],
+        last_state=[json_codecs.car_to_json(car) for car in entity.last_state or []],
     )
 
 
@@ -216,12 +216,12 @@ class UserPostgresRepository(_RepositoryBase):
             rows = await session.scalars(
                 select(UserRow).where(UserRow.last_activity >= cutoff)
             )
-            return [user_to_row_to_entity_or_none(r) for r in rows]  # noqa: RUF100
+            return [user_row_to_entity(r) for r in rows]
 
     async def get_moderators(self) -> list[User]:
         async with self._session_factory() as session:
             rows = await session.scalars(select(UserRow).where(UserRow.is_moderator))
-            return [user_to_row_to_entity_or_none(r) for r in rows]  # noqa: RUF100
+            return [user_row_to_entity(r) for r in rows]
 
     async def _user_or_raise(self, session: AsyncSession, user_id: str) -> UserRow:
         row = await session.scalar(select(UserRow).where(UserRow.id == user_id))

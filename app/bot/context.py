@@ -147,4 +147,4 @@ class CommandContext:
 
 
 if TYPE_CHECKING:
-    from app.bot.router import ICommandRouter
+    from app.bot.interfaces import ICommandRouter

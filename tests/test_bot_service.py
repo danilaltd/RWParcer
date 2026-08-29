@@ -8,10 +8,13 @@ without a network connection or a database.
 from __future__ import annotations
 
 import asyncio
+from collections.abc import AsyncGenerator
 from types import SimpleNamespace
+from typing import cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from aiogram import Bot
 from app.application.facade import Facade
 from app.bot.router import CommandRouter
 from app.bot.service import BotService
@@ -77,12 +80,14 @@ class RecordingStore(SessionStorage):
 
 
 @pytest.fixture
-async def service(fake_facade: MagicMock) -> tuple[BotService, FakeBot, RecordingStore]:
+async def service(
+    fake_facade: MagicMock,
+) -> AsyncGenerator[tuple[BotService, FakeBot, RecordingStore], None]:
     bot = FakeBot()
     store = RecordingStore()
     router = CommandRouter(fake_facade)
     svc = BotService(
-        bot=bot,
+        bot=cast(Bot, bot),
         store=store,
         facade=fake_facade,
         router=router,

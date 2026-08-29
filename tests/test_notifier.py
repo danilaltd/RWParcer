@@ -37,6 +37,51 @@ class FakeUsers:
     async def get_user_min_interval(self, user_id: str) -> int:
         return self._min_interval
 
+    async def is_user_registered(self, user_id: str) -> bool:
+        raise NotImplementedError
+
+    async def add_user(self, user) -> None:
+        raise NotImplementedError
+
+    async def is_user_moderator(self, user_id: str) -> bool:
+        raise NotImplementedError
+
+    async def get_user_max_subscriptions(self, user_id: str) -> int:
+        raise NotImplementedError
+
+    async def get_user_by_id(self, user_id: str) -> None:
+        raise NotImplementedError
+
+    async def set_users_min_interval(self, user_id: str, min_interval: int) -> None:
+        raise NotImplementedError
+
+    async def set_users_max_subscriptions(self, user_id: str, max_subscriptions: int) -> None:
+        raise NotImplementedError
+
+    async def ban_user(self, user_id: str) -> None:
+        raise NotImplementedError
+
+    async def unban_user(self, user_id: str) -> None:
+        raise NotImplementedError
+
+    async def promote_user(self, user_id: str) -> None:
+        raise NotImplementedError
+
+    async def demote_user(self, user_id: str) -> None:
+        raise NotImplementedError
+
+    async def is_user_banned(self, user_id: str) -> bool:
+        raise NotImplementedError
+
+    async def update_activity(self, user_id: str) -> None:
+        raise NotImplementedError
+
+    async def get_last_users(self, time_span) -> list:
+        raise NotImplementedError
+
+    async def get_moderators(self) -> list:
+        raise NotImplementedError
+
 
 class FakeSubscriptions:
     def __init__(self, actual: Subscription) -> None:
@@ -52,6 +97,24 @@ class FakeSubscriptions:
     async def get_all_subscriptions(self) -> list[Subscription]:
         return []
 
+    async def get_user_subscriptions(self, user_id: str) -> list[Subscription]:
+        raise NotImplementedError
+
+    async def add_subscription(self, subscription: Subscription) -> None:
+        raise NotImplementedError
+
+    async def remove_subscription(self, subscription: Subscription) -> None:
+        raise NotImplementedError
+
+    async def subscription_exists(self, user_id: str, details) -> bool:
+        raise NotImplementedError
+
+    async def get_subscription_count(self, user_id: str) -> int:
+        raise NotImplementedError
+
+    async def reset_subscription(self, subscription: Subscription) -> None:
+        raise NotImplementedError
+
 
 class FakeNotifications:
     def __init__(self) -> None:
@@ -60,6 +123,9 @@ class FakeNotifications:
     async def add_notification(self, notification: Notification) -> None:
         self.added.append(notification)
 
+    async def pop_all(self) -> list[Notification]:
+        raise NotImplementedError
+
 
 class FakeRw:
     def __init__(self, seats: list[Car]) -> None:
@@ -67,6 +133,12 @@ class FakeRw:
 
     async def get_seats(self, details) -> list[Car]:
         return self._seats
+
+    async def get_stations(self, prefix: str) -> list[Station]:
+        raise NotImplementedError
+
+    async def get_trains(self, route) -> list[Train]:
+        raise NotImplementedError
 
 
 class _QuietLogger:

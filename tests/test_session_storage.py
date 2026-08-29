@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import datetime
 import json
-from types import SimpleNamespace
 
 from app.bot import storage
 from app.bot.command_names import CommandNames
@@ -19,6 +18,7 @@ from app.domain.value_objects import (
     Train,
     UserInfo,
 )
+from app.infrastructure.db.models import SessionRow
 
 
 def make_train() -> Train:
@@ -150,9 +150,11 @@ def test_session_from_row_round_trips_data_json() -> None:
         data=[make_train(), Station("Минск", "МСК")],
         date=datetime.date(2026, 8, 22),
     )
-    row = SimpleNamespace(
+    row = SessionRow(
         chat_id="1",
-        current_command=int(session.current_command),
+        current_command=(
+            int(session.current_command) if session.current_command is not None else None
+        ),
         init_state=True,
         data=storage.serialize_session_data(session.data),
         date=session.date,
