@@ -58,7 +58,7 @@ class Notifier:
             try:
                 subscriptions = await self._subscriptions.get_all_subscriptions()
                 if not subscriptions:
-                    await asyncio.sleep(0.01)  # C# ``Task.Delay(10)``
+                    await asyncio.sleep(10)  # C# ``Task.Delay(10)``
                 if await self._unsubscribe_expired(subscriptions):
                     continue
                 await asyncio.gather(

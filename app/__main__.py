@@ -14,6 +14,7 @@ import signal
 from aiogram import Bot
 
 from app.application.facade import Facade
+from app.application.notifier import Notifier
 from app.bot.router import CommandRouter
 from app.bot.service import BotService
 from app.bot.storage import SessionStorage
@@ -49,7 +50,8 @@ def _build(settings: Settings) -> tuple[BotService, Bot, EngineHolder]:
     rw = RwClient(http, logger)
 
     facade = Facade(users, subscriptions, favorites, notifications, messages, rw)
-
+    notifier = Notifier(subscriptions, notifications, users, rw, logger)
+    asyncio.create_task(notifier.run(asyncio.Event()))
     bot = Bot(token=settings.bot.token)
     router = CommandRouter(facade)
     store = SessionStorage(session_factory)
