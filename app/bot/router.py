@@ -10,6 +10,7 @@ from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING
 
+from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.handlers.core import (
     FeedbackHandler,
@@ -76,11 +77,11 @@ if TYPE_CHECKING:
 class CommandRouter:
     """Maps every ``CommandNames`` value to its handler (like the C# dict)."""
 
-    def __init__(self, facade) -> None:
+    def __init__(self, facade: Facade) -> None:
         self._map: dict[CommandNames, ICommandHandler] = {}
         self._build(facade)
 
-    def _build(self, facade) -> None:
+    def _build(self, facade: Facade) -> None:
         self._map.update(
             {
                 CommandNames.START: StartHandler(facade, self),

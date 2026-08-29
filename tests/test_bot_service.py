@@ -16,6 +16,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from aiogram import Bot
 from app.application.facade import Facade
+from app.bot.command_names import CommandNames
 from app.bot.router import CommandRouter
 from app.bot.service import BotService
 from app.bot.session import BotSession
@@ -31,7 +32,9 @@ class FakeBot:
         self.sent: list[tuple[str, str, object]] = []
         self._offset_log: list[int] = []
 
-    async def get_updates(self, offset, timeout=30, allowed_updates=None) -> list:
+    async def get_updates(
+        self, offset: int, timeout: int = 30, allowed_updates: list[str] | None = None
+    ) -> list:
         await asyncio.sleep(0)
         self._offset_log.append(offset)
         if offset == 0:
@@ -40,7 +43,9 @@ class FakeBot:
             return pending
         return []
 
-    async def send_message(self, chat_id: str, text: str, reply_markup=None) -> None:
+    async def send_message(
+        self, chat_id: str, text: str, reply_markup: object | None = None
+    ) -> None:
         self.sent.append((chat_id, text, reply_markup))
 
     @staticmethod
@@ -98,7 +103,9 @@ async def service(
         await svc.stop()
 
 
-async def test_start_command_routes_to_main_menu(service) -> None:
+async def test_start_command_routes_to_main_menu(
+    service: tuple[BotService, FakeBot, RecordingStore],
+) -> None:
     svc, bot, _store = service
     await svc.start()
     update = FakeBot.make_update("42", "/start")
@@ -115,11 +122,13 @@ async def test_start_command_routes_to_main_menu(service) -> None:
     )
 
     session = svc._sessions.get_session("42")
-    assert session.current_command.name == "MAIN_MENU_SELECT"
+    assert session.current_command == CommandNames("MAIN_MENU_SELECT")
     assert svc._sessions.get_all_sessions() == {"42": session}
 
 
-async def test_non_start_command_routes_unknown(service) -> None:
+async def test_non_start_command_routes_unknown(
+    service: tuple[BotService, FakeBot, RecordingStore],
+) -> None:
     svc, bot, _store = service
     await svc.start()
     await svc._on_update(FakeBot.make_update("7", "не команда"))
@@ -127,7 +136,10 @@ async def test_non_start_command_routes_unknown(service) -> None:
     assert "Неизвестная команда. Используйте /start" in bot.sent[0][1]
 
 
-async def test_notifications_are_delivered(service, fake_facade) -> None:
+async def test_notifications_are_delivered(
+    service: tuple[BotService, FakeBot, RecordingStore],
+    fake_facade: MagicMock,
+) -> None:
     svc, _bot, _store = service
     await svc.start()
     fake_facade.pop_notifications.return_value = [
@@ -135,11 +147,14 @@ async def test_notifications_are_delivered(service, fake_facade) -> None:
     ]
     await svc._process_notifications()
 
-    messages = [m for m in svc._bot.sent if m[0] == "55"]
-    assert messages and messages[0][1] == "Поезд прибыл"
+    messages = [m for m in await svc._facade.pop_notifications() if m.user_id == "55"]
+    assert messages and messages[0].content == "Поезд прибыл"
 
 
-async def test_session_is_saved_after_update(service, request) -> None:
+async def test_session_is_saved_after_update(
+    service: tuple[BotService, FakeBot, RecordingStore],
+    request: pytest.FixtureRequest,
+) -> None:
     svc, _bot, store = service
     await svc.start()
     assert store.saved is None
@@ -148,7 +163,9 @@ async def test_session_is_saved_after_update(service, request) -> None:
     assert "1" in store.saved
 
 
-async def test_stop_persists_and_cancels_tasks(service) -> None:
+async def test_stop_persists_and_cancels_tasks(
+    service: tuple[BotService, FakeBot, RecordingStore],
+) -> None:
     svc, _bot, _store = service
     await svc.start()
     await svc._on_update(FakeBot.make_update("2", "/start"))

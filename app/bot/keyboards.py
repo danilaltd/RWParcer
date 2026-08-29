@@ -7,6 +7,7 @@ to the C# source.
 
 from __future__ import annotations
 
+from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.context import CommandContext
 from app.bot.interfaces import IMenuProvider
@@ -14,7 +15,7 @@ from app.domain.value_objects import Train, UserInfo
 
 
 class MainMenuProvider(IMenuProvider):
-    def __init__(self, facade) -> None:
+    def __init__(self, facade: Facade) -> None:
         self._facade = facade
 
     async def get_options(self, ctx: CommandContext) -> dict[str, CommandNames]:
@@ -32,7 +33,7 @@ class MainMenuProvider(IMenuProvider):
 
 
 class ManageUsersChoiceProvider(IMenuProvider):
-    def __init__(self, facade) -> None:
+    def __init__(self, facade: Facade) -> None:
         self._facade = facade
 
     async def get_options(self, ctx: CommandContext) -> dict[str, CommandNames]:
@@ -102,7 +103,7 @@ class UnsubscribeDateChoiceProvider(IMenuProvider):
 
 
 class TrainActionsProvider(IMenuProvider):
-    def __init__(self, facade) -> None:
+    def __init__(self, facade: Facade) -> None:
         self._facade = facade
 
     async def get_options(self, ctx: CommandContext) -> dict[str, CommandNames]:
@@ -133,7 +134,7 @@ class SubscriptionActionsProvider(IMenuProvider):
         }
 
 
-def first_of_type(data: list, target: type, default=None):
+def first_of_type(data: list, target: type, default: object | None = None) -> object | None:
     return next((d for d in data if isinstance(d, target)), default)
 
 

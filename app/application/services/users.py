@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import datetime
+
 from app.application.errors import KeyNotFoundError, UnauthorizedError
 from app.application.services.guards import require_registered
 from app.domain.entities import User
@@ -87,7 +89,9 @@ async def is_user_banned(users: UserRepository, user_id: str, target_id: str) ->
         await _finally_update(users, user_id, original_exception)
 
 
-async def get_users(users: UserRepository, user_id: str, time_span) -> list[UserInfo]:
+async def get_users(
+    users: UserRepository, user_id: str, time_span: datetime.timedelta
+) -> list[UserInfo]:
     """Return users with activity within ``time_span``; the requester must be a moderator."""
     original_exception: BaseException | None = None
     try:

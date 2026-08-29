@@ -8,9 +8,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.converters import convert_train
 from app.bot.handlers.base import BaseTrainsHandler
+from app.bot.interfaces import ICommandRouter
 from app.domain.value_objects import Train
 
 if TYPE_CHECKING:
@@ -41,7 +43,7 @@ class FavoritesSelectHandler(BaseTrainsHandler):
 class _TrainMenuActionBase:
     """C# ``TrainsMenu.Favorites`` handlers — session guard, then act + menu."""
 
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         self._facade = facade
         self._router = router
 

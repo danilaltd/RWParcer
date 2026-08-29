@@ -14,6 +14,8 @@ from __future__ import annotations
 import asyncio
 import json
 
+import httpx
+
 from app.application.errors import MaxRetriesError
 from app.domain import times
 from app.domain.protocols import Logger
@@ -149,7 +151,7 @@ class RwClient:
         }
         return GET_SEATS_URL + "?" + urlencode(params)
 
-    async def _fetch_with_retries(self, url: str, direct: bool):
+    async def _fetch_with_retries(self, url: str, direct: bool) -> httpx.Response | None:
         """C# retry loop; returns the first successful response or ``None``."""
         attempt = 0
         response = None

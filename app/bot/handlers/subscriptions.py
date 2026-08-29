@@ -7,8 +7,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.converters import subscription_to_string
+from app.bot.interfaces import ICommandRouter
 from app.domain.value_objects import SubscriptionDetails
 
 if TYPE_CHECKING:
@@ -23,7 +25,7 @@ def _is_subscription_list(value: object) -> bool:
 
 
 class SubscriptionsSelectHandler:
-    def __init__(self, router, facade) -> None:
+    def __init__(self, router: ICommandRouter, facade: Facade) -> None:
         self._router = router
         self._facade = facade
 
@@ -80,7 +82,7 @@ class SubscriptionsSelectHandler:
 class UnsubscribeSubscriptionHandler:
     """C# ``UnsubscribeSubscriptionHandler`` — "Отписка выполнена"."""
 
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         self._facade = facade
         self._router = router
 
@@ -98,7 +100,7 @@ class UnsubscribeSubscriptionHandler:
 class ResetSubscriptionHandler:
     """C# ``ResetSubscriptionHandler`` — "Сброс выполнен"."""
 
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         self._facade = facade
         self._router = router
 

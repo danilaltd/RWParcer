@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import datetime
 import uuid
+from collections.abc import Awaitable, Callable
 
 from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -39,7 +40,7 @@ class _RepositoryBase:
     def __init__(self, session_factory: async_sessionmaker[AsyncSession]) -> None:
         self._session_factory = session_factory
 
-    async def _transaction(self, fn):
+    async def _transaction(self, fn: Callable[[AsyncSession], Awaitable[object]]) -> object:
         async with self._session_factory() as session:
             return await fn(session)
 

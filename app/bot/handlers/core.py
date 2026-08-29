@@ -8,16 +8,17 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.converters import message_to_string, user_to_string
-from app.bot.interfaces import IMenuProvider
+from app.bot.interfaces import ICommandRouter, IMenuProvider
 
 if TYPE_CHECKING:
     from app.bot.context import CommandContext
 
 
 class StartHandler:
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         self._facade = facade
         self._router = router
 
@@ -34,7 +35,7 @@ class UnknownHandler:
 
 
 class MenuSelectHandler:
-    def __init__(self, router, menu: IMenuProvider, menu_head: str) -> None:
+    def __init__(self, router: ICommandRouter, menu: IMenuProvider, menu_head: str) -> None:
         self._router = router
         self._menu = menu
         self._menu_head = menu_head
@@ -56,7 +57,7 @@ class MenuSelectHandler:
 
 
 class FeedbackHandler:
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         self._facade = facade
         self._router = router
 
@@ -73,7 +74,7 @@ class FeedbackHandler:
 
 
 class GetStatusHandler:
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         self._facade = facade
         self._router = router
 
@@ -86,7 +87,7 @@ class GetStatusHandler:
 
 
 class ViewMessagesHandler:
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         self._facade = facade
         self._router = router
 

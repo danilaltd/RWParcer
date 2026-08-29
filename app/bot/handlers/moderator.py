@@ -8,9 +8,11 @@ from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING
 
+from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.converters import message_to_string, user_to_string
 from app.bot.dates import parse_timespan
+from app.bot.interfaces import ICommandRouter
 from app.domain.value_objects import UserInfo
 
 if TYPE_CHECKING:
@@ -20,7 +22,7 @@ if TYPE_CHECKING:
 class ModeratorSpanHandler:
     """``ModeratorSpanHandler(ICommandRouter, TimeSpan)`` — fixed spans."""
 
-    def __init__(self, router, span: datetime.timedelta) -> None:
+    def __init__(self, router: ICommandRouter, span: datetime.timedelta) -> None:
         self._router = router
         self._span = span
 
@@ -33,7 +35,7 @@ class ModeratorSpanHandler:
 class ModeratorEnterSpanHandler:
     """``ModeratorEnterSpanHandler`` — free-form ``d*.hh:mm:ss`` input."""
 
-    def __init__(self, router) -> None:
+    def __init__(self, router: ICommandRouter) -> None:
         self._router = router
 
     async def handle(self, ctx: CommandContext) -> None:
@@ -56,7 +58,7 @@ class ModeratorEnterSpanHandler:
 class SelectUserHandler:
     """``SelectUserHandler`` — users active within the chosen span."""
 
-    def __init__(self, router, facade) -> None:
+    def __init__(self, router: ICommandRouter, facade: Facade) -> None:
         self._router = router
         self._facade = facade
 
@@ -125,7 +127,7 @@ class SelectUserHandler:
 class SendMessageEnterMessageHandler:
     """``SendMessageEnterMessageHandler`` — moderator writes to a user."""
 
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         self._facade = facade
         self._router = router
 
@@ -153,7 +155,7 @@ class _UserActionBase:
 
     _message = ""
 
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         self._facade = facade
         self._router = router
 
@@ -210,7 +212,7 @@ class UnbanUserHandler(_UserActionBase):
 class ChangeUserMinIntervalLimitHandler:
     """``ChangeUserMinIntervalLimitHandler`` — positive integer input."""
 
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         self._facade = facade
         self._router = router
 
@@ -247,7 +249,7 @@ class ChangeUserMinIntervalLimitHandler:
 class ChangeUserMaxSubscribtionLimitHandler:
     """``ChangeUserMaxSubscribtionLimitHandler`` — ``uint`` input (may be 0)."""
 
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         self._facade = facade
         self._router = router
 
@@ -284,7 +286,7 @@ class ChangeUserMaxSubscribtionLimitHandler:
 class ViewAllMessagesHandler:
     """``ViewAllMessagesHandler`` — moderator sees every user's messages."""
 
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         self._facade = facade
         self._router = router
 

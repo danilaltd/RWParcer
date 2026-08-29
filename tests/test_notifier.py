@@ -10,8 +10,15 @@ import datetime
 import uuid
 
 from app.application.notifier import Notifier
-from app.domain.entities import Notification, Subscription
-from app.domain.value_objects import Car, CarType, Station, SubscriptionDetails, Train
+from app.domain.entities import Notification, Subscription, User
+from app.domain.value_objects import (
+    Car,
+    CarType,
+    Route,
+    Station,
+    SubscriptionDetails,
+    Train,
+)
 
 
 def make_train() -> Train:
@@ -40,7 +47,7 @@ class FakeUsers:
     async def is_user_registered(self, user_id: str) -> bool:
         raise NotImplementedError
 
-    async def add_user(self, user) -> None:
+    async def add_user(self, user: User) -> None:
         raise NotImplementedError
 
     async def is_user_moderator(self, user_id: str) -> bool:
@@ -76,7 +83,7 @@ class FakeUsers:
     async def update_activity(self, user_id: str) -> None:
         raise NotImplementedError
 
-    async def get_last_users(self, time_span) -> list:
+    async def get_last_users(self, time_span: datetime.timedelta) -> list:
         raise NotImplementedError
 
     async def get_moderators(self) -> list:
@@ -106,7 +113,7 @@ class FakeSubscriptions:
     async def remove_subscription(self, subscription: Subscription) -> None:
         raise NotImplementedError
 
-    async def subscription_exists(self, user_id: str, details) -> bool:
+    async def subscription_exists(self, user_id: str, details: SubscriptionDetails) -> bool:
         raise NotImplementedError
 
     async def get_subscription_count(self, user_id: str) -> int:
@@ -131,13 +138,13 @@ class FakeRw:
     def __init__(self, seats: list[Car]) -> None:
         self._seats = seats
 
-    async def get_seats(self, details) -> list[Car]:
+    async def get_seats(self, details: SubscriptionDetails) -> list[Car]:
         return self._seats
 
     async def get_stations(self, prefix: str) -> list[Station]:
         raise NotImplementedError
 
-    async def get_trains(self, route) -> list[Train]:
+    async def get_trains(self, route: Route) -> list[Train]:
         raise NotImplementedError
 
 

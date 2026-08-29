@@ -9,8 +9,10 @@ import datetime
 from typing import TYPE_CHECKING
 
 from app.application.errors import InvalidOperationError
+from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.dates import add_months, parse_date_exact
+from app.bot.interfaces import ICommandRouter
 from app.domain.value_objects import SubscriptionDetails, Train
 
 if TYPE_CHECKING:
@@ -18,7 +20,7 @@ if TYPE_CHECKING:
 
 
 class UnsubscribeEnterDateHandler:
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         self._facade = facade
         self._router = router
 
@@ -46,7 +48,7 @@ class UnsubscribeEnterDateHandler:
 
 
 class UnsubscribeUseLastDateHandler:
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         self._facade = facade
         self._router = router
 
@@ -67,7 +69,7 @@ class UnsubscribeUseLastDateHandler:
 
 
 class UnsubscribeEnterDateRangeHandler:
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         self._facade = facade
         self._router = router
 

@@ -8,9 +8,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.converters import convert_train
-from app.bot.interfaces import ICommandHandler
+from app.bot.interfaces import ICommandHandler, ICommandRouter
 from app.domain.value_objects import Station, Train
 
 if TYPE_CHECKING:
@@ -34,7 +35,14 @@ class StationSelectHandler(ICommandHandler):
     ``(IFacade, ICommandRouter, CommandNames, string, string)``.
     """
 
-    def __init__(self, facade, router, next_command, prompt_text, keyboard_text):
+    def __init__(
+        self,
+        facade: Facade,
+        router: ICommandRouter,
+        next_command: CommandNames,
+        prompt_text: str,
+        keyboard_text: str,
+    ) -> None:
         self._facade = facade
         self._router = router
         self._next_command = next_command
@@ -77,7 +85,7 @@ class StationSelectHandler(ICommandHandler):
 class BaseTrainsHandler(ICommandHandler):
     """C# ``BaseTrainsHandler`` — numbered train-pick flow shared by search/favorites."""
 
-    def __init__(self, router, facade) -> None:
+    def __init__(self, router: ICommandRouter, facade: Facade) -> None:
         self._router = router
         self._facade = facade
 

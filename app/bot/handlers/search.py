@@ -8,9 +8,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.converters import convert_train
 from app.bot.handlers.base import BaseTrainsHandler, StationSelectHandler
+from app.bot.interfaces import ICommandRouter
 from app.domain.value_objects import Route, Station
 
 if TYPE_CHECKING:
@@ -18,7 +20,7 @@ if TYPE_CHECKING:
 
 
 class FromSelectHandler(StationSelectHandler):
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         super().__init__(
             facade,
             router,
@@ -29,7 +31,7 @@ class FromSelectHandler(StationSelectHandler):
 
 
 class ToSelectHandler(StationSelectHandler):
-    def __init__(self, facade, router) -> None:
+    def __init__(self, facade: Facade, router: ICommandRouter) -> None:
         super().__init__(
             facade,
             router,

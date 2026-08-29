@@ -35,8 +35,8 @@ src = ["app", "tests"]
 exclude = ["proxy-manager"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "W", "UP", "B", "C4", "SIM"]
-ignore = ["B008"]
+select = ["E", "F", "I", "W", "UP", "B", "C4", "SIM", "ANN"]
+ignore = ["B008", "ANN401"]
 
 [tool.ruff.format]
 quote-style = "double"

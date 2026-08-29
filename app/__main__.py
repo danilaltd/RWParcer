@@ -17,7 +17,7 @@ from app.application.facade import Facade
 from app.bot.router import CommandRouter
 from app.bot.service import BotService
 from app.bot.storage import SessionStorage
-from app.config import load_settings
+from app.config import Settings, load_settings
 from app.infrastructure.db.repositories import (
     FavoritesPostgresRepository,
     MessagePostgresRepository,
@@ -31,7 +31,7 @@ from app.infrastructure.logging import PythonLogger
 from app.infrastructure.rw_client import RwClient
 
 
-def _build(settings) -> tuple[BotService, Bot, EngineHolder]:
+def _build(settings: Settings) -> tuple[BotService, Bot, EngineHolder]:
     logger = PythonLogger("rwparcer")
     engine_holder = EngineHolder(settings.database)
     session_factory = engine_holder.session_factory

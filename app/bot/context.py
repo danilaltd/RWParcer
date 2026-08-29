@@ -86,7 +86,9 @@ class CommandContext:
         await router.route(CommandNames.MAIN_MENU_SELECT, self)
 
     # ------------------------------------------------------------------
-    async def _send_to_client(self, text: str, reply_markup) -> None:
+    async def _send_to_client(
+        self, text: str, reply_markup: ReplyKeyboardMarkup | ReplyKeyboardRemove | None
+    ) -> None:
         try:
             for chunk in self.split_message_smart(text, 4096):
                 await self._bot.send_message(

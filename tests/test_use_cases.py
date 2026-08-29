@@ -13,9 +13,10 @@ import uuid
 import pytest
 from app.application.errors import InvalidOperationError, KeyNotFoundError
 from app.application.facade import Facade
-from app.domain.entities import Favorite, Notification, Subscription, User
+from app.domain.entities import Favorite, Message, Notification, Subscription, User
 from app.domain.value_objects import (
     Car,
+    Route,
     Station,
     SubscriptionDetails,
     Train,
@@ -161,7 +162,7 @@ class InMemoryNotifications:
 
 
 class NoopMessages:
-    async def add_message(self, message) -> None: ...
+    async def add_message(self, message: Message) -> None: ...
     async def get_user_messages(self, user_id: str) -> list:
         return []
 
@@ -173,10 +174,10 @@ class NoopRw:
     async def get_stations(self, prefix: str) -> list[Station]:
         return []
 
-    async def get_trains(self, route) -> list[Train]:
+    async def get_trains(self, route: Route) -> list[Train]:
         return []
 
-    async def get_seats(self, details) -> list[Car]:
+    async def get_seats(self, details: SubscriptionDetails) -> list[Car]:
         return []
 
 
@@ -197,7 +198,9 @@ def facade() -> tuple[Facade, InMemoryUsers, InMemorySubscriptions, InMemoryFavo
     return fac, users, subscriptions, favorites
 
 
-async def test_subscribe_get_and_unsubscribe_flow(facade) -> None:
+async def test_subscribe_get_and_unsubscribe_flow(
+    facade: tuple[Facade, InMemoryUsers, InMemorySubscriptions, InMemoryFavorites],
+) -> None:
     fac, _users, subscriptions, _favorites = facade
     user_id = "1"
     await fac.authenticate_user(user_id)
@@ -214,7 +217,9 @@ async def test_subscribe_get_and_unsubscribe_flow(facade) -> None:
         await fac.unsubscribe(user_id, details)
 
 
-async def test_subscription_limit_exceeded_raises_overflow(facade) -> None:
+async def test_subscription_limit_exceeded_raises_overflow(
+    facade: tuple[Facade, InMemoryUsers, InMemorySubscriptions, InMemoryFavorites],
+) -> None:
     fac, users, _subscriptions, _favorites = facade
     await fac.authenticate_user("user1")
     users.users["user1"].change_subscriptions_limits(1)
@@ -224,7 +229,9 @@ async def test_subscription_limit_exceeded_raises_overflow(facade) -> None:
         await fac.subscribe("user1", make_subscription(datetime.date(2026, 8, 23)))
 
 
-async def test_favorites_add_and_remove_flow(facade) -> None:
+async def test_favorites_add_and_remove_flow(
+    facade: tuple[Facade, InMemoryUsers, InMemorySubscriptions, InMemoryFavorites],
+) -> None:
     fac, _users, _subscriptions, _favorites = facade
     await fac.authenticate_user("user1")
     train = make_train()
@@ -241,7 +248,9 @@ async def test_favorites_add_and_remove_flow(facade) -> None:
         await fac.remove_from_favorites("user1", train)
 
 
-async def test_unknown_user_is_rejected(facade) -> None:
+async def test_unknown_user_is_rejected(
+    facade: tuple[Facade, InMemoryUsers, InMemorySubscriptions, InMemoryFavorites],
+) -> None:
     fac, _users, _subscriptions, _favorites = facade
     with pytest.raises(KeyNotFoundError):
         await fac.subscribe("ghost", make_subscription())
