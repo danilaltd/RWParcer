@@ -45,9 +45,7 @@ class ModeratorEnterSpanHandler:
 
         ts = parse_timespan(ctx.input)
         if ts is None or ts == datetime.timedelta(0):
-            await ctx.send_message(
-                "Неверный формат времени, используйте d*.hh:mm:ss"
-            )
+            await ctx.send_message("Неверный формат времени, используйте d*.hh:mm:ss")
             return
 
         ctx.session.data.append(ts)
@@ -70,9 +68,7 @@ class SelectUserHandler:
         await self._handle_selection(ctx)
 
     async def _init_users(self, ctx: CommandContext) -> None:
-        ts = next(
-            (d for d in ctx.session.data if isinstance(d, datetime.timedelta)), None
-        )
+        ts = next((d for d in ctx.session.data if isinstance(d, datetime.timedelta)), None)
         if ts is None or ts == datetime.timedelta(0):
             await ctx.reset_session("Ошибка. Начните заново", self._router)
             return

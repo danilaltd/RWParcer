@@ -18,10 +18,7 @@ if TYPE_CHECKING:
 
 
 def _is_subscription_list(value: object) -> bool:
-    return (
-        isinstance(value, list)
-        and (not value or isinstance(value[0], SubscriptionDetails))
-    )
+    return isinstance(value, list) and (not value or isinstance(value[0], SubscriptionDetails))
 
 
 class SubscriptionsSelectHandler:
@@ -51,9 +48,7 @@ class SubscriptionsSelectHandler:
         )
 
     async def _handle_selection(self, ctx: CommandContext) -> None:
-        subscriptions = next(
-            (d for d in ctx.session.data if _is_subscription_list(d)), None
-        )
+        subscriptions = next((d for d in ctx.session.data if _is_subscription_list(d)), None)
         if subscriptions is None:
             await ctx.reset_session("Сессия устарела, начните заново", self._router)
             return
@@ -88,9 +83,7 @@ class UnsubscribeSubscriptionHandler:
 
     async def handle(self, ctx: CommandContext) -> None:
         # C# ``Data.OfType<SubscriptionVO>().First()``.
-        subscription = next(
-            d for d in ctx.session.data if isinstance(d, SubscriptionDetails)
-        )
+        subscription = next(d for d in ctx.session.data if isinstance(d, SubscriptionDetails))
         await self._facade.unsubscribe(ctx.chat_id, subscription)
         await ctx.send_message("Отписка выполнена")
         ctx.session.set_command(CommandNames.MAIN_MENU_SELECT)
@@ -106,9 +99,7 @@ class ResetSubscriptionHandler:
 
     async def handle(self, ctx: CommandContext) -> None:
         # C# ``Data.OfType<SubscriptionVO>().First()``.
-        subscription = next(
-            d for d in ctx.session.data if isinstance(d, SubscriptionDetails)
-        )
+        subscription = next(d for d in ctx.session.data if isinstance(d, SubscriptionDetails))
         await self._facade.reset_subscription(ctx.chat_id, subscription)
         await ctx.send_message("Сброс выполнен")
         ctx.session.set_command(CommandNames.MAIN_MENU_SELECT)

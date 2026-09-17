@@ -64,9 +64,7 @@ def fake_facade() -> MagicMock:
     facade.authenticate_user = AsyncMock()
     facade.is_user_moderator = AsyncMock(return_value=False)
     facade.pop_notifications = AsyncMock(return_value=[])
-    facade.get_user_by_id = AsyncMock(
-        return_value=SimpleNamespace(id="1", name="tester")
-    )
+    facade.get_user_by_id = AsyncMock(return_value=SimpleNamespace(id="1", name="tester"))
     return facade
 
 
@@ -115,11 +113,7 @@ async def test_start_command_routes_to_main_menu(
     chat_id, text, markup = bot.sent[0]
     assert chat_id == "42"
     assert text == "Главное меню: выберите пункт"
-    assert any(
-        "Поиск" in button.text
-        for row in getattr(markup, "keyboard", [])
-        for button in row
-    )
+    assert any("Поиск" in button.text for row in getattr(markup, "keyboard", []) for button in row)
 
     session = svc._sessions.get_session("42")
     assert session.current_command == CommandNames.MAIN_MENU_SELECT

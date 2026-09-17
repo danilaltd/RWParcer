@@ -80,25 +80,17 @@ class Facade:
         return await rw_service.get_stations(self._users, self._rw, user_id, prefix)
 
     async def get_times_for_route(self, user_id: str, route: Route) -> list[Train]:
-        return await rw_service.get_trains_for_route(
-            self._users, self._rw, user_id, route
-        )
+        return await rw_service.get_trains_for_route(self._users, self._rw, user_id, route)
 
     # -- favorites -----------------------------------------------------------
     async def add_to_favorites(self, user_id: str, train: Train) -> None:
-        await favorites_service.add_to_favorites(
-            self._users, self._favorites, user_id, train
-        )
+        await favorites_service.add_to_favorites(self._users, self._favorites, user_id, train)
 
     async def is_in_favorites(self, user_id: str, train: Train) -> bool:
-        return await favorites_service.is_in_favorites(
-            self._users, self._favorites, user_id, train
-        )
+        return await favorites_service.is_in_favorites(self._users, self._favorites, user_id, train)
 
     async def remove_from_favorites(self, user_id: str, train: Train) -> None:
-        await favorites_service.remove_from_favorites(
-            self._users, self._favorites, user_id, train
-        )
+        await favorites_service.remove_from_favorites(self._users, self._favorites, user_id, train)
 
     async def get_favorites(self, user_id: str) -> list[Train]:
         return await favorites_service.get_favorites(self._users, self._favorites, user_id)
@@ -119,18 +111,14 @@ class Facade:
             self._users, self._subscriptions, user_id, subscription
         )
 
-    async def get_subscriptions(
-        self, user_id: str, target_id: str
-    ) -> list[SubscriptionDetails]:
+    async def get_subscriptions(self, user_id: str, target_id: str) -> list[SubscriptionDetails]:
         return await subscriptions_service.get_subscriptions(
             self._users, self._subscriptions, user_id, target_id
         )
 
     # -- notifications -------------------------------------------------------
     async def pop_notifications(self) -> list[NotificationItem]:
-        return await notifications_service.pop_notifications(
-            self._notifications, self._users
-        )
+        return await notifications_service.pop_notifications(self._notifications, self._users)
 
     # -- moderation ----------------------------------------------------------
     async def ban_user(self, user_id: str, target_id: str) -> None:
@@ -152,9 +140,7 @@ class Facade:
             self._users, user_id, target_id, max_subscriptions
         )
 
-    async def set_users_min_interval(
-        self, user_id: str, target_id: str, min_interval: int
-    ) -> None:
+    async def set_users_min_interval(self, user_id: str, target_id: str, min_interval: int) -> None:
         await moderator_service.set_users_min_subscriptions_interval(
             self._users, user_id, target_id, min_interval
         )
@@ -186,9 +172,7 @@ class Facade:
         return await feedback_service.get_messages(self._users, self._messages, user_id)
 
     async def get_all_messages(self, user_id: str) -> list[MessageInfo]:
-        return await feedback_service.get_all_messages(
-            self._users, self._messages, user_id
-        )
+        return await feedback_service.get_all_messages(self._users, self._messages, user_id)
 
     # -- raw JSON helpers (parity with ``IFacade``/``JsonOperationsUseCase``) -
     def serialize_to_json(self, obj: Any) -> str:

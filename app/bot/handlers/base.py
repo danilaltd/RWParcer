@@ -55,9 +55,7 @@ class StationSelectHandler(ICommandHandler):
             return
 
         existing = [d for d in ctx.session.data if isinstance(d, Station)]
-        last_list = next(
-            (d for d in ctx.session.data if _is_station_list(d)), None
-        )
+        last_list = next((d for d in ctx.session.data if _is_station_list(d)), None)
 
         if last_list is not None and any(s.label == ctx.input for s in last_list):
             chosen = next(s for s in last_list if s.label == ctx.input)
@@ -93,9 +91,7 @@ class BaseTrainsHandler(ICommandHandler):
         raise NotImplementedError
 
     async def handle_train_selection(self, ctx: CommandContext) -> None:
-        trains_list = next(
-            (d for d in ctx.session.data if _is_train_list(d)), None
-        )
+        trains_list = next((d for d in ctx.session.data if _is_train_list(d)), None)
         if trains_list is None:
             await ctx.reset_session("Сессия устарела, начните заново", self._router)
             return

@@ -91,9 +91,7 @@ class CommandContext:
     ) -> None:
         try:
             for chunk in self.split_message_smart(text, 4096):
-                await self._bot.send_message(
-                    self._chat_id, chunk, reply_markup=reply_markup
-                )
+                await self._bot.send_message(self._chat_id, chunk, reply_markup=reply_markup)
         except Exception as exc:  # noqa: BLE001 — C# catches everything
             logger.warning("Error sending message for chat %s: %s", self._chat_id, exc)
 
@@ -108,11 +106,7 @@ class CommandContext:
         chosen = next((d for d in candidate_delimiters if d in message), " ")
         delimiter = chosen if chosen in candidate_delimiters else " "
 
-        blocks = [
-            block.strip()
-            for block in message.split(delimiter)
-            if block.strip()
-        ]
+        blocks = [block.strip() for block in message.split(delimiter) if block.strip()]
 
         hard_split: list[str] = []
         for block in blocks:

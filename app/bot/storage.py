@@ -54,6 +54,7 @@ TAG_TIMESPAN = "TimeSpan"
 # Individual value-object codecs
 # ---------------------------------------------------------------------------
 
+
 def _timespan_to_string(span: datetime.timedelta) -> str:
     """Mirror ``System.Text.Json`` default ``TimeSpan`` serialization."""
     total_seconds = int(span.total_seconds())
@@ -128,9 +129,7 @@ def to_session_data_item(item: Any) -> dict[str, str]:
     if isinstance(item, SubscriptionDetails):
         return {
             "Type": TAG_SUBSCRIPTION,
-            "Data": json.dumps(
-                json_codecs.subscription_details_to_json(item), ensure_ascii=False
-            ),
+            "Data": json.dumps(json_codecs.subscription_details_to_json(item), ensure_ascii=False),
         }
     if isinstance(item, UserInfo):
         return {
@@ -190,9 +189,7 @@ class SessionStorage:
             return sessions
         try:
             async with self._session_factory() as db_session:
-                rows = (
-                    (await db_session.execute(select(SessionRow))).scalars().all()
-                )
+                rows = (await db_session.execute(select(SessionRow))).scalars().all()
         except Exception as exc:  # noqa: BLE001 - degrade to in-memory store
             logger.warning("Failed to load sessions, using empty store: %s", exc)
             return sessions
@@ -251,9 +248,7 @@ class SessionStorage:
         async with self._save_lock, self._session_factory() as db_session:
             existing_rows = {
                 row.chat_id: row
-                for row in (
-                    (await db_session.execute(select(SessionRow))).scalars().all()
-                )
+                for row in ((await db_session.execute(select(SessionRow))).scalars().all())
             }
             for chat_id, bot_session in sessions.items():
                 values = {
@@ -280,9 +275,7 @@ class SessionStorage:
 class BotSessionManager:
     """Python twin of ``SessionManager`` (``GetOrAdd`` by chat id)."""
 
-    def __init__(
-        self, store: dict[str, BotSession] | None = None
-    ) -> None:
+    def __init__(self, store: dict[str, BotSession] | None = None) -> None:
         self._store: dict[str, BotSession] = store if store is not None else {}
 
     def get_session(self, chat_id: str) -> BotSession:
@@ -305,16 +298,12 @@ def _item_data(item: Any) -> Any | None:
     if type_name is None or json_data is None:
         return None
     if type_name == TAG_LIST_TRAIN:
-        return [
-            json_codecs.train_from_json_or_default(x)
-            for x in _json_array(json_data)
-        ]
+        return [json_codecs.train_from_json_or_default(x) for x in _json_array(json_data)]
     if type_name == TAG_LIST_STATION:
         return [json_codecs.station_from_json(x) for x in _json_array(json_data)]
     if type_name == TAG_LIST_SUBSCRIPTION:
         return [
-            json_codecs.subscription_details_from_json_or_default(x)
-            for x in _json_array(json_data)
+            json_codecs.subscription_details_from_json_or_default(x) for x in _json_array(json_data)
         ]
     if type_name == TAG_LIST_USER:
         return [json_codecs.user_from_json(x) for x in _json_array(json_data)]
@@ -345,9 +334,6 @@ def _json_object(json_data: Any) -> dict | None:
     except (json.JSONDecodeError, TypeError):
         return None
     return parsed if isinstance(parsed, dict) else None
-
-
-
 
 
 from app.infrastructure.db.models import SessionRow  # noqa: E402

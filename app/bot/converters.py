@@ -20,18 +20,14 @@ def convert_train(train: Train) -> str:
     route = f"{train.station_from.label} - {train.station_to.label}"
     times = f"{train.from_time:%H:%M}→{train.to_time:%H:%M}"
     duration_minutes = max(train.duration_minutes, 0)
-    formatted_duration = (
-        f"{duration_minutes // 60:02d}:{duration_minutes % 60:02d}"
-    )
+    formatted_duration = f"{duration_minutes // 60:02d}:{duration_minutes % 60:02d}"
     number = f"№{train.train_number}"
     name = f"{train.title_station_from} - {train.title_station_to}"
     train_type = _TRAIN_TYPE_RU.get(train.train_type, train.train_type)
     train_days = f"Дни курсирования: {train.train_days}"
     if train.train_days_except:
         train_days += f", кроме {train.train_days_except}"
-    return "\n".join(
-        (route, times, formatted_duration, number, name, train_type, train_days)
-    )
+    return "\n".join((route, times, formatted_duration, number, name, train_type, train_days))
 
 
 def user_to_string(user: UserInfo) -> str:
@@ -42,9 +38,7 @@ def user_to_string(user: UserInfo) -> str:
     min_update_interval = f"Минимальный интервал обновления {user.min_update_interval}"
     max_subscriptions = f"Максимальное количество подписок {user.max_subscriptions}"
     is_blocked = "Заблокирован" if user.is_blocked else ""
-    last_activity = (
-        f"Последняя активность: {(user.last_activity + datetime.timedelta(hours=3))}"
-    )
+    last_activity = f"Последняя активность: {(user.last_activity + datetime.timedelta(hours=3))}"
     parts = [
         name,
         user_id,

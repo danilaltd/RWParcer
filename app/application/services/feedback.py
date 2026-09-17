@@ -54,9 +54,7 @@ async def send_message(
         Message(id=uuid4(), sender_id="admin", receiver_id=target_id, content=content)
     )
     await notifications.add_notification(
-        Notification(
-            id=uuid4(), user_id=target_id, content="Новое сообщение! \n" + content
-        )
+        Notification(id=uuid4(), user_id=target_id, content="Новое сообщение! \n" + content)
     )
 
 

@@ -60,9 +60,7 @@ class UnsubscribeUseLastDateHandler:
             )
             await ctx.send_message(f"Отписка выполнена на {ctx.session.date:%d.%m.%Y}")
         except InvalidOperationError:
-            await ctx.send_message(
-                f"Подписка на дату {ctx.session.date:%d.%m.%Y} не существует"
-            )
+            await ctx.send_message(f"Подписка на дату {ctx.session.date:%d.%m.%Y} не существует")
 
         ctx.session.set_command(CommandNames.MAIN_MENU_SELECT)
         await self._router.route(CommandNames.MAIN_MENU_SELECT, ctx)
@@ -82,9 +80,7 @@ class UnsubscribeEnterDateRangeHandler:
         start_date = parse_date_exact(dates[0].strip()) if len(dates) == 2 else None
         end_date = parse_date_exact(dates[1].strip()) if len(dates) == 2 else None
         if start_date is None or end_date is None or start_date > end_date:
-            await ctx.send_message(
-                "Неверный формат диапазона, используйте DD.MM.YYYY-DD.MM.YYYY"
-            )
+            await ctx.send_message("Неверный формат диапазона, используйте DD.MM.YYYY-DD.MM.YYYY")
             return
 
         if (end_date - start_date).days >= 60:
@@ -104,9 +100,7 @@ class UnsubscribeEnterDateRangeHandler:
         date = start_date
         while date <= end_date:
             try:
-                await self._facade.unsubscribe(
-                    ctx.chat_id, SubscriptionDetails(train, date)
-                )
+                await self._facade.unsubscribe(ctx.chat_id, SubscriptionDetails(train, date))
             except InvalidOperationError:
                 ans += f"Подписка на дату {date:%d.%m.%Y} не существует\n"
             date += datetime.timedelta(days=1)

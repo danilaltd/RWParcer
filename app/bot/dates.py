@@ -66,9 +66,7 @@ def parse_timespan(text: str) -> datetime.timedelta | None:
         seconds = int(parts[2]) if len(parts) == 3 else 0
         if minutes >= 60 or seconds >= 60:
             return None
-        result = datetime.timedelta(
-            days=days, hours=hours, minutes=minutes, seconds=seconds
-        )
+        result = datetime.timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds)
     else:
         if not value.isdigit():
             return None

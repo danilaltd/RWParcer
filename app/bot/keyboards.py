@@ -37,9 +37,7 @@ class ManageUsersChoiceProvider(IMenuProvider):
         self._facade = facade
 
     async def get_options(self, ctx: CommandContext) -> dict[str, CommandNames]:
-        user = next(
-            (d for d in ctx.session.data if isinstance(d, UserInfo)), None
-        )
+        user = next((d for d in ctx.session.data if isinstance(d, UserInfo)), None)
         if user is None:
             raise RuntimeError("Session has no selected user")
         options: dict[str, CommandNames] = {}
@@ -107,9 +105,7 @@ class TrainActionsProvider(IMenuProvider):
         self._facade = facade
 
     async def get_options(self, ctx: CommandContext) -> dict[str, CommandNames]:
-        train = next(
-            (d for d in ctx.session.data if isinstance(d, Train)), None
-        )
+        train = next((d for d in ctx.session.data if isinstance(d, Train)), None)
         if train is None:
             raise RuntimeError("Session has no train")
 

@@ -77,14 +77,10 @@ class SubscribeUseLastDateHandler(_SubscribeBase):
 
         train = next(d for d in ctx.session.data if isinstance(d, Train))
         try:
-            await self._facade.subscribe(
-                ctx.chat_id, SubscriptionDetails(train, ctx.session.date)
-            )
+            await self._facade.subscribe(ctx.chat_id, SubscriptionDetails(train, ctx.session.date))
             await ctx.send_message(f"Подписка установлена на {ctx.session.date:%d.%m.%Y}")
         except InvalidOperationError:
-            await ctx.send_message(
-                f"Подписка на дату {ctx.session.date:%d.%m.%Y} уже существует"
-            )
+            await ctx.send_message(f"Подписка на дату {ctx.session.date:%d.%m.%Y} уже существует")
         except OverflowError:
             await ctx.send_message("Вы достигли лимита подписок")
         await self._back_to_menu(ctx)
@@ -100,9 +96,7 @@ class SubscribeEnterDateRangeHandler(_SubscribeBase):
         start_date = parse_date_exact(dates[0].strip()) if len(dates) == 2 else None
         end_date = parse_date_exact(dates[1].strip()) if len(dates) == 2 else None
         if start_date is None or end_date is None or start_date > end_date:
-            await ctx.send_message(
-                "Неверный формат диапазона, используйте DD.MM.YYYY-DD.MM.YYYY"
-            )
+            await ctx.send_message("Неверный формат диапазона, используйте DD.MM.YYYY-DD.MM.YYYY")
             return
 
         if (end_date - start_date).days >= 60:
@@ -122,9 +116,7 @@ class SubscribeEnterDateRangeHandler(_SubscribeBase):
         date = start_date
         while date <= end_date:
             try:
-                await self._facade.subscribe(
-                    ctx.chat_id, SubscriptionDetails(train, date)
-                )
+                await self._facade.subscribe(ctx.chat_id, SubscriptionDetails(train, date))
             except InvalidOperationError:
                 ans += f"Подписка на дату {date:%d.%m.%Y} уже существует\n"
             except OverflowError:

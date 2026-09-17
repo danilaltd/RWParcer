@@ -37,6 +37,7 @@ class CodecError(ValueError):
 # Station
 # ---------------------------------------------------------------------------
 
+
 def station_to_json(station: Station) -> dict[str, Any]:
     return {"label": station.label, "exp": station.exp}
 
@@ -125,6 +126,7 @@ def train_from_json_or_default(data: Any) -> Train:
 # Car
 # ---------------------------------------------------------------------------
 
+
 def car_to_json(car: Car) -> dict[str, Any]:
     return {
         "type": car.car_type.name_key,
@@ -180,6 +182,7 @@ def cars_from_json_or_default(data: Any) -> list[Car]:
 # Subscription details
 # ---------------------------------------------------------------------------
 
+
 def subscription_details_to_json(details: SubscriptionDetails) -> dict[str, Any]:
     return {"date": details.date.isoformat(), "train": train_to_json(details.train)}
 
@@ -206,6 +209,7 @@ def subscription_details_from_json_or_default(data: Any) -> SubscriptionDetails:
 # ---------------------------------------------------------------------------
 # User
 # ---------------------------------------------------------------------------
+
 
 def user_to_json(user: UserInfo) -> dict[str, Any]:
     return {
@@ -247,6 +251,7 @@ def user_from_json(data: Any) -> UserInfo:
 # ---------------------------------------------------------------------------
 # Message
 # ---------------------------------------------------------------------------
+
 
 def message_to_json(message: Message) -> dict[str, Any]:
     return {

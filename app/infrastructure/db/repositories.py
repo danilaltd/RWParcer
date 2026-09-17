@@ -132,9 +132,7 @@ class UserPostgresRepository(_RepositoryBase):
 
     async def is_user_registered(self, user_id: str) -> bool:
         async with self._session_factory() as session:
-            result = await session.scalars(
-                select(UserRow.id).where(UserRow.id == user_id).limit(1)
-            )
+            result = await session.scalars(select(UserRow.id).where(UserRow.id == user_id).limit(1))
             return result.first() is not None
 
     async def add_user(self, user: User) -> None:
@@ -214,9 +212,7 @@ class UserPostgresRepository(_RepositoryBase):
     async def get_last_users(self, time_span: datetime.timedelta) -> list[User]:
         cutoff = datetime.datetime.now(UTC) - time_span
         async with self._session_factory() as session:
-            rows = await session.scalars(
-                select(UserRow).where(UserRow.last_activity >= cutoff)
-            )
+            rows = await session.scalars(select(UserRow).where(UserRow.last_activity >= cutoff))
             return [user_row_to_entity(r) for r in rows]
 
     async def get_moderators(self) -> list[User]:
@@ -294,8 +290,7 @@ class SubscriptionPostgresRepository(_RepositoryBase):
             return False
         subscriptions = await self.get_user_subscriptions(user_id)
         return any(
-            json_codecs.subscription_details_to_json(s.details)
-            == details_json
+            json_codecs.subscription_details_to_json(s.details) == details_json
             for s in subscriptions
             for details_json in [json_codecs.subscription_details_to_json(details)]
         )
@@ -303,9 +298,9 @@ class SubscriptionPostgresRepository(_RepositoryBase):
     async def get_subscription_count(self, user_id: str) -> int:
         async with self._session_factory() as session:
             count = await session.scalar(
-                select(func.count()).select_from(SubscriptionRow).where(
-                    SubscriptionRow.user_id == user_id
-                )
+                select(func.count())
+                .select_from(SubscriptionRow)
+                .where(SubscriptionRow.user_id == user_id)
             )
         return int(count or 0)
 
@@ -355,9 +350,7 @@ class FavoritesPostgresRepository(_RepositoryBase):
 
     async def get_favorites(self, user_id: str) -> list[Favorite]:
         async with self._session_factory() as session:
-            rows = await session.scalars(
-                select(FavoriteRow).where(FavoriteRow.user_id == user_id)
-            )
+            rows = await session.scalars(select(FavoriteRow).where(FavoriteRow.user_id == user_id))
             return [favorite_row_to_entity(r) for r in rows]
 
     async def add_favorite(self, favorite: Favorite | None) -> None:
@@ -373,9 +366,7 @@ class FavoritesPostgresRepository(_RepositoryBase):
             self._logger.debug("RemoveFavorite err")
             return
         async with self._session_factory() as session:
-            await session.execute(
-                delete(FavoriteRow).where(FavoriteRow.id == favorite.id)
-            )
+            await session.execute(delete(FavoriteRow).where(FavoriteRow.id == favorite.id))
             await session.commit()
 
     async def favorite_exists(self, user_id: str, train: Train) -> bool:

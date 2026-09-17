@@ -99,20 +99,14 @@ class CommandRouter:
                     "Что сделать с этим поездом? Выберите пункт меню",
                 ),
                 CommandNames.ADD_TO_FAVORITES: AddToFavoritesHandler(facade, self),
-                CommandNames.REMOVE_FROM_FAVORITES: RemoveFromFavoritesHandler(
-                    facade, self
-                ),
+                CommandNames.REMOVE_FROM_FAVORITES: RemoveFromFavoritesHandler(facade, self),
                 CommandNames.SUBSCRIBE_DATE_SELECT: MenuSelectHandler(
                     self,
                     SubscribeDateChoiceProvider(),
                     "Способ выбора даты? Выберите пункт меню",
                 ),
-                CommandNames.SUBSCRIBE_ENTER_DATE: SubscribeEnterDateHandler(
-                    facade, self
-                ),
-                CommandNames.SUBSCRIBE_USE_LAST_DATE: SubscribeUseLastDateHandler(
-                    facade, self
-                ),
+                CommandNames.SUBSCRIBE_ENTER_DATE: SubscribeEnterDateHandler(facade, self),
+                CommandNames.SUBSCRIBE_USE_LAST_DATE: SubscribeUseLastDateHandler(facade, self),
                 CommandNames.SUBSCRIBE_ENTER_DATE_RANGE: SubscribeEnterDateRangeHandler(
                     facade, self
                 ),
@@ -121,27 +115,19 @@ class CommandRouter:
                     UnsubscribeDateChoiceProvider(),
                     "Способ выбора даты? Выберите пункт меню",
                 ),
-                CommandNames.UNSUBSCRIBE_ENTER_DATE: UnsubscribeEnterDateHandler(
-                    facade, self
-                ),
-                CommandNames.UNSUBSCRIBE_USE_LAST_DATE: UnsubscribeUseLastDateHandler(
-                    facade, self
-                ),
+                CommandNames.UNSUBSCRIBE_ENTER_DATE: UnsubscribeEnterDateHandler(facade, self),
+                CommandNames.UNSUBSCRIBE_USE_LAST_DATE: UnsubscribeUseLastDateHandler(facade, self),
                 CommandNames.UNSUBSCRIBE_ENTER_DATE_RANGE: UnsubscribeEnterDateRangeHandler(
                     facade, self
                 ),
                 CommandNames.FAVORITES_SELECT: FavoritesSelectHandler(self, facade),
-                CommandNames.SUBSCRIPTIONS_SELECT: SubscriptionsSelectHandler(
-                    self, facade
-                ),
+                CommandNames.SUBSCRIPTIONS_SELECT: SubscriptionsSelectHandler(self, facade),
                 CommandNames.SUBSCRIPTION_MENU_SELECT: MenuSelectHandler(
                     self,
                     SubscriptionActionsProvider(),
                     "Что сделать с этой подпиской? Выберите пункт меню",
                 ),
-                CommandNames.UNSUBSCRIBE_SUBSCRIPTION: UnsubscribeSubscriptionHandler(
-                    facade, self
-                ),
+                CommandNames.UNSUBSCRIBE_SUBSCRIPTION: UnsubscribeSubscriptionHandler(facade, self),
                 CommandNames.RESET_SUBSCRIPTION: ResetSubscriptionHandler(facade, self),
                 CommandNames.UNKNOWN: UnknownHandler(),
                 CommandNames.MODERATOR_SPAN_SELECT: MenuSelectHandler(

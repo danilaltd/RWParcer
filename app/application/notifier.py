@@ -61,9 +61,7 @@ class Notifier:
                     await asyncio.sleep(10)  # C# ``Task.Delay(10)``
                 if await self._unsubscribe_expired(subscriptions):
                     continue
-                await asyncio.gather(
-                    *(self._process_subscription(s) for s in subscriptions)
-                )
+                await asyncio.gather(*(self._process_subscription(s) for s in subscriptions))
             except Exception as exc:
                 self.logger.debug(f"Неизвестная ошибка: {exc}")
 
@@ -80,9 +78,7 @@ class Notifier:
                 try:
                     now = datetime.datetime.now(UTC)
                     min_interval = datetime.timedelta(
-                        seconds=await self._users.get_user_min_interval(
-                            subscription.user_id
-                        )
+                        seconds=await self._users.get_user_min_interval(subscription.user_id)
                     )
                     if (
                         subscription.last_update is not None
@@ -96,9 +92,7 @@ class Notifier:
                         break
                     if not self._states_equal(response, actual.last_state):
                         self.logger.debug(f"Изменение данных для {subscription.id}\n")
-                        changes = self._find_seat_changes(
-                            actual.last_state, response
-                        )
+                        changes = self._find_seat_changes(actual.last_state, response)
                         if changes:
                             await self._notifications.add_notification(
                                 Notification(
@@ -112,22 +106,16 @@ class Notifier:
                                 )
                             )
                         elif response:
-                            raise RuntimeError(
-                                f"unsupported changes {actual.id}"
-                            )
+                            raise RuntimeError(f"unsupported changes {actual.id}")
                         actual.last_state = response
                         await self._subscriptions.update_subscription(actual)
                     actual.last_update = now
                     await self._subscriptions.update_subscription(actual)
                     break
                 except TimeoutError:
-                    self.logger.debug(
-                        f"Тайм-аут запроса для {subscription.id} (Попытка {attempt})"
-                    )
+                    self.logger.debug(f"Тайм-аут запроса для {subscription.id} (Попытка {attempt})")
                 except HttpRequestError as exc:
-                    self.logger.debug(
-                        f"Ошибка HTTP ({subscription.id}, Попытка {attempt}): {exc}"
-                    )
+                    self.logger.debug(f"Ошибка HTTP ({subscription.id}, Попытка {attempt}): {exc}")
                 except Exception as exc:
                     self.logger.debug(
                         f"Неизвестная ошибка ({subscription.id}, Попытка {attempt}): {exc}"
@@ -162,9 +150,7 @@ class Notifier:
         )
 
     @staticmethod
-    def _find_seat_changes(
-        old_state: list[Car] | None, new_state: list[Car] | None
-    ) -> list[str]:
+    def _find_seat_changes(old_state: list[Car] | None, new_state: list[Car] | None) -> list[str]:
         changes: list[str] = []
         old_safe = old_state or []
         new_safe = new_state or []
@@ -186,8 +172,7 @@ class Notifier:
                     )
             else:
                 changes.append(
-                    f"{car_type_label(old_car.car_type)} №{old_car.number}: "
-                    f"Все места удалены"
+                    f"{car_type_label(old_car.car_type)} №{old_car.number}: Все места удалены"
                 )
 
         for new_car in sorted(new_safe, key=lambda c: c.number):

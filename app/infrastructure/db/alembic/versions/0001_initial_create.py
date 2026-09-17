@@ -11,6 +11,7 @@ Revises:
 Create Date: 2025-08-22
 
 """
+
 from __future__ import annotations
 
 from collections.abc import Sequence

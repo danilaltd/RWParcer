@@ -31,6 +31,4 @@ class ICommandHandler(Protocol):
 class ICommandRouter(Protocol):
     """C# ``ICommandRouter.RouteAsync``."""
 
-    async def route(
-        self, cmd: CommandNames | None, ctx: CommandContext
-    ) -> None: ...
+    async def route(self, cmd: CommandNames | None, ctx: CommandContext) -> None: ...

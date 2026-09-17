@@ -26,9 +26,7 @@ async def _ensure_access(users: UserRepository, user_id: str, target_id: str) ->
     if await users.is_user_banned(user_id):
         raise UnauthorizedError(f"User {user_id} is banned")
     if user_id != target_id and not await users.is_user_moderator(user_id):
-        raise UnauthorizedError(
-            f"User with ID {user_id} not a moderator (can't get {target_id})"
-        )
+        raise UnauthorizedError(f"User with ID {user_id} not a moderator (can't get {target_id})")
 
 
 async def _update_activity(users: UserRepository, user_id: str) -> None:

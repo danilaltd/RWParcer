@@ -30,9 +30,7 @@ async def subscribe(
         raise OverflowError(
             f"User {user_id} reached the subscription limit ({user.max_subscriptions})"
         )
-    await subs.add_subscription(
-        Subscription(id=uuid4(), user_id=user_id, details=subscription)
-    )
+    await subs.add_subscription(Subscription(id=uuid4(), user_id=user_id, details=subscription))
 
 
 async def unsubscribe(
@@ -74,7 +72,5 @@ async def get_subscriptions(
     await users.update_activity(user_id)
     await require_not_banned(users, user_id)
     if user_id != target_id and not await users.is_user_moderator(user_id):
-        raise UnauthorizedError(
-            f"{user_id} tries get {target_id} subscriptions when not moder"
-        )
+        raise UnauthorizedError(f"{user_id} tries get {target_id} subscriptions when not moder")
     return [s.details for s in await subs.get_user_subscriptions(target_id)]

@@ -80,9 +80,7 @@ async def _amain() -> None:
     service, bot, engine_holder = _build(settings)
     loop = asyncio.get_running_loop()
     for sig in (signal.SIGINT, signal.SIGTERM):
-        loop.add_signal_handler(
-            sig, lambda: asyncio.create_task(service.stop())
-        )
+        loop.add_signal_handler(sig, lambda: asyncio.create_task(service.stop()))
 
     try:
         await service.start()

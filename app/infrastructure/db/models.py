@@ -53,9 +53,7 @@ class SubscriptionRow(Base):
     __tablename__ = "subscriptions"
     __table_args__ = (Index("i_x_subscriptions_user_id", "user_id"),)
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id: Mapped[str] = mapped_column(Text)
     details: Mapped[dict] = mapped_column(JSONB)
     last_update: Mapped[datetime.datetime | None] = mapped_column(DateTime(timezone=True))
@@ -68,9 +66,7 @@ class FavoriteRow(Base):
     __tablename__ = "favorites"
     __table_args__ = (Index("i_x_favorites_user_id", "user_id"),)
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id: Mapped[str] = mapped_column(Text)
     train_info: Mapped[dict] = mapped_column(JSONB)
 
@@ -84,9 +80,7 @@ class MessageRow(Base):
         Index("i_x_messages_receiver_id", "receiver_id"),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     sender_id: Mapped[str] = mapped_column(Text)
     receiver_id: Mapped[str] = mapped_column(Text)
     content: Mapped[str] = mapped_column(Text)
@@ -102,9 +96,7 @@ class NotificationRow(Base):
     __tablename__ = "notifications"
     __table_args__ = (Index("i_x_notifications_user_id", "user_id"),)
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id: Mapped[str] = mapped_column(Text)
     content: Mapped[str] = mapped_column(Text)
 
@@ -118,6 +110,4 @@ class SessionRow(Base):
     current_command: Mapped[int | None] = mapped_column(Integer)
     init_state: Mapped[bool] = mapped_column(Boolean, default=True)
     data: Mapped[str] = mapped_column(Text, default="")
-    date: Mapped[datetime.date] = mapped_column(
-        Date, default=func.current_date
-    )
+    date: Mapped[datetime.date] = mapped_column(Date, default=func.current_date)

@@ -155,7 +155,5 @@ class BotService:
         notifications = await self._facade.pop_notifications()
         for notification in notifications or []:
             session = self._sessions.get_session(notification.user_id)
-            ctx = CommandContext(
-                notification.user_id, "", session, self._bot
-            )
+            ctx = CommandContext(notification.user_id, "", session, self._bot)
             await ctx.send_notification(notification.content)
