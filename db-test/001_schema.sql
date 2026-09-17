@@ -207,17 +207,11 @@ CREATE TABLE transport.service_routes (
     CONSTRAINT service_routes_validity_chk
         CHECK (valid_from IS NULL OR valid_to IS NULL OR valid_to >= valid_from)
 );
-
 CREATE UNIQUE INDEX service_routes_business_uq
     ON transport.service_routes (
         service_id,
         from_stop_id,
-        to_stop_id,
-        departure_time,
-        arrival_time,
-        COALESCE(days_rule, ''),
-        COALESCE(valid_from, '0001-01-01'::date),
-        COALESCE(valid_to, '9999-12-31'::date)
+        to_stop_id
     );
 CREATE INDEX service_routes_service_idx
     ON transport.service_routes (service_id);
