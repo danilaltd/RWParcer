@@ -122,7 +122,7 @@ async def test_start_command_routes_to_main_menu(
     )
 
     session = svc._sessions.get_session("42")
-    assert session.current_command == CommandNames("MAIN_MENU_SELECT")
+    assert session.current_command == CommandNames.MAIN_MENU_SELECT
     assert svc._sessions.get_all_sessions() == {"42": session}
 
 
