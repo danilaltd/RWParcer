@@ -8,6 +8,7 @@ without a network connection or a database.
 from __future__ import annotations
 
 import asyncio
+import uuid
 from collections.abc import AsyncGenerator
 from types import SimpleNamespace
 from typing import cast
@@ -53,6 +54,7 @@ class FakeBot:
         message = SimpleNamespace(
             text=text,
             chat=SimpleNamespace(id=chat_id),
+            from_user=SimpleNamespace(id=int(chat_id)),
             content_type="text" if text is not None else "photo",
         )
         return SimpleNamespace(update_id=update_id, message=message)
@@ -61,10 +63,14 @@ class FakeBot:
 @pytest.fixture
 def fake_facade() -> MagicMock:
     facade = MagicMock(spec=Facade)
-    facade.authenticate_user = AsyncMock()
+    facade.authenticate_user = AsyncMock(return_value=uuid.uuid4())
     facade.is_user_moderator = AsyncMock(return_value=False)
     facade.pop_notifications = AsyncMock(return_value=[])
-    facade.get_user_by_id = AsyncMock(return_value=SimpleNamespace(id="1", name="tester"))
+    facade.get_user_by_id = AsyncMock(
+        return_value=SimpleNamespace(id=uuid.uuid4(), telegram_chat_id=1, name="tester")
+    )
+    facade.users_repo = MagicMock()
+    facade.users_repo.get_user_by_id = AsyncMock(return_value=SimpleNamespace(telegram_chat_id=1))
     return facade
 
 
@@ -72,13 +78,13 @@ class RecordingStore(SessionStorage):
     """In-memory store that also records the snapshots it was asked to save."""
 
     def __init__(self) -> None:
-        super().__init__(session_factory=None)
-        self.saved: dict[str, object] | None = None
+        super().__init__(session_factory=MagicMock())
+        self.saved: dict[uuid.UUID, object] | None = None
 
-    async def load(self) -> dict[str, BotSession]:
+    async def load(self) -> dict[uuid.UUID, BotSession]:
         return {}
 
-    async def save_all(self, sessions: dict[str, BotSession]) -> None:
+    async def save_all(self, sessions: dict[uuid.UUID, BotSession]) -> None:
         self.saved = dict(sessions)
 
 
@@ -103,8 +109,11 @@ async def service(
 
 async def test_start_command_routes_to_main_menu(
     service: tuple[BotService, FakeBot, RecordingStore],
+    fake_facade: MagicMock,
 ) -> None:
     svc, bot, _store = service
+    uid = uuid.uuid4()
+    fake_facade.authenticate_user.return_value = uid
     await svc.start()
     update = FakeBot.make_update("42", "/start")
     await svc._on_update(update)
@@ -115,9 +124,9 @@ async def test_start_command_routes_to_main_menu(
     assert text == "Главное меню: выберите пункт"
     assert any("Поиск" in button.text for row in getattr(markup, "keyboard", []) for button in row)
 
-    session = svc._sessions.get_session("42")
+    session = svc._sessions.get_session(uid)
     assert session.current_command == CommandNames.MAIN_MENU_SELECT
-    assert svc._sessions.get_all_sessions() == {"42": session}
+    assert svc._sessions.get_all_sessions() == {uid: session}
 
 
 async def test_non_start_command_routes_unknown(
@@ -136,25 +145,29 @@ async def test_notifications_are_delivered(
 ) -> None:
     svc, _bot, _store = service
     await svc.start()
+    u_id = uuid.uuid4()
     fake_facade.pop_notifications.return_value = [
-        NotificationItem(user_id="55", content="Поезд прибыл")
+        NotificationItem(user_id=str(u_id), content="Поезд прибыл")
     ]
     await svc._process_notifications()
 
-    messages = [m for m in await svc._facade.pop_notifications() if m.user_id == "55"]
+    messages = [m for m in await svc._facade.pop_notifications() if m.user_id == str(u_id)]
     assert messages and messages[0].content == "Поезд прибыл"
 
 
 async def test_session_is_saved_after_update(
     service: tuple[BotService, FakeBot, RecordingStore],
     request: pytest.FixtureRequest,
+    fake_facade: MagicMock,
 ) -> None:
     svc, _bot, store = service
+    uid = uuid.uuid4()
+    fake_facade.authenticate_user.return_value = uid
     await svc.start()
     assert store.saved is None
     await svc._on_update(FakeBot.make_update("1", "/start"))
     assert store.saved is not None
-    assert "1" in store.saved
+    assert uid in store.saved
 
 
 async def test_stop_persists_and_cancels_tasks(

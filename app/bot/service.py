@@ -1,17 +1,10 @@
-"""``BotService`` — mirrors ``RWParcer/Services/BotService.cs``.
-
-* sessions are loaded once at startup (``_sessions = _store.Load()``);
-* every text update routes through the ``CommandRouter`` keyed by the
-  session's current command (``/start`` always resets and starts over);
-* the full in-memory session table is rewritten after every update;
-* a loop polls ``PopNotificationsAsync`` every ``poll_interval`` seconds and
-  delivers notifications directly to the user chats.
-"""
+"""BotService handling Telegram updates, user resolution, and session persistence."""
 
 from __future__ import annotations
 
 import asyncio
 import logging
+import uuid
 from collections.abc import Sequence
 from typing import Any
 
@@ -30,8 +23,6 @@ BACKEND_ERROR_MESSAGE = "Backend Error. Попробуйте снова"
 
 
 class BotService:
-    """Long-poll front end that mirrors the C# ``BackgroundService``."""
-
     def __init__(
         self,
         bot: Bot,
@@ -51,12 +42,7 @@ class BotService:
         self._stop = asyncio.Event()
         self._tasks: list[asyncio.Task] = []
 
-    # ------------------------------------------------------------------
-    # lifecycle
-    # ------------------------------------------------------------------
-
     async def start(self) -> None:
-        """``BotService`` construction: load persisted sessions first."""
         self._sessions = BotSessionManager(await self._store.load())
         self._tasks = [
             asyncio.create_task(self._receive_loop(), name="bot-receive"),
@@ -74,18 +60,12 @@ class BotService:
             task.cancel()
         await asyncio.gather(*self._tasks, return_exceptions=True)
         self._tasks = []
-        # C# ``StopAsync`` persists before shutting down.
         try:
             await self._store.save_all(self._sessions.get_all_sessions())
-        except Exception as exc:  # noqa: BLE001 - C# did not guard either
+        except Exception as exc:
             logger.warning("Error saving sessions on stop: %s", exc)
 
-    # ------------------------------------------------------------------
-    # Update flow (``OnUpdate`` / ``ReceiveAsync``)
-    # ------------------------------------------------------------------
-
     async def _receive_loop(self) -> None:
-        """``_bot.StartReceiving(OnUpdate, OnError, ReceiverOptions{...})``."""
         offset = 0
         while not self._stop.is_set():
             try:
@@ -96,7 +76,7 @@ class BotService:
                 )
             except asyncio.CancelledError:
                 raise
-            except Exception as exc:  # noqa: BLE001 - ``OnError``
+            except Exception as exc:
                 logger.error("Error receiving updates: %s", exc)
                 await asyncio.sleep(1)
                 continue
@@ -106,20 +86,23 @@ class BotService:
                     await self._on_update(update)
                 except asyncio.CancelledError:
                     raise
-                except Exception as exc:  # noqa: BLE001 - ``OnError``
+                except Exception as exc:
                     logger.error("Error handling update: %s", exc)
 
     async def _on_update(self, update: Any) -> None:
-        """Port of ``OnUpdate`` (the ``update.Message.Type == Text`` branch)."""
         message = update.message
         if message is None or message.content_type != ContentType.TEXT:
             return
-        if message.text is None:
+        if message.text is None or message.from_user is None:
             return
         text = message.text.strip()
         chat_id = str(message.chat.id)
-        session = self._sessions.get_session(chat_id)
-        ctx = CommandContext(chat_id, text, session, self._bot, message)
+        telegram_user_id = message.from_user.id
+        telegram_chat_id = message.chat.id
+
+        user_id = await self._facade.authenticate_user(telegram_user_id, telegram_chat_id)
+        session = self._sessions.get_session(user_id)
+        ctx = CommandContext(chat_id, user_id, text, session, self._bot, message)
         try:
             if text.lower() == "/start":
                 session.reset()
@@ -133,15 +116,11 @@ class BotService:
                 await self._router.route(command, ctx)
         except UnauthorizedError:
             raise
-        except Exception as exc:  # noqa: BLE001 - C# ``catch when not Unauthorized``
+        except Exception as exc:
             await ctx.reset_session(BACKEND_ERROR_MESSAGE, self._router)
-            logger.error("%s", exc)
+            logger.exception(exc)
         finally:
             await self._store.save_all(self._sessions.get_all_sessions())
-
-    # ------------------------------------------------------------------
-    # Notifications loop (``ProcessNotificationsAsync``)
-    # ------------------------------------------------------------------
 
     async def _notifications_loop(self) -> None:
         while not self._stop.is_set():
@@ -154,6 +133,16 @@ class BotService:
     async def _process_notifications(self) -> None:
         notifications = await self._facade.pop_notifications()
         for notification in notifications or []:
-            session = self._sessions.get_session(notification.user_id)
-            ctx = CommandContext(notification.user_id, "", session, self._bot)
+            try:
+                u_id = uuid.UUID(notification.user_id)
+            except ValueError:
+                continue
+            session = self._sessions.get_session(u_id)
+            user_obj = await self._facade.users_repo.get_user_by_id(u_id)
+            chat_id = (
+                str(user_obj.telegram_chat_id)
+                if user_obj and user_obj.telegram_chat_id
+                else str(u_id)
+            )
+            ctx = CommandContext(chat_id, u_id, "", session, self._bot)
             await ctx.send_notification(notification.content)

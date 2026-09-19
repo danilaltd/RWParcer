@@ -1,8 +1,9 @@
-"""User services mirroring the C# ``UserService`` use cases."""
+"""User services using UUID user identifiers and normalized schema repositories."""
 
 from __future__ import annotations
 
 import datetime
+import uuid
 
 from app.application.errors import KeyNotFoundError, UnauthorizedError
 from app.application.services.guards import require_registered
@@ -11,17 +12,17 @@ from app.domain.protocols import UserRepository
 from app.domain.value_objects import UserInfo
 
 
-async def register_user(users: UserRepository, user_id: str) -> None:
+async def resolve_user(users: UserRepository, telegram_user_id: int, telegram_chat_id: int) -> User:
+    return await users.resolve_user(telegram_user_id, telegram_chat_id)
+
+
+async def register_user(users: UserRepository, user_id: uuid.UUID) -> None:
     if await users.is_user_registered(user_id):
         return
-    await users.add_user(User(id=user_id))
+    await users.add_user(User(id=user_id, telegram_user_id=0, telegram_chat_id=0))
 
 
-async def _ensure_access(users: UserRepository, user_id: str, target_id: str) -> None:
-    """Registered + not banned + (self or moderator) guard chain.
-
-    Mirrors the C# ``UserService`` checks that run before any DB mutation.
-    """
+async def _ensure_access(users: UserRepository, user_id: uuid.UUID, target_id: uuid.UUID) -> None:
     await require_registered(users, user_id)
     if await users.is_user_banned(user_id):
         raise UnauthorizedError(f"User {user_id} is banned")
@@ -29,17 +30,12 @@ async def _ensure_access(users: UserRepository, user_id: str, target_id: str) ->
         raise UnauthorizedError(f"User with ID {user_id} not a moderator (can't get {target_id})")
 
 
-async def _update_activity(users: UserRepository, user_id: str) -> None:
-    """C# ``UpdateActivityAsync`` with the original ``try/finally`` semantics.
-
-    The C# code swallows activity-update errors only when the use case body
-    already failed (``catch when (originalException != null)``).
-    """
+async def _update_activity(users: UserRepository, user_id: uuid.UUID) -> None:
     await users.update_activity(user_id)
 
 
 async def _finally_update(
-    users: UserRepository, user_id: str, original_exception: BaseException | None
+    users: UserRepository, user_id: uuid.UUID, original_exception: BaseException | None
 ) -> None:
     try:
         await _update_activity(users, user_id)
@@ -48,7 +44,9 @@ async def _finally_update(
             raise
 
 
-async def get_user_by_id(users: UserRepository, user_id: str, target_id: str) -> UserInfo:
+async def get_user_by_id(
+    users: UserRepository, user_id: uuid.UUID, target_id: uuid.UUID
+) -> UserInfo:
     original_exception: BaseException | None = None
     try:
         await _ensure_access(users, user_id, target_id)
@@ -63,7 +61,9 @@ async def get_user_by_id(users: UserRepository, user_id: str, target_id: str) ->
         await _finally_update(users, user_id, original_exception)
 
 
-async def is_user_moderator(users: UserRepository, user_id: str, target_id: str) -> bool:
+async def is_user_moderator(
+    users: UserRepository, user_id: uuid.UUID, target_id: uuid.UUID
+) -> bool:
     original_exception: BaseException | None = None
     try:
         await _ensure_access(users, user_id, target_id)
@@ -75,7 +75,7 @@ async def is_user_moderator(users: UserRepository, user_id: str, target_id: str)
         await _finally_update(users, user_id, original_exception)
 
 
-async def is_user_banned(users: UserRepository, user_id: str, target_id: str) -> bool:
+async def is_user_banned(users: UserRepository, user_id: uuid.UUID, target_id: uuid.UUID) -> bool:
     original_exception: BaseException | None = None
     try:
         await _ensure_access(users, user_id, target_id)
@@ -88,9 +88,8 @@ async def is_user_banned(users: UserRepository, user_id: str, target_id: str) ->
 
 
 async def get_users(
-    users: UserRepository, user_id: str, time_span: datetime.timedelta
+    users: UserRepository, user_id: uuid.UUID, time_span: datetime.timedelta
 ) -> list[UserInfo]:
-    """Return users with activity within ``time_span``; the requester must be a moderator."""
     original_exception: BaseException | None = None
     try:
         await _ensure_access(users, user_id, user_id)
@@ -104,10 +103,10 @@ async def get_users(
 
 def _to_user(user: User) -> UserInfo:
     return UserInfo(
-        id=user.id,
+        id=str(user.id),
         is_moderator=user.is_moderator,
         max_subscriptions=user.max_subscriptions,
         min_update_interval=user.min_subscriptions_interval,
         is_blocked=user.is_blocked,
-        last_activity=user.last_activity,
+        last_activity=user.last_activity or datetime.datetime.now(datetime.UTC),
     )

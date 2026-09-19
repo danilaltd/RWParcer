@@ -1,22 +1,24 @@
-"""Notification services mirroring the C# ``NotificationService`` use case."""
+"""Notification services using outbox queue."""
 
 from __future__ import annotations
 
+import datetime
+
 from app.domain.protocols import NotificationRepository, UserRepository
 from app.domain.value_objects import NotificationItem
+
+UTC = datetime.UTC
 
 
 async def pop_notifications(
     notifications: NotificationRepository, users: UserRepository
 ) -> list[NotificationItem]:
-    """Pop all notifications, then drop the ones for banned users.
-
-    Matches the C# ``PopNotificationsUseCase``: rows are removed from the
-    table even when they are filtered out afterwards.
-    """
-    items = await notifications.pop_all()
-    return [
-        NotificationItem(user_id=n.user_id, content=n.content)
-        for n in items
-        if not await users.is_user_banned(n.user_id)
-    ]
+    items = await notifications.claim_pending_notifications(limit=50)
+    results = []
+    for n in items:
+        if await users.is_user_banned(n.user_id):
+            await notifications.mark_failed(n.id, "User is banned")
+            continue
+        results.append(NotificationItem(user_id=str(n.user_id), content=n.content))
+        await notifications.mark_sent(n.id)
+    return results

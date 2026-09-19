@@ -41,46 +41,49 @@ class FakeUsers:
     def __init__(self, min_interval: int = 0) -> None:
         self._min_interval = min_interval
 
-    async def get_user_min_interval(self, user_id: str) -> int:
+    async def resolve_user(self, telegram_user_id: int, telegram_chat_id: int) -> User:
+        raise NotImplementedError
+
+    async def get_user_min_interval(self, user_id: uuid.UUID) -> int:
         return self._min_interval
 
-    async def is_user_registered(self, user_id: str) -> bool:
+    async def is_user_registered(self, user_id: uuid.UUID) -> bool:
         raise NotImplementedError
 
     async def add_user(self, user: User) -> None:
         raise NotImplementedError
 
-    async def is_user_moderator(self, user_id: str) -> bool:
+    async def is_user_moderator(self, user_id: uuid.UUID) -> bool:
         raise NotImplementedError
 
-    async def get_user_max_subscriptions(self, user_id: str) -> int:
+    async def get_user_max_subscriptions(self, user_id: uuid.UUID) -> int:
         raise NotImplementedError
 
-    async def get_user_by_id(self, user_id: str) -> None:
+    async def get_user_by_id(self, user_id: uuid.UUID) -> None:
         raise NotImplementedError
 
-    async def set_users_min_interval(self, user_id: str, min_interval: int) -> None:
+    async def set_users_min_interval(self, user_id: uuid.UUID, min_interval: int) -> None:
         raise NotImplementedError
 
-    async def set_users_max_subscriptions(self, user_id: str, max_subscriptions: int) -> None:
+    async def set_users_max_subscriptions(self, user_id: uuid.UUID, max_subscriptions: int) -> None:
         raise NotImplementedError
 
-    async def ban_user(self, user_id: str) -> None:
+    async def ban_user(self, user_id: uuid.UUID) -> None:
         raise NotImplementedError
 
-    async def unban_user(self, user_id: str) -> None:
+    async def unban_user(self, user_id: uuid.UUID) -> None:
         raise NotImplementedError
 
-    async def promote_user(self, user_id: str) -> None:
+    async def promote_user(self, user_id: uuid.UUID) -> None:
         raise NotImplementedError
 
-    async def demote_user(self, user_id: str) -> None:
+    async def demote_user(self, user_id: uuid.UUID) -> None:
         raise NotImplementedError
 
-    async def is_user_banned(self, user_id: str) -> bool:
+    async def is_user_banned(self, user_id: uuid.UUID) -> bool:
         raise NotImplementedError
 
-    async def update_activity(self, user_id: str) -> None:
+    async def update_activity(self, user_id: uuid.UUID) -> None:
         raise NotImplementedError
 
     async def get_last_users(self, time_span: datetime.timedelta) -> list:
@@ -95,16 +98,22 @@ class FakeSubscriptions:
         self._actual = actual
         self.updated: list[Subscription] = []
 
+    async def claim_due_subscriptions(self, limit: int = 10) -> list[Subscription]:
+        return []
+
     async def get_by_id(self, subscription_id: uuid.UUID) -> Subscription | None:
         return self._actual
 
     async def update_subscription(self, subscription: Subscription) -> None:
         self.updated.append(subscription)
 
+    async def save_availability_snapshot(self, subscription_id: uuid.UUID, cars: list[Car]) -> bool:
+        return True
+
     async def get_all_subscriptions(self) -> list[Subscription]:
         return []
 
-    async def get_user_subscriptions(self, user_id: str) -> list[Subscription]:
+    async def get_user_subscriptions(self, user_id: uuid.UUID) -> list[Subscription]:
         raise NotImplementedError
 
     async def add_subscription(self, subscription: Subscription) -> None:
@@ -113,10 +122,12 @@ class FakeSubscriptions:
     async def remove_subscription(self, subscription: Subscription) -> None:
         raise NotImplementedError
 
-    async def subscription_exists(self, user_id: str, details: SubscriptionDetails) -> bool:
+    async def subscription_exists(
+        self, user_id: uuid.UUID, service_route_id: uuid.UUID, target_date: datetime.date
+    ) -> bool:
         raise NotImplementedError
 
-    async def get_subscription_count(self, user_id: str) -> int:
+    async def get_subscription_count(self, user_id: uuid.UUID) -> int:
         raise NotImplementedError
 
     async def reset_subscription(self, subscription: Subscription) -> None:
@@ -130,8 +141,16 @@ class FakeNotifications:
     async def add_notification(self, notification: Notification) -> None:
         self.added.append(notification)
 
-    async def pop_all(self) -> list[Notification]:
-        raise NotImplementedError
+    async def claim_pending_notifications(self, limit: int = 50) -> list[Notification]:
+        result = self.added
+        self.added = []
+        return result
+
+    async def mark_sent(self, notification_id: uuid.UUID) -> None:
+        pass
+
+    async def mark_failed(self, notification_id: uuid.UUID, error_text: str) -> None:
+        pass
 
 
 class FakeRw:
@@ -177,9 +196,10 @@ def make_notifier(
 async def test_seat_changed_uses_izmneny_mesta_exact_message() -> None:
     details = SubscriptionDetails(train=make_train(), date=datetime.date(2026, 8, 22))
     old_state = [Car(car_type=CarType.COUPE, number=1, free_seats=(1, 2, 3))]
+    uid = uuid.uuid4()
     sub = Subscription(
         id=uuid.uuid4(),
-        user_id="1",
+        user_id=uid,
         details=details,
         last_update=None,
         last_state=old_state,
@@ -198,16 +218,17 @@ async def test_seat_changed_uses_izmneny_mesta_exact_message() -> None:
         "Купейный вагон №1: Заняты места 3"
     )
     assert notifs.added[0].content == expected
-    assert notifs.added[0].user_id == "1"
+    assert notifs.added[0].user_id == sub.user_id
     assert subs.updated, "the refreshed state and last_update must be persisted"
 
 
 async def test_unchanged_seats_produce_no_notification() -> None:
     details = SubscriptionDetails(train=make_train(), date=datetime.date(2026, 8, 22))
     state = [Car(car_type=CarType.COUPE, number=1, free_seats=(1, 2, 3))]
+    uid = uuid.uuid4()
     sub = Subscription(
         id=uuid.uuid4(),
-        user_id="1",
+        user_id=uid,
         details=details,
         last_update=None,
         last_state=state,
@@ -221,12 +242,12 @@ async def test_unchanged_seats_produce_no_notification() -> None:
 
 
 async def test_svobodnye_mesta_fallback_when_no_previous_state() -> None:
-    details = SubscriptionDetails(train=make_train(), date=datetime.date(2026, 8, 22))
     new_state = [Car(car_type=CarType.COUPE, number=1, free_seats=(5, 6))]
+    uid = uuid.uuid4()
     sub = Subscription(
         id=uuid.uuid4(),
-        user_id="2",
-        details=details,
+        user_id=uid,
+        details=SubscriptionDetails(train=make_train(), date=datetime.date(2026, 8, 22)),
         last_update=None,
         last_state=None,
     )

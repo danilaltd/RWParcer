@@ -1,12 +1,9 @@
-"""``CommandContext`` — mirrors ``RWParcer/Services/Commands/CommandContext.cs``.
-
-Wraps the aiogram ``Bot`` and an optional originating message; all bot output
-happens exclusively through this object so handlers stay transport-agnostic.
-"""
+"""CommandContext wrapping bot, user_id, chat_id, and session."""
 
 from __future__ import annotations
 
 import logging
+import uuid
 from typing import TYPE_CHECKING
 
 from aiogram import Bot
@@ -17,6 +14,8 @@ from app.bot.session import BotSession
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    from app.bot.interfaces import ICommandRouter
+
 logger = logging.getLogger(__name__)
 
 
@@ -26,12 +25,14 @@ class CommandContext:
     def __init__(
         self,
         chat_id: str,
+        user_id: uuid.UUID,
         input: str,
         session: BotSession,
         bot: Bot,
         message: Message | None = None,
     ) -> None:
         self._chat_id = chat_id
+        self._user_id = user_id
         self._input = input
         self._session = session
         self._bot = bot
@@ -40,6 +41,10 @@ class CommandContext:
     @property
     def chat_id(self) -> str:
         return self._chat_id
+
+    @property
+    def user_id(self) -> uuid.UUID:
+        return self._user_id
 
     @property
     def input(self) -> str:
@@ -64,8 +69,6 @@ class CommandContext:
     ) -> None:
         options = list(options)
         if wrapping:
-            # C# takes 174 entries only for the prompt suffix; all options
-            # become numbered buttons.
             prompt += "\n" + "\n\n".join(
                 f"{index + 1} {label}" for index, label in enumerate(options[:174])
             )
@@ -79,20 +82,18 @@ class CommandContext:
         await self._send_to_client(prompt, reply_markup=keyboard)
 
     async def reset_session(self, message: str, router: ICommandRouter) -> None:
-        """C# ``ResetSessionAsync`` — wipe state and jump to the main menu."""
         self._session.reset()
         await self.send_message(message)
         self._session.set_command(CommandNames.MAIN_MENU_SELECT)
         await router.route(CommandNames.MAIN_MENU_SELECT, self)
 
-    # ------------------------------------------------------------------
     async def _send_to_client(
         self, text: str, reply_markup: ReplyKeyboardMarkup | ReplyKeyboardRemove | None
     ) -> None:
         try:
             for chunk in self.split_message_smart(text, 4096):
                 await self._bot.send_message(self._chat_id, chunk, reply_markup=reply_markup)
-        except Exception as exc:  # noqa: BLE001 — C# catches everything
+        except Exception as exc:
             logger.warning("Error sending message for chat %s: %s", self._chat_id, exc)
 
     @staticmethod
@@ -101,7 +102,6 @@ class CommandContext:
         max_length: int,
         candidate_delimiters: list[str] | None = None,
     ) -> list[str]:
-        """Port of ``SplitMessageSmart`` (C#)."""
         candidate_delimiters = candidate_delimiters or ["\n\n", "\n", " "]
         chosen = next((d for d in candidate_delimiters if d in message), " ")
         delimiter = chosen if chosen in candidate_delimiters else " "
@@ -140,7 +140,3 @@ class CommandContext:
         if current:
             result.append(current)
         return result
-
-
-if TYPE_CHECKING:
-    from app.bot.interfaces import ICommandRouter

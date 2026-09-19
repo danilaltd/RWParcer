@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import datetime
 import json
+from unittest.mock import MagicMock
 
 from app.bot import storage
 from app.bot.command_names import CommandNames
@@ -159,7 +160,7 @@ def test_session_from_row_round_trips_data_json() -> None:
         data=storage.serialize_session_data(session.data),
         date=session.date,
     )
-    decoded = storage.SessionStorage()._session_from_row(row)
+    decoded = storage.SessionStorage(MagicMock())._session_from_row(row)
     assert decoded.current_command == CommandNames.TRAIN_SELECT
     assert decoded.init_state is True
     assert decoded.data == session.data

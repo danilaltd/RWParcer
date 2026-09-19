@@ -24,6 +24,7 @@ from app.infrastructure.db.repositories import (
     MessagePostgresRepository,
     NotificationPostgresRepository,
     SubscriptionPostgresRepository,
+    TransportPostgresRepository,
     UserPostgresRepository,
 )
 from app.infrastructure.db.session import EngineHolder
@@ -38,8 +39,9 @@ def _build(settings: Settings) -> tuple[BotService, Bot, EngineHolder]:
     session_factory = engine_holder.session_factory
 
     users = UserPostgresRepository(session_factory)
-    subscriptions = SubscriptionPostgresRepository(session_factory, logger)
-    favorites = FavoritesPostgresRepository(session_factory, logger)
+    transport = TransportPostgresRepository(session_factory)
+    subscriptions = SubscriptionPostgresRepository(session_factory, transport, logger)
+    favorites = FavoritesPostgresRepository(session_factory, transport, logger)
     notifications = NotificationPostgresRepository(session_factory)
     messages = MessagePostgresRepository(session_factory)
 
@@ -49,7 +51,15 @@ def _build(settings: Settings) -> tuple[BotService, Bot, EngineHolder]:
     )
     rw = RwClient(http, logger)
 
-    facade = Facade(users, subscriptions, favorites, notifications, messages, rw)
+    facade = Facade(
+        users=users,
+        transport=transport,
+        subscriptions=subscriptions,
+        favorites=favorites,
+        notifications=notifications,
+        messages=messages,
+        rw=rw,
+    )
     notifier = Notifier(subscriptions, notifications, users, rw, logger)
     asyncio.create_task(notifier.run(asyncio.Event()))
     bot = Bot(token=settings.bot.token)

@@ -1,49 +1,68 @@
-"""Favorites services mirroring the C# ``FavoritesService`` use cases."""
+"""Favorites services using normalized schema."""
 
 from __future__ import annotations
 
-from uuid import uuid4
+import datetime
+import uuid
 
 from app.application.errors import InvalidOperationError, KeyNotFoundError
 from app.application.services.guards import require_not_banned, require_registered
 from app.domain.entities import Favorite
-from app.domain.protocols import FavoritesRepository, UserRepository
-from app.domain.value_objects import Train
+from app.domain.protocols import FavoritesRepository, TransportRepository, UserRepository
+from app.domain.value_objects import SubscriptionDetails, Train
 
 
 async def add_to_favorites(
-    users: UserRepository, favorites: FavoritesRepository, user_id: str, train: Train
+    users: UserRepository,
+    transport: TransportRepository,
+    favorites: FavoritesRepository,
+    user_id: uuid.UUID,
+    train: Train,
 ) -> None:
     await require_registered(users, user_id)
     await users.update_activity(user_id)
     await require_not_banned(users, user_id)
-    if await favorites.favorite_exists(user_id, train):
+    service_route_id = await transport.get_or_create_service_route(
+        SubscriptionDetails(train=train, date=datetime.date.today())
+    )
+    if await favorites.favorite_exists(user_id, service_route_id):
         raise InvalidOperationError(f"Train {train} already in favorites")
-    await favorites.add_favorite(Favorite(id=uuid4(), user_id=user_id, train_info=train))
+    await favorites.add_favorite(
+        Favorite(
+            id=uuid.uuid4(), user_id=user_id, service_route_id=service_route_id, train_info=train
+        )
+    )
 
 
 async def get_favorites(
-    users: UserRepository, favorites: FavoritesRepository, user_id: str
+    users: UserRepository, favorites: FavoritesRepository, user_id: uuid.UUID
 ) -> list[Train]:
     await require_registered(users, user_id)
     await users.update_activity(user_id)
     await require_not_banned(users, user_id)
-    return [f.train_info for f in await favorites.get_favorites(user_id)]
+    items = await favorites.get_favorites(user_id)
+    return [f.train_info for f in items]
 
 
 async def is_in_favorites(
-    users: UserRepository, favorites: FavoritesRepository, user_id: str, train: Train
+    users: UserRepository,
+    transport: TransportRepository,
+    favorites: FavoritesRepository,
+    user_id: uuid.UUID,
+    train: Train,
 ) -> bool:
     await require_registered(users, user_id)
     await users.update_activity(user_id)
     await require_not_banned(users, user_id)
-    return await favorites.favorite_exists(user_id, train)
+    service_route_id = await transport.get_or_create_service_route(
+        SubscriptionDetails(train=train, date=datetime.date.today())
+    )
+    return await favorites.favorite_exists(user_id, service_route_id)
 
 
 async def remove_from_favorites(
-    users: UserRepository, favorites: FavoritesRepository, user_id: str, train: Train
+    users: UserRepository, favorites: FavoritesRepository, user_id: uuid.UUID, train: Train
 ) -> None:
-    # The C# use case performs these checks in a different order than the others.
     await require_not_banned(users, user_id)
     await users.update_activity(user_id)
     await require_registered(users, user_id)

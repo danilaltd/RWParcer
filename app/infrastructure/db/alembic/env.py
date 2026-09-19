@@ -17,7 +17,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from app.config import load_settings
-from app.infrastructure.db import models  # noqa: F401  (registers tables)
+from app.infrastructure.db import models
 
 config = context.config
 

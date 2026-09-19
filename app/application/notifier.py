@@ -1,16 +1,4 @@
-"""Background notifier mirroring ``NotificationBackgroundService``.
-
-Semantics preserved from the C# service:
-
-* The loop re-fetches all subscriptions continuously (10 ms pause only when
-  the table is empty) — there is **no** periodic sleep between iterations.
-* Expired subscriptions (``date < today UTC``) are removed; a removal aborts
-  the current pass.
-* Each subscription is processed under a global semaphore
-  (``max_concurrency``) with up to ``max_retries`` attempts.
-* A subscription is skipped while ``now - LastUpdate < user.MinUpdateInterval``.
-* The page life-cycle of ``CarVO`` state introduces the exact diff strings.
-"""
+"""Background notifier using normalized subscription checking and availability snapshots."""
 
 from __future__ import annotations
 
@@ -52,39 +40,22 @@ class Notifier:
         self._semaphore = asyncio.Semaphore(max_concurrency)
 
     async def run(self, stop: asyncio.Event) -> None:
-        """Main notifier loop (``StartAsync``)."""
         self.logger.debug("Waiting...")
         while not stop.is_set():
             try:
-                subscriptions = await self._subscriptions.get_all_subscriptions()
+                subscriptions = await self._subscriptions.claim_due_subscriptions(limit=10)
                 if not subscriptions:
-                    await asyncio.sleep(10)  # C# ``Task.Delay(10)``
-                if await self._unsubscribe_expired(subscriptions):
+                    await asyncio.sleep(2)
                     continue
                 await asyncio.gather(*(self._process_subscription(s) for s in subscriptions))
             except Exception as exc:
                 self.logger.debug(f"Неизвестная ошибка: {exc}")
-
-    async def _unsubscribe_expired(self, subscriptions: list[Subscription]) -> bool:
-        today = datetime.datetime.now(UTC).date()  # DateOnly.FromDateTime(UtcNow)
-        expired = [s for s in subscriptions if s.details.date < today]
-        for subscription in expired:
-            await self._subscriptions.remove_subscription(subscription)
-        return len(expired) > 0
+                await asyncio.sleep(2)
 
     async def _process_subscription(self, subscription: Subscription) -> None:
         async with self._semaphore:
             for attempt in range(1, self._max_retries + 1):
                 try:
-                    now = datetime.datetime.now(UTC)
-                    min_interval = datetime.timedelta(
-                        seconds=await self._users.get_user_min_interval(subscription.user_id)
-                    )
-                    if (
-                        subscription.last_update is not None
-                        and now - subscription.last_update < min_interval
-                    ):
-                        break
                     self.logger.debug(f"Попытка {attempt}: Запрос {subscription.id}")
                     response = await self._rw.get_seats(subscription.details)
                     actual = await self._subscriptions.get_by_id(subscription.id)
@@ -94,22 +65,25 @@ class Notifier:
                         self.logger.debug(f"Изменение данных для {subscription.id}\n")
                         changes = self._find_seat_changes(actual.last_state, response)
                         if changes:
+                            await self._subscriptions.save_availability_snapshot(
+                                subscription.id, response
+                            )
                             await self._notifications.add_notification(
                                 Notification(
                                     id=uuid.uuid4(),
                                     user_id=subscription.user_id,
+                                    subscription_id=subscription.id,
+                                    notification_type="SEATS_CHANGED",
                                     content=self._build_change_message(
                                         subscription.details,
                                         actual.last_state,
                                         changes,
                                     ),
+                                    status="PENDING",
                                 )
                             )
-                        elif response:
-                            raise RuntimeError(f"unsupported changes {actual.id}")
-                        actual.last_state = response
-                        await self._subscriptions.update_subscription(actual)
-                    actual.last_update = now
+                    actual.last_state = response
+                    actual.last_update = datetime.datetime.now(UTC)
                     await self._subscriptions.update_subscription(actual)
                     break
                 except TimeoutError:
@@ -128,9 +102,6 @@ class Notifier:
         changes: list[str],
     ) -> str:
         header = f"{details.date:%d.%m.%Y}\n{convert_train(details.train)}\n"
-        # C# ``LastState is not null ? "Изменены места" : "Свободные места"``;
-        # ``Subscription.LastState`` is initialized to ``[]`` so it is effectively
-        # always "Изменены места".
         label = "Изменены места" if old_state is not None else "Свободные места"
         return f"{header}{label}: \n{chr(10).join(changes)}"
 

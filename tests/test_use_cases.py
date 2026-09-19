@@ -45,49 +45,59 @@ def make_subscription(date: datetime.date = datetime.date(2026, 8, 22)) -> Subsc
 
 class InMemoryUsers:
     def __init__(self) -> None:
-        self.users: dict[str, User] = {}
+        self.users: dict[uuid.UUID, User] = {}
 
-    async def is_user_registered(self, user_id: str) -> bool:
+    async def resolve_user(self, telegram_user_id: int, telegram_chat_id: int) -> User:
+        for u in self.users.values():
+            if u.telegram_user_id == telegram_user_id:
+                return u
+        uid = uuid.uuid4()
+        user = User(id=uid, telegram_user_id=telegram_user_id, telegram_chat_id=telegram_chat_id)
+        self.users[uid] = user
+        return user
+
+    async def is_user_registered(self, user_id: uuid.UUID) -> bool:
         return user_id in self.users
 
     async def add_user(self, user: User) -> None:
         self.users[user.id] = user
 
-    async def get_user_min_interval(self, user_id: str) -> int:
+    async def get_user_min_interval(self, user_id: uuid.UUID) -> int:
         return self.users[user_id].min_subscriptions_interval
 
-    async def is_user_moderator(self, user_id: str) -> bool:
+    async def is_user_moderator(self, user_id: uuid.UUID) -> bool:
         return self.users[user_id].is_moderator
 
-    async def get_user_max_subscriptions(self, user_id: str) -> int:
+    async def get_user_max_subscriptions(self, user_id: uuid.UUID) -> int:
         return self.users[user_id].max_subscriptions
 
-    async def get_user_by_id(self, user_id: str) -> User | None:
+    async def get_user_by_id(self, user_id: uuid.UUID) -> User | None:
         return self.users.get(user_id)
 
-    async def set_users_min_interval(self, user_id: str, min_interval: int) -> None:
+    async def set_users_min_interval(self, user_id: uuid.UUID, min_interval: int) -> None:
         self.users[user_id].change_interval_limits(min_interval)
 
-    async def set_users_max_subscriptions(self, user_id: str, max_subscriptions: int) -> None:
+    async def set_users_max_subscriptions(self, user_id: uuid.UUID, max_subscriptions: int) -> None:
         self.users[user_id].change_subscriptions_limits(max_subscriptions)
 
-    async def ban_user(self, user_id: str) -> None:
+    async def ban_user(self, user_id: uuid.UUID) -> None:
         self.users[user_id].block()
 
-    async def unban_user(self, user_id: str) -> None:
+    async def unban_user(self, user_id: uuid.UUID) -> None:
         self.users[user_id].unblock()
 
-    async def promote_user(self, user_id: str) -> None:
+    async def promote_user(self, user_id: uuid.UUID) -> None:
         self.users[user_id].promote()
 
-    async def demote_user(self, user_id: str) -> None:
+    async def demote_user(self, user_id: uuid.UUID) -> None:
         self.users[user_id].demote()
 
-    async def is_user_banned(self, user_id: str) -> bool:
+    async def is_user_banned(self, user_id: uuid.UUID) -> bool:
         return self.users[user_id].is_blocked
 
-    async def update_activity(self, user_id: str) -> None:
-        self.users[user_id].last_activity = datetime.datetime.now(datetime.UTC)
+    async def update_activity(self, user_id: uuid.UUID) -> None:
+        if user_id in self.users:
+            self.users[user_id].last_activity = datetime.datetime.now(datetime.UTC)
 
     async def get_last_users(self, time_span: datetime.timedelta) -> list[User]:
         return list(self.users.values())
@@ -96,11 +106,16 @@ class InMemoryUsers:
         return [u for u in self.users.values() if u.is_moderator]
 
 
+class InMemoryTransport:
+    async def get_or_create_service_route(self, details: SubscriptionDetails) -> uuid.UUID:
+        return uuid.uuid4()
+
+
 class InMemorySubscriptions:
     def __init__(self) -> None:
         self.subscriptions: list[Subscription] = []
 
-    async def get_user_subscriptions(self, user_id: str) -> list[Subscription]:
+    async def get_user_subscriptions(self, user_id: uuid.UUID) -> list[Subscription]:
         return [s for s in self.subscriptions if s.user_id == user_id]
 
     async def get_all_subscriptions(self) -> list[Subscription]:
@@ -115,11 +130,22 @@ class InMemorySubscriptions:
     async def remove_subscription(self, subscription: Subscription) -> None:
         self.subscriptions.remove(subscription)
 
-    async def subscription_exists(self, user_id: str, details: SubscriptionDetails) -> bool:
-        return any(s.details == details for s in await self.get_user_subscriptions(user_id))
+    async def subscription_exists(
+        self, user_id: uuid.UUID, service_route_id: uuid.UUID, target_date: datetime.date
+    ) -> bool:
+        return any(
+            s.user_id == user_id and s.target_date == target_date
+            for s in await self.get_user_subscriptions(user_id)
+        )
 
-    async def get_subscription_count(self, user_id: str) -> int:
+    async def get_subscription_count(self, user_id: uuid.UUID) -> int:
         return len(await self.get_user_subscriptions(user_id))
+
+    async def claim_due_subscriptions(self, limit: int = 10) -> list[Subscription]:
+        return []
+
+    async def save_availability_snapshot(self, subscription_id: uuid.UUID, cars: list[Car]) -> bool:
+        return True
 
     async def update_subscription(self, subscription: Subscription) -> None:
         pass
@@ -132,7 +158,7 @@ class InMemoryFavorites:
     def __init__(self) -> None:
         self.favorites: list[Favorite] = []
 
-    async def get_favorites(self, user_id: str) -> list[Favorite]:
+    async def get_favorites(self, user_id: uuid.UUID) -> list[Favorite]:
         return [f for f in self.favorites if f.user_id == user_id]
 
     async def add_favorite(self, favorite: Favorite) -> None:
@@ -144,18 +170,24 @@ class InMemoryFavorites:
                 self.favorites.remove(stored)
                 return
 
-    async def favorite_exists(self, user_id: str, train: Train) -> bool:
-        return any(f.train_info == train for f in await self.get_favorites(user_id))
+    async def favorite_exists(self, user_id: uuid.UUID, service_route_id: uuid.UUID) -> bool:
+        return any(f.user_id == user_id for f in await self.get_favorites(user_id))
 
 
 class InMemoryNotifications:
     def __init__(self) -> None:
         self.notifications: list[Notification] = []
 
-    async def pop_all(self) -> list[Notification]:
+    async def claim_pending_notifications(self, limit: int = 50) -> list[Notification]:
         result = self.notifications
         self.notifications = []
         return result
+
+    async def mark_sent(self, notification_id: uuid.UUID) -> None:
+        pass
+
+    async def mark_failed(self, notification_id: uuid.UUID, error_text: str) -> None:
+        pass
 
     async def add_notification(self, notification: Notification) -> None:
         self.notifications.append(notification)
@@ -163,7 +195,7 @@ class InMemoryNotifications:
 
 class NoopMessages:
     async def add_message(self, message: Message) -> None: ...
-    async def get_user_messages(self, user_id: str) -> list:
+    async def get_user_messages(self, user_id: uuid.UUID) -> list:
         return []
 
     async def get_all_messages(self) -> list:
@@ -184,11 +216,13 @@ class NoopRw:
 @pytest.fixture
 def facade() -> tuple[Facade, InMemoryUsers, InMemorySubscriptions, InMemoryFavorites]:
     users = InMemoryUsers()
+    transport = InMemoryTransport()
     subscriptions = InMemorySubscriptions()
     favorites = InMemoryFavorites()
     notifications = InMemoryNotifications()
     fac = Facade(
         users=users,
+        transport=transport,
         subscriptions=subscriptions,
         favorites=favorites,
         notifications=notifications,
@@ -202,8 +236,7 @@ async def test_subscribe_get_and_unsubscribe_flow(
     facade: tuple[Facade, InMemoryUsers, InMemorySubscriptions, InMemoryFavorites],
 ) -> None:
     fac, _users, subscriptions, _favorites = facade
-    user_id = "1"
-    await fac.authenticate_user(user_id)
+    user_id = await fac.authenticate_user(1, 1)
     details = make_subscription()
 
     await fac.subscribe(user_id, details)
@@ -221,36 +254,37 @@ async def test_subscription_limit_exceeded_raises_overflow(
     facade: tuple[Facade, InMemoryUsers, InMemorySubscriptions, InMemoryFavorites],
 ) -> None:
     fac, users, _subscriptions, _favorites = facade
-    await fac.authenticate_user("user1")
-    users.users["user1"].change_subscriptions_limits(1)
+    uid = await fac.authenticate_user(2, 2)
+    users.users[uid].change_subscriptions_limits(1)
 
-    await fac.subscribe("user1", make_subscription(datetime.date(2026, 8, 22)))
+    await fac.subscribe(uid, make_subscription(datetime.date(2026, 8, 22)))
     with pytest.raises(OverflowError):
-        await fac.subscribe("user1", make_subscription(datetime.date(2026, 8, 23)))
+        await fac.subscribe(uid, make_subscription(datetime.date(2026, 8, 23)))
 
 
 async def test_favorites_add_and_remove_flow(
     facade: tuple[Facade, InMemoryUsers, InMemorySubscriptions, InMemoryFavorites],
 ) -> None:
     fac, _users, _subscriptions, _favorites = facade
-    await fac.authenticate_user("user1")
+    uid = await fac.authenticate_user(3, 3)
     train = make_train()
 
-    assert await fac.is_in_favorites("user1", train) is False
-    await fac.add_to_favorites("user1", train)
-    assert await fac.is_in_favorites("user1", train) is True
-    assert await fac.get_favorites("user1") == [train]
+    assert await fac.is_in_favorites(uid, train) is False
+    await fac.add_to_favorites(uid, train)
+    assert await fac.is_in_favorites(uid, train) is True
+    assert await fac.get_favorites(uid) == [train]
 
-    await fac.remove_from_favorites("user1", train)
-    assert await fac.is_in_favorites("user1", train) is False
+    await fac.remove_from_favorites(uid, train)
+    assert await fac.is_in_favorites(uid, train) is False
 
     with pytest.raises(KeyNotFoundError):
-        await fac.remove_from_favorites("user1", train)
+        await fac.remove_from_favorites(uid, train)
 
 
 async def test_unknown_user_is_rejected(
     facade: tuple[Facade, InMemoryUsers, InMemorySubscriptions, InMemoryFavorites],
 ) -> None:
     fac, _users, _subscriptions, _favorites = facade
+    ghost_uuid = uuid.uuid4()
     with pytest.raises(KeyNotFoundError):
-        await fac.subscribe("ghost", make_subscription())
+        await fac.subscribe(ghost_uuid, make_subscription())

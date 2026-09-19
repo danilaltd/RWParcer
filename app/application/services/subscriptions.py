@@ -1,27 +1,34 @@
-"""Subscription services mirroring the C# ``SubscriptionService`` use cases."""
+"""Subscription services integrating with normalized
+
+transport service routes and user repositories.
+"""
 
 from __future__ import annotations
 
-from uuid import uuid4
+import uuid
 
 from app.application.errors import InvalidOperationError, KeyNotFoundError, UnauthorizedError
 from app.application.services.guards import require_not_banned, require_registered
 from app.domain.entities import Subscription
-from app.domain.protocols import SubscriptionRepository, UserRepository
+from app.domain.protocols import SubscriptionRepository, TransportRepository, UserRepository
 from app.domain.value_objects import SubscriptionDetails
 
 
 async def subscribe(
     users: UserRepository,
+    transport: TransportRepository,
     subs: SubscriptionRepository,
-    user_id: str,
+    user_id: uuid.UUID,
     subscription: SubscriptionDetails,
 ) -> None:
     await require_registered(users, user_id)
     await users.update_activity(user_id)
     await require_not_banned(users, user_id)
-    if await subs.subscription_exists(user_id, subscription):
+
+    service_route_id = await transport.get_or_create_service_route(subscription)
+    if await subs.subscription_exists(user_id, service_route_id, subscription.date):
         raise InvalidOperationError(f"{user_id} already has this subscription")
+
     count = await subs.get_subscription_count(user_id)
     user = await users.get_user_by_id(user_id)
     if user is None:
@@ -30,13 +37,22 @@ async def subscribe(
         raise OverflowError(
             f"User {user_id} reached the subscription limit ({user.max_subscriptions})"
         )
-    await subs.add_subscription(Subscription(id=uuid4(), user_id=user_id, details=subscription))
+
+    await subs.add_subscription(
+        Subscription(
+            id=uuid.uuid4(),
+            user_id=user_id,
+            service_route_id=service_route_id,
+            target_date=subscription.date,
+            details=subscription,
+        )
+    )
 
 
 async def unsubscribe(
     users: UserRepository,
     subs: SubscriptionRepository,
-    user_id: str,
+    user_id: uuid.UUID,
     subscription: SubscriptionDetails,
 ) -> None:
     await require_registered(users, user_id)
@@ -52,7 +68,7 @@ async def unsubscribe(
 async def reset_subscribe(
     users: UserRepository,
     subs: SubscriptionRepository,
-    user_id: str,
+    user_id: uuid.UUID,
     subscription: SubscriptionDetails,
 ) -> None:
     await require_registered(users, user_id)
@@ -66,7 +82,7 @@ async def reset_subscribe(
 
 
 async def get_subscriptions(
-    users: UserRepository, subs: SubscriptionRepository, user_id: str, target_id: str
+    users: UserRepository, subs: SubscriptionRepository, user_id: uuid.UUID, target_id: uuid.UUID
 ) -> list[SubscriptionDetails]:
     await require_registered(users, user_id)
     await users.update_activity(user_id)
