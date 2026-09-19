@@ -5,8 +5,10 @@ from __future__ import annotations
 import datetime
 import uuid
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
-from app.domain.value_objects import Car, SubscriptionDetails, Train
+if TYPE_CHECKING:
+    from app.domain.value_objects import Car, SubscriptionDetails, Train
 
 
 @dataclass

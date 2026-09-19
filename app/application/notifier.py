@@ -5,17 +5,20 @@ from __future__ import annotations
 import asyncio
 import datetime
 import uuid
+from typing import TYPE_CHECKING
 
 from app.application.errors import HttpRequestError
 from app.domain.entities import Notification, Subscription
-from app.domain.protocols import (
-    Logger,
-    NotificationRepository,
-    RwRepository,
-    SubscriptionRepository,
-    UserRepository,
-)
 from app.domain.value_objects import Car, SubscriptionDetails, Train, car_type_label
+
+if TYPE_CHECKING:
+    from app.domain.protocols import (
+        Logger,
+        NotificationRepository,
+        RwRepository,
+        SubscriptionRepository,
+        UserRepository,
+    )
 
 UTC = datetime.UTC
 

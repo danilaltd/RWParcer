@@ -5,13 +5,12 @@ from __future__ import annotations
 import contextlib
 import datetime
 import uuid
+from typing import TYPE_CHECKING
 
 from sqlalchemy import delete, func, select, update
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.application.errors import KeyNotFoundError
 from app.domain.entities import Favorite, Message, Notification, Subscription, User
-from app.domain.protocols import Logger
 from app.domain.value_objects import Car, CarType, Station, SubscriptionDetails, Train
 from app.infrastructure.db.models import (
     AvailabilitySnapshotRow,
@@ -28,6 +27,11 @@ from app.infrastructure.db.models import (
     UserRoleRow,
     UserRow,
 )
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+    from app.domain.protocols import Logger
 
 UTC = datetime.UTC
 

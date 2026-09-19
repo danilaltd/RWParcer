@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import datetime
+from typing import TYPE_CHECKING
 
-from app.domain.protocols import NotificationRepository, UserRepository
 from app.domain.value_objects import NotificationItem
+
+if TYPE_CHECKING:
+    from app.domain.protocols import NotificationRepository, UserRepository
 
 UTC = datetime.UTC
 

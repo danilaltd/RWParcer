@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-import datetime
 import json
 import uuid
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from app.application.services import (
     favorites as favorites_service,
@@ -30,15 +29,6 @@ from app.application.services import (
 )
 from app.domain import json_codecs
 from app.domain.entities import User
-from app.domain.protocols import (
-    FavoritesRepository,
-    MessageRepository,
-    NotificationRepository,
-    RwRepository,
-    SubscriptionRepository,
-    TransportRepository,
-    UserRepository,
-)
 from app.domain.value_objects import (
     MessageInfo,
     NotificationItem,
@@ -48,6 +38,19 @@ from app.domain.value_objects import (
     Train,
     UserInfo,
 )
+
+if TYPE_CHECKING:
+    import datetime
+
+    from app.domain.protocols import (
+        FavoritesRepository,
+        MessageRepository,
+        NotificationRepository,
+        RwRepository,
+        SubscriptionRepository,
+        TransportRepository,
+        UserRepository,
+    )
 
 
 class DummyTransport:

@@ -10,14 +10,17 @@ sync-style URL by normalising ``postgres://``/``postgresql://`` prefixes.
 from __future__ import annotations
 
 import asyncio
+from typing import TYPE_CHECKING
 
 from alembic import context
 from sqlalchemy import pool
-from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from app.config import load_settings
 from app.infrastructure.db import models
+
+if TYPE_CHECKING:
+    from sqlalchemy.engine import Connection
 
 config = context.config
 

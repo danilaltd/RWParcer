@@ -7,11 +7,15 @@ to the C# source.
 
 from __future__ import annotations
 
-from app.application.facade import Facade
+from typing import TYPE_CHECKING
+
 from app.bot.command_names import CommandNames
-from app.bot.context import CommandContext
 from app.bot.interfaces import IMenuProvider
 from app.domain.value_objects import Train, UserInfo
+
+if TYPE_CHECKING:
+    from app.application.facade import Facade
+    from app.bot.context import CommandContext
 
 
 class MainMenuProvider(IMenuProvider):

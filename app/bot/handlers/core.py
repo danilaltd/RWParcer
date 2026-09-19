@@ -8,13 +8,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.converters import message_to_string, user_to_string
-from app.bot.interfaces import ICommandRouter, IMenuProvider
 
 if TYPE_CHECKING:
+    from app.application.facade import Facade
     from app.bot.context import CommandContext
+    from app.bot.interfaces import ICommandRouter, IMenuProvider
 
 
 class StartHandler:

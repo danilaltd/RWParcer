@@ -11,10 +11,14 @@ code exactly like the C# did with ``HttpResponseMessage``.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import httpx
 
 from app.application.errors import HttpRequestError
-from app.domain.protocols import Logger
+
+if TYPE_CHECKING:
+    from app.domain.protocols import Logger
 
 DEFAULT_TIMEOUT = 10.0  # C# ``HttpClient.Timeout``
 

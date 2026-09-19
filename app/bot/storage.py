@@ -6,8 +6,7 @@ import asyncio
 import datetime
 import json
 import logging
-import uuid
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from app.bot.command_names import command_name_by_value
 from app.bot.session import BotSession
@@ -15,7 +14,11 @@ from app.domain import json_codecs
 from app.domain.value_objects import Station, SubscriptionDetails, Train, UserInfo
 from app.infrastructure.db.models import ConversationSessionRow
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+if TYPE_CHECKING:
+    import uuid
+
+    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 

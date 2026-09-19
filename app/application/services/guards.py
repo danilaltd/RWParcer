@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
-import uuid
+from typing import TYPE_CHECKING
 
 from app.application.errors import KeyNotFoundError, UnauthorizedError
-from app.domain.protocols import UserRepository
+
+if TYPE_CHECKING:
+    import uuid
+
+    from app.domain.protocols import UserRepository
 
 
 async def require_registered(users: UserRepository, user_id: uuid.UUID) -> None:

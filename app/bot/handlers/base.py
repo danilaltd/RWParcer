@@ -8,13 +8,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.converters import convert_train
 from app.bot.interfaces import ICommandHandler, ICommandRouter
 from app.domain.value_objects import Station, Train
 
 if TYPE_CHECKING:
+    from app.application.facade import Facade
     from app.bot.context import CommandContext
 
 

@@ -10,10 +10,9 @@ from __future__ import annotations
 
 import datetime
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from app.domain import times
-from app.domain.entities import Message
 from app.domain.value_objects import (
     Car,
     CarType,
@@ -25,6 +24,9 @@ from app.domain.value_objects import (
     Train,
     UserInfo,
 )
+
+if TYPE_CHECKING:
+    from app.domain.entities import Message
 
 logger = logging.getLogger(__name__)
 

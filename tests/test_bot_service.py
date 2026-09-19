@@ -9,20 +9,23 @@ from __future__ import annotations
 
 import asyncio
 import uuid
-from collections.abc import AsyncGenerator
 from types import SimpleNamespace
-from typing import cast
+from typing import TYPE_CHECKING, cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from aiogram import Bot
 from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.router import CommandRouter
 from app.bot.service import BotService
-from app.bot.session import BotSession
 from app.bot.storage import SessionStorage
 from app.domain.value_objects import NotificationItem
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
+
+    from aiogram import Bot
+    from app.bot.session import BotSession
 
 
 class FakeBot:
@@ -96,7 +99,7 @@ async def service(
     store = RecordingStore()
     router = CommandRouter(fake_facade)
     svc = BotService(
-        bot=cast(Bot, bot),
+        bot=cast("Bot", bot),
         store=store,
         facade=fake_facade,
         router=router,

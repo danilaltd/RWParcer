@@ -6,12 +6,15 @@ transport service routes and user repositories.
 from __future__ import annotations
 
 import uuid
+from typing import TYPE_CHECKING
 
 from app.application.errors import InvalidOperationError, KeyNotFoundError, UnauthorizedError
 from app.application.services.guards import require_not_banned, require_registered
 from app.domain.entities import Subscription
-from app.domain.protocols import SubscriptionRepository, TransportRepository, UserRepository
-from app.domain.value_objects import SubscriptionDetails
+
+if TYPE_CHECKING:
+    from app.domain.protocols import SubscriptionRepository, TransportRepository, UserRepository
+    from app.domain.value_objects import SubscriptionDetails
 
 
 async def subscribe(

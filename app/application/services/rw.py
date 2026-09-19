@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
-import uuid
+from typing import TYPE_CHECKING
 
 from app.application.services.guards import require_not_banned, require_registered
-from app.domain.protocols import RwRepository, UserRepository
-from app.domain.value_objects import Route, Station, Train
+
+if TYPE_CHECKING:
+    import uuid
+
+    from app.domain.protocols import RwRepository, UserRepository
+    from app.domain.value_objects import Route, Station, Train
 
 
 async def get_stations(

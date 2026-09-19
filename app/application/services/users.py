@@ -3,13 +3,17 @@
 from __future__ import annotations
 
 import datetime
-import uuid
+from typing import TYPE_CHECKING
 
 from app.application.errors import KeyNotFoundError, UnauthorizedError
 from app.application.services.guards import require_registered
 from app.domain.entities import User
-from app.domain.protocols import UserRepository
 from app.domain.value_objects import UserInfo
+
+if TYPE_CHECKING:
+    import uuid
+
+    from app.domain.protocols import UserRepository
 
 
 async def resolve_user(users: UserRepository, telegram_user_id: int, telegram_chat_id: int) -> User:

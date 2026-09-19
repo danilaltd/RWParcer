@@ -3,18 +3,18 @@
 from __future__ import annotations
 
 import logging
-import uuid
 from typing import TYPE_CHECKING
 
-from aiogram import Bot
 from aiogram.types import KeyboardButton, Message, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from app.bot.command_names import CommandNames
-from app.bot.session import BotSession
 
 if TYPE_CHECKING:
+    import uuid
     from collections.abc import Iterable
 
+    from aiogram import Bot
     from app.bot.interfaces import ICommandRouter
+    from app.bot.session import BotSession
 
 logger = logging.getLogger(__name__)
 

@@ -8,9 +8,10 @@ back after each update, exactly like ``PostgresSessionStore``.
 from __future__ import annotations
 
 import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from app.bot.command_names import CommandNames
+if TYPE_CHECKING:
+    from app.bot.command_names import CommandNames
 
 
 class BotSession:

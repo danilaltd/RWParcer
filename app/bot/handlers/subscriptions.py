@@ -7,14 +7,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.converters import subscription_to_string
-from app.bot.interfaces import ICommandRouter
 from app.domain.value_objects import SubscriptionDetails
 
 if TYPE_CHECKING:
+    from app.application.facade import Facade
     from app.bot.context import CommandContext
+    from app.bot.interfaces import ICommandRouter
 
 
 def _is_subscription_list(value: object) -> bool:

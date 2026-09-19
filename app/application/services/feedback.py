@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import uuid
+from typing import TYPE_CHECKING
 
 from app.application.errors import KeyNotFoundError, UnauthorizedError
 from app.application.services.guards import require_not_banned, require_registered
 from app.domain.entities import Message, Notification
-from app.domain.protocols import MessageRepository, NotificationRepository, UserRepository
 from app.domain.value_objects import MessageInfo
+
+if TYPE_CHECKING:
+    from app.domain.protocols import MessageRepository, NotificationRepository, UserRepository
 
 
 async def send_feedback(

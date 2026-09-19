@@ -5,17 +5,20 @@ from __future__ import annotations
 import asyncio
 import logging
 import uuid
-from collections.abc import Sequence
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from aiogram import Bot
 from aiogram.enums import ContentType
 from app.application.errors import UnauthorizedError
-from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.context import CommandContext
-from app.bot.router import CommandRouter
 from app.bot.storage import BotSessionManager, SessionStorage
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from aiogram import Bot
+    from app.application.facade import Facade
+    from app.bot.router import CommandRouter
 
 logger = logging.getLogger(__name__)
 

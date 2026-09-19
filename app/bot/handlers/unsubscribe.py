@@ -9,14 +9,14 @@ import datetime
 from typing import TYPE_CHECKING
 
 from app.application.errors import InvalidOperationError
-from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.dates import add_months, parse_date_exact
-from app.bot.interfaces import ICommandRouter
 from app.domain.value_objects import SubscriptionDetails, Train
 
 if TYPE_CHECKING:
+    from app.application.facade import Facade
     from app.bot.context import CommandContext
+    from app.bot.interfaces import ICommandRouter
 
 
 class UnsubscribeEnterDateHandler:

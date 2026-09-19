@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
-import datetime
-import uuid
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from app.domain.entities import Favorite, Message, Notification, Subscription, User
-from app.domain.value_objects import Car, Route, Station, SubscriptionDetails, Train
+if TYPE_CHECKING:
+    import datetime
+    import uuid
+
+    from app.domain.entities import Favorite, Message, Notification, Subscription, User
+    from app.domain.value_objects import Car, Route, Station, SubscriptionDetails, Train
 
 
 @runtime_checkable

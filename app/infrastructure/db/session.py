@@ -6,6 +6,8 @@ Each repository operation opens its *own* ``AsyncSession`` (mirroring
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -13,7 +15,8 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from app.config import DatabaseSettings
+if TYPE_CHECKING:
+    from app.config import DatabaseSettings
 
 
 def create_engine(connection_string: str) -> AsyncEngine:

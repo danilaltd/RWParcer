@@ -8,15 +8,15 @@ from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING
 
-from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.converters import message_to_string, user_to_string
 from app.bot.dates import parse_timespan
-from app.bot.interfaces import ICommandRouter
 from app.domain.value_objects import UserInfo
 
 if TYPE_CHECKING:
+    from app.application.facade import Facade
     from app.bot.context import CommandContext
+    from app.bot.interfaces import ICommandRouter
 
 
 class ModeratorSpanHandler:

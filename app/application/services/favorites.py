@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import datetime
 import uuid
+from typing import TYPE_CHECKING
 
 from app.application.errors import InvalidOperationError, KeyNotFoundError
 from app.application.services.guards import require_not_banned, require_registered
 from app.domain.entities import Favorite
-from app.domain.protocols import FavoritesRepository, TransportRepository, UserRepository
 from app.domain.value_objects import SubscriptionDetails, Train
+
+if TYPE_CHECKING:
+    from app.domain.protocols import FavoritesRepository, TransportRepository, UserRepository
 
 
 async def add_to_favorites(

@@ -7,11 +7,14 @@ like ``CarVO.GetEqualityComponents``.
 
 from __future__ import annotations
 
-import datetime
 import enum
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from app.domain import times
+
+if TYPE_CHECKING:
+    import datetime
 
 
 class CarType(enum.IntEnum):

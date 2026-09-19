@@ -13,14 +13,17 @@ from __future__ import annotations
 
 import asyncio
 import json
-
-import httpx
+from typing import TYPE_CHECKING
 
 from app.application.errors import MaxRetriesError
 from app.domain import times
-from app.domain.protocols import Logger
 from app.domain.value_objects import Car, CarType, Route, Station, SubscriptionDetails, Train
-from app.infrastructure.http_client_factory import AsyncHttpClientFactory
+
+if TYPE_CHECKING:
+    import httpx
+
+    from app.domain.protocols import Logger
+    from app.infrastructure.http_client_factory import AsyncHttpClientFactory
 
 USER_KEY = "c2a3d81674b7f4c9e4af16bdba110d53"
 GET_STATIONS_URL = "https://pass.rw.by/ru/ajax/autocomplete/search/?term="

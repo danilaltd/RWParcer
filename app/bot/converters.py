@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import datetime
+from typing import TYPE_CHECKING
 
-from app.domain.value_objects import MessageInfo, SubscriptionDetails, Train, UserInfo
+if TYPE_CHECKING:
+    from app.domain.value_objects import MessageInfo, SubscriptionDetails, Train, UserInfo
 
 _TRAIN_TYPE_RU = {
     "international": "Международные линии",

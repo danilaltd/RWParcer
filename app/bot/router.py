@@ -10,7 +10,6 @@ from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING
 
-from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.handlers.core import (
     FeedbackHandler,
@@ -58,7 +57,6 @@ from app.bot.handlers.unsubscribe import (
     UnsubscribeEnterDateRangeHandler,
     UnsubscribeUseLastDateHandler,
 )
-from app.bot.interfaces import ICommandHandler
 from app.bot.keyboards import (
     MainMenuProvider,
     ManageUsersChoiceProvider,
@@ -71,7 +69,9 @@ from app.bot.keyboards import (
 )
 
 if TYPE_CHECKING:
+    from app.application.facade import Facade
     from app.bot.context import CommandContext
+    from app.bot.interfaces import ICommandHandler
 
 
 class CommandRouter:

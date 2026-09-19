@@ -10,9 +10,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Protocol
 
-from app.bot.command_names import CommandNames
-
 if TYPE_CHECKING:
+    from app.bot.command_names import CommandNames
     from app.bot.context import CommandContext
 
 
