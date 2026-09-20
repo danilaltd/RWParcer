@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import uuid
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from aiogram.enums import ContentType
 from app.application.errors import UnauthorizedError
@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from aiogram import Bot
+    from aiogram.types import Update
     from app.application.facade import Facade
     from app.bot.router import CommandRouter
 
@@ -92,7 +93,7 @@ class BotService:
                 except Exception as exc:
                     logger.error("Error handling update: %s", exc)
 
-    async def _on_update(self, update: Any) -> None:
+    async def _on_update(self, update: Update) -> None:
         message = update.message
         if message is None or message.content_type != ContentType.TEXT:
             return

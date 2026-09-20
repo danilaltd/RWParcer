@@ -28,6 +28,17 @@ if not config.get_main_option("sqlalchemy.url"):
     settings = load_settings()
     url = settings.database.sync_connection_string or settings.database.connection_string
     config.set_main_option("sqlalchemy.url", url)
+else:
+    url = config.get_main_option("sqlalchemy.url")
+
+if url and "+psycopg2" in url:
+    url = url.replace("+psycopg2", "+asyncpg", 1)
+    config.set_main_option("sqlalchemy.url", url)
+elif url and "://" not in url:
+    pass
+elif url and "+" not in url:
+    url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    config.set_main_option("sqlalchemy.url", url)
 
 target_metadata = models.Base.metadata
 

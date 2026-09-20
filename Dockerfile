@@ -6,4 +6,4 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY app/ ./app/
 COPY alembic.ini .
 ENV PYTHONUNBUFFERED=1
-CMD ["sh", "-c", "uv run --frozen --no-sync alembic -c alembic.ini upgrade head && uv run --frozen --no-sync python -m app"]
+CMD ["sh", "-c", "uv run --frozen --no-sync alembic -c alembic.ini upgrade head && uv run --frozen --no-sync python -m app & uv run --frozen --no-sync python -m app.web"]

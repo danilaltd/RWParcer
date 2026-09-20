@@ -23,6 +23,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8000:8000"
     volumes:
       - ${DATA_DIR:-/var/lib/rwparcer/data}:/app/data
     restart: ${PARSER_RESTART_POLICY:-unless-stopped}
