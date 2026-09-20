@@ -26,6 +26,7 @@ dev = [
     "ruff>=0.4",
     "ty>=0.0.75",
     "testcontainers[postgres]>=4.0",
+    "deptry>=0.20",
 ]
 
 [tool.pytest.ini_options]
@@ -52,6 +53,12 @@ line-ending = "auto"
 [tool.uv]
 package = false
 
+[tool.deptry]
+exclude = ["proxy-manager", ".venv", ".kilo"]
+
+[tool.deptry.per_rule_ignores]
+DEP002 = ["asyncpg", "pydantic", "pydantic-settings", "jinja2", "psycopg2-binary", "python-multipart"]
+DEP004 = ["pytest", "testcontainers"]
+
 [tool.ty.src]
-include = ["app", "tests"]
 exclude = ["proxy-manager"]

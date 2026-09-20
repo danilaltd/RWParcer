@@ -8,12 +8,14 @@ without a network connection or a database.
 from __future__ import annotations
 
 import asyncio
+import datetime
 import uuid
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from aiogram.types import Chat, ChatIdUnion, Message, Update, User
 from app.application.facade import Facade
 from app.bot.command_names import CommandNames
 from app.bot.router import CommandRouter
@@ -33,7 +35,7 @@ class FakeBot:
 
     def __init__(self) -> None:
         self.updates: list[SimpleNamespace] = []
-        self.sent: list[tuple[str, str, object]] = []
+        self.sent: list[tuple[ChatIdUnion, str, object]] = []
         self._offset_log: list[int] = []
 
     async def get_updates(
@@ -48,19 +50,21 @@ class FakeBot:
         return []
 
     async def send_message(
-        self, chat_id: str, text: str, reply_markup: object | None = None
+        self, chat_id: ChatIdUnion, text: str, reply_markup: object | None = None
     ) -> None:
         self.sent.append((chat_id, text, reply_markup))
 
     @staticmethod
-    def make_update(chat_id: str, text: str | None, update_id: int = 1) -> SimpleNamespace:
-        message = SimpleNamespace(
+    def make_update(chat_id: int, text: str | None, update_id: int = 1) -> Update:
+        message = Message(
             text=text,
-            chat=SimpleNamespace(id=chat_id),
-            from_user=SimpleNamespace(id=int(chat_id)),
+            message_id=update_id,
+            date=datetime.datetime.now(),
+            chat=Chat(id=chat_id, type="private"),
+            from_user=User(id=chat_id, is_bot=False, first_name="TestUser"),
             content_type="text" if text is not None else "photo",
         )
-        return SimpleNamespace(update_id=update_id, message=message)
+        return Update(update_id=update_id, message=message)
 
 
 @pytest.fixture
@@ -118,12 +122,12 @@ async def test_start_command_routes_to_main_menu(
     uid = uuid.uuid4()
     fake_facade.authenticate_user.return_value = uid
     await svc.start()
-    update = FakeBot.make_update("42", "/start")
+    update = FakeBot.make_update(42, "/start")
     await svc._on_update(update)
 
     assert bot.sent, "expected at least one message"
     chat_id, text, markup = bot.sent[0]
-    assert chat_id == "42"
+    assert chat_id == 42
     assert text == "Главное меню: выберите пункт"
     assert any("Поиск" in button.text for row in getattr(markup, "keyboard", []) for button in row)
 
@@ -137,7 +141,7 @@ async def test_non_start_command_routes_unknown(
 ) -> None:
     svc, bot, _store = service
     await svc.start()
-    await svc._on_update(FakeBot.make_update("7", "не команда"))
+    await svc._on_update(FakeBot.make_update(7, "не команда"))
     assert bot.sent, "expected a message"
     assert "Неизвестная команда. Используйте /start" in bot.sent[0][1]
 
@@ -168,7 +172,7 @@ async def test_session_is_saved_after_update(
     fake_facade.authenticate_user.return_value = uid
     await svc.start()
     assert store.saved is None
-    await svc._on_update(FakeBot.make_update("1", "/start"))
+    await svc._on_update(FakeBot.make_update(1, "/start"))
     assert store.saved is not None
     assert uid in store.saved
 
@@ -178,7 +182,7 @@ async def test_stop_persists_and_cancels_tasks(
 ) -> None:
     svc, _bot, _store = service
     await svc.start()
-    await svc._on_update(FakeBot.make_update("2", "/start"))
+    await svc._on_update(FakeBot.make_update(2, "/start"))
     await svc.stop()
     assert svc._stop.is_set()
     assert not svc._tasks
