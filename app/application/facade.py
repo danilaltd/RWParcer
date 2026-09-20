@@ -93,7 +93,7 @@ class Facade:
                 try:
                     uid_int = int(telegram_user_id)
                     chat_int = int(telegram_chat_id) if telegram_chat_id is not None else uid_int
-                    user = await users_service.resolve_user(self._users, uid_int, chat_int)
+                    user = await users_service.register_user(self._users, uid_int, chat_int)
                     return user.id
                 except Exception:
                     u_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, telegram_user_id)
@@ -103,7 +103,7 @@ class Facade:
                         )
                     return u_uuid
         chat_id = telegram_chat_id if telegram_chat_id is not None else telegram_user_id
-        user = await users_service.resolve_user(self._users, int(telegram_user_id), int(chat_id))
+        user = await users_service.register_user(self._users, int(telegram_user_id), int(chat_id))
         return user.id
 
     async def get_station(self, user_id: uuid.UUID | str, prefix: str) -> list[Station]:

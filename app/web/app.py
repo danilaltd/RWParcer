@@ -21,9 +21,7 @@ def create_web_app(facade: Facade) -> FastAPI:
     app.state.facade = facade
 
     @app.get("/", response_class=HTMLResponse)
-    async def index(
-        request: Request, user_id: int = 1, chat_id: int = 1
-    ) -> HTMLResponse:
+    async def index(request: Request, user_id: int = 1, chat_id: int = 1) -> HTMLResponse:
         fac: Facade = request.app.state.facade
         uid = await fac.authenticate_user(user_id, chat_id)
         favorites = await fac.get_favorites(uid)
@@ -42,8 +40,8 @@ def create_web_app(facade: Facade) -> FastAPI:
     @app.post("/favorites/add", response_class=RedirectResponse)
     async def add_favorite(
         request: Request,
-        user_id: str = Form(...),
-        chat_id: str = Form(...),
+        user_id: int = Form(...),
+        chat_id: int = Form(...),
         train_type: str = Form("p"),
         train_number: str = Form(...),
         station_from: str = Form(...),
@@ -74,8 +72,8 @@ def create_web_app(facade: Facade) -> FastAPI:
     @app.post("/feedback/send", response_class=RedirectResponse)
     async def send_feedback(
         request: Request,
-        user_id: str = Form(...),
-        chat_id: str = Form(...),
+        user_id: int = Form(...),
+        chat_id: int = Form(...),
         content: str = Form(...),
     ) -> RedirectResponse:
         fac: Facade = request.app.state.facade

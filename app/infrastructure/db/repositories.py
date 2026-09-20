@@ -67,7 +67,7 @@ def user_row_to_entity(row: UserRow) -> User:
 
 
 class UserPostgresRepository(_RepositoryBase):
-    async def resolve_user(self, telegram_user_id: int, telegram_chat_id: int) -> User:
+    async def register_user(self, telegram_user_id: int, telegram_chat_id: int) -> User:
         async with self._session_factory() as session:
             role_count = await session.scalar(select(func.count()).select_from(RoleRow))
             if not role_count or role_count == 0:

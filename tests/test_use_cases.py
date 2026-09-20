@@ -47,7 +47,7 @@ class InMemoryUsers:
     def __init__(self) -> None:
         self.users: dict[uuid.UUID, User] = {}
 
-    async def resolve_user(self, telegram_user_id: int, telegram_chat_id: int) -> User:
+    async def register_user(self, telegram_user_id: int, telegram_chat_id: int) -> User:
         for u in self.users.values():
             if u.telegram_user_id == telegram_user_id:
                 return u

@@ -41,7 +41,7 @@ class FakeUsers:
     def __init__(self, min_interval: int = 0) -> None:
         self._min_interval = min_interval
 
-    async def resolve_user(self, telegram_user_id: int, telegram_chat_id: int) -> User:
+    async def register_user(self, telegram_user_id: int, telegram_chat_id: int) -> User:
         raise NotImplementedError
 
     async def get_user_min_interval(self, user_id: uuid.UUID) -> int:

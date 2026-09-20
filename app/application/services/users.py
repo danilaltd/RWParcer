@@ -7,23 +7,26 @@ from typing import TYPE_CHECKING
 
 from app.application.errors import KeyNotFoundError, UnauthorizedError
 from app.application.services.guards import require_registered
-from app.domain.entities import User
 from app.domain.value_objects import UserInfo
 
 if TYPE_CHECKING:
     import uuid
 
+    from app.domain.entities import User
     from app.domain.protocols import UserRepository
 
 
-async def resolve_user(users: UserRepository, telegram_user_id: int, telegram_chat_id: int) -> User:
-    return await users.resolve_user(telegram_user_id, telegram_chat_id)
+async def register_user(
+    users: UserRepository, telegram_user_id: int, telegram_chat_id: int
+) -> User:
+    return await users.register_user(telegram_user_id, telegram_chat_id)
 
 
-async def register_user(users: UserRepository, user_id: uuid.UUID) -> None:
-    if await users.is_user_registered(user_id):
-        return
-    await users.add_user(User(id=user_id, telegram_user_id=0, telegram_chat_id=0))
+# TODO: use it in future
+# async def register_user(users: UserRepository, user_id: uuid.UUID)-> None:
+#     if await users.is_user_registered(user_id):
+#         return
+#     await users.add_user(User(id=user_id, telegram_user_id=0, telegram_chat_id=0))
 
 
 async def _ensure_access(users: UserRepository, user_id: uuid.UUID, target_id: uuid.UUID) -> None:
