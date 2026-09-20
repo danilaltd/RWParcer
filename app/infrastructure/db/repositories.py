@@ -95,6 +95,7 @@ class UserPostgresRepository(_RepositoryBase):
                 row.last_activity_at = datetime.datetime.now(UTC)
                 await session.flush()
 
+            # TODO: not moderator role for new users
             mod_role = await session.scalar(select(RoleRow).where(RoleRow.code == "MODERATOR"))
             if mod_role:
                 existing_ur = await session.scalar(

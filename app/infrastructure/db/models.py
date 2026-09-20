@@ -294,6 +294,7 @@ class ConversationSessionRow(Base):
     )
     expires_at: Mapped[datetime.datetime | None] = mapped_column(DateTime(timezone=True))
 
+    # TODO: look there
     def __init__(self, chat_id: str | uuid.UUID | None = None, **kwargs: Any) -> None:
         if chat_id is not None:
             if isinstance(chat_id, uuid.UUID):

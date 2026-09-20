@@ -38,7 +38,7 @@ class UnsubscribeEnterDateHandler:
         ctx.session.date = date
 
         try:
-            await self._facade.unsubscribe(ctx.chat_id, SubscriptionDetails(train, date))
+            await self._facade.unsubscribe(ctx.user_id, SubscriptionDetails(train, date))
             await ctx.send_message(f"Отписка выполнена на {date:%d.%m.%Y}")
         except InvalidOperationError:
             await ctx.send_message(f"Подписка на дату {date:%d.%m.%Y} не существует")
@@ -56,7 +56,7 @@ class UnsubscribeUseLastDateHandler:
         train = next(d for d in ctx.session.data if isinstance(d, Train))
         try:
             await self._facade.unsubscribe(
-                ctx.chat_id, SubscriptionDetails(train, ctx.session.date)
+                ctx.user_id, SubscriptionDetails(train, ctx.session.date)
             )
             await ctx.send_message(f"Отписка выполнена на {ctx.session.date:%d.%m.%Y}")
         except InvalidOperationError:
@@ -100,7 +100,7 @@ class UnsubscribeEnterDateRangeHandler:
         date = start_date
         while date <= end_date:
             try:
-                await self._facade.unsubscribe(ctx.chat_id, SubscriptionDetails(train, date))
+                await self._facade.unsubscribe(ctx.user_id, SubscriptionDetails(train, date))
             except InvalidOperationError:
                 ans += f"Подписка на дату {date:%d.%m.%Y} не существует\n"
             date += datetime.timedelta(days=1)

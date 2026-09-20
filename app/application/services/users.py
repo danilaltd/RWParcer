@@ -110,7 +110,7 @@ async def get_users(
 
 def _to_user(user: User) -> UserInfo:
     return UserInfo(
-        id=str(user.id),
+        id=user.id,
         is_moderator=user.is_moderator,
         max_subscriptions=user.max_subscriptions,
         min_update_interval=user.min_subscriptions_interval,

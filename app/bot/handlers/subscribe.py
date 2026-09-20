@@ -54,7 +54,7 @@ class SubscribeEnterDateHandler(_SubscribeBase):
         train = next(d for d in ctx.session.data if isinstance(d, Train))
         ctx.session.date = date
         try:
-            await self._facade.subscribe(ctx.chat_id, SubscriptionDetails(train, date))
+            await self._facade.subscribe(ctx.user_id, SubscriptionDetails(train, date))
             await ctx.send_message(f"Подписка установлена на {date:%d.%m.%Y}")
         except InvalidOperationError:
             await ctx.send_message(f"Подписка на дату {date:%d.%m.%Y} уже существует")
@@ -77,7 +77,7 @@ class SubscribeUseLastDateHandler(_SubscribeBase):
 
         train = next(d for d in ctx.session.data if isinstance(d, Train))
         try:
-            await self._facade.subscribe(ctx.chat_id, SubscriptionDetails(train, ctx.session.date))
+            await self._facade.subscribe(ctx.user_id, SubscriptionDetails(train, ctx.session.date))
             await ctx.send_message(f"Подписка установлена на {ctx.session.date:%d.%m.%Y}")
         except InvalidOperationError:
             await ctx.send_message(f"Подписка на дату {ctx.session.date:%d.%m.%Y} уже существует")
@@ -116,7 +116,7 @@ class SubscribeEnterDateRangeHandler(_SubscribeBase):
         date = start_date
         while date <= end_date:
             try:
-                await self._facade.subscribe(ctx.chat_id, SubscriptionDetails(train, date))
+                await self._facade.subscribe(ctx.user_id, SubscriptionDetails(train, date))
             except InvalidOperationError:
                 ans += f"Подписка на дату {date:%d.%m.%Y} уже существует\n"
             except OverflowError:

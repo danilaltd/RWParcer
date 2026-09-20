@@ -31,7 +31,7 @@ class MainMenuProvider(IMenuProvider):
             "📨 Мои сообщения": CommandNames.VIEW_MESSAGES,
             "💬 Обратная связь": CommandNames.FEEDBACK,
         }
-        if await self._facade.is_user_moderator(ctx.chat_id, ctx.chat_id):
+        if await self._facade.is_user_moderator(ctx.user_id, ctx.user_id):
             options["👮 Меню модератора"] = CommandNames.MODERATOR_MENU_SELECT
         return options
 
@@ -45,12 +45,12 @@ class ManageUsersChoiceProvider(IMenuProvider):
         if user is None:
             raise RuntimeError("Session has no selected user")
         options: dict[str, CommandNames] = {}
-        if await self._facade.is_user_moderator(ctx.chat_id, user.id):
+        if await self._facade.is_user_moderator(ctx.user_id, user.id):
             options["⬇️ Понизить до пользователя"] = CommandNames.DEMOTE_USER
         else:
             options["⬆️ Повысить до модератора"] = CommandNames.PROMOTE_USER
 
-        if await self._facade.is_user_banned(ctx.chat_id, user.id):
+        if await self._facade.is_user_banned(ctx.user_id, user.id):
             options["✅ Разбанить"] = CommandNames.UNBAN_USER
         else:
             options["🚫 Забанить"] = CommandNames.BAN_USER
@@ -114,7 +114,7 @@ class TrainActionsProvider(IMenuProvider):
             raise RuntimeError("Session has no train")
 
         options: dict[str, CommandNames] = {}
-        if await self._facade.is_in_favorites(ctx.chat_id, train):
+        if await self._facade.is_in_favorites(ctx.user_id, train):
             options["⭐ Удалить из избранного"] = CommandNames.REMOVE_FROM_FAVORITES
         else:
             options["⭐ Добавить в избранное"] = CommandNames.ADD_TO_FAVORITES

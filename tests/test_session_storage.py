@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import datetime
 import json
+import uuid
 from unittest.mock import MagicMock
 
 from app.bot import storage
@@ -44,7 +45,7 @@ def make_subscription() -> SubscriptionDetails:
 
 def make_user() -> UserInfo:
     return UserInfo(
-        id="42",
+        id=uuid.uuid4(),
         is_moderator=False,
         max_subscriptions=5,
         min_update_interval=15,

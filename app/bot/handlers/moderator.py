@@ -14,6 +14,8 @@ from app.bot.dates import parse_timespan
 from app.domain.value_objects import UserInfo
 
 if TYPE_CHECKING:
+    import uuid
+
     from app.application.facade import Facade
     from app.bot.context import CommandContext
     from app.bot.interfaces import ICommandRouter
@@ -73,7 +75,7 @@ class SelectUserHandler:
             await ctx.reset_session("Ошибка. Начните заново", self._router)
             return
 
-        users = await self._facade.get_users(ctx.chat_id, ts)
+        users = await self._facade.get_users(ctx.user_id, ts)
         if not users:
             await ctx.reset_session("Нет пользователей за данный промежуток", self._router)
             return
@@ -138,7 +140,7 @@ class SendMessageEnterMessageHandler:
             await ctx.send_message("Сессия устарела — начните заново")
             return
 
-        await self._facade.send_message(ctx.chat_id, user.id, ctx.input)
+        await self._facade.send_message(ctx.user_id, user.id, ctx.input)
         await ctx.send_message("Сообщение отправлено")
 
         ctx.session.data.clear()
@@ -167,41 +169,41 @@ class _UserActionBase:
         if user is None:
             return
 
-        await self._act(ctx.chat_id, user.id)
+        await self._act(ctx.user_id, user.id)
         await ctx.send_message(self._message)
         ctx.session.data.clear()
         ctx.session.set_command(CommandNames.MAIN_MENU_SELECT)
         await self._router.route(CommandNames.MAIN_MENU_SELECT, ctx)
 
-    async def _act(self, user_id: str, target_id: str) -> None:
+    async def _act(self, user_id: uuid.UUID, target_id: uuid.UUID) -> None:
         raise NotImplementedError
 
 
 class PromoteUserHandler(_UserActionBase):
     _message = "Пользователь повышен до модератора"
 
-    async def _act(self, user_id: str, target_id: str) -> None:
+    async def _act(self, user_id: uuid.UUID, target_id: uuid.UUID) -> None:
         await self._facade.promote_user(user_id, target_id)
 
 
 class DemoteUserHandler(_UserActionBase):
     _message = "Модератор понижен до пользователя"
 
-    async def _act(self, user_id: str, target_id: str) -> None:
+    async def _act(self, user_id: uuid.UUID, target_id: uuid.UUID) -> None:
         await self._facade.demote_user(user_id, target_id)
 
 
 class BanUserHandler(_UserActionBase):
     _message = "Пользователь забанен"
 
-    async def _act(self, user_id: str, target_id: str) -> None:
+    async def _act(self, user_id: uuid.UUID, target_id: uuid.UUID) -> None:
         await self._facade.ban_user(user_id, target_id)
 
 
 class UnbanUserHandler(_UserActionBase):
     _message = "Пользователь разбанен"
 
-    async def _act(self, user_id: str, target_id: str) -> None:
+    async def _act(self, user_id: uuid.UUID, target_id: uuid.UUID) -> None:
         await self._facade.unban_user(user_id, target_id)
 
 
@@ -228,7 +230,7 @@ class ChangeUserMinIntervalLimitHandler:
             await ctx.send_message("Неверный формат, введите целое положительное число")
             return
 
-        await self._facade.set_users_min_interval(ctx.chat_id, user.id, num)
+        await self._facade.set_users_min_interval(ctx.user_id, user.id, num)
         await ctx.send_message("Минимальный интервал проверки для пользователя установлен")
         ctx.session.data.clear()
         ctx.session.set_command(CommandNames.MAIN_MENU_SELECT)
@@ -265,7 +267,7 @@ class ChangeUserMaxSubscribtionLimitHandler:
             await ctx.send_message("Неверный формат, введите целое неотрицательное число")
             return
 
-        await self._facade.set_users_max_subscriptions(ctx.chat_id, user.id, num)
+        await self._facade.set_users_max_subscriptions(ctx.user_id, user.id, num)
         await ctx.send_message("Максимальное число подписок для пользователя установлен")
         ctx.session.data.clear()
         ctx.session.set_command(CommandNames.MAIN_MENU_SELECT)
@@ -287,7 +289,7 @@ class ViewAllMessagesHandler:
         self._router = router
 
     async def handle(self, ctx: CommandContext) -> None:
-        messages = await self._facade.get_all_messages(ctx.chat_id)
+        messages = await self._facade.get_all_messages(ctx.user_id)
         if messages:
             text = "Все сообщения:\n\n"
             text += "\n\n".join(message_to_string(m) for m in messages)

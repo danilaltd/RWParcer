@@ -100,13 +100,12 @@ class BotService:
         if message.text is None or message.from_user is None:
             return
         text = message.text.strip()
-        chat_id = str(message.chat.id)
         telegram_user_id = message.from_user.id
         telegram_chat_id = message.chat.id
 
         user_id = await self._facade.authenticate_user(telegram_user_id, telegram_chat_id)
         session = self._sessions.get_session(user_id)
-        ctx = CommandContext(chat_id, user_id, text, session, self._bot, message)
+        ctx = CommandContext(telegram_chat_id, user_id, text, session, self._bot, message)
         try:
             if text.lower() == "/start":
                 session.reset()
@@ -143,10 +142,8 @@ class BotService:
                 continue
             session = self._sessions.get_session(u_id)
             user_obj = await self._facade.users_repo.get_user_by_id(u_id)
-            chat_id = (
-                str(user_obj.telegram_chat_id)
-                if user_obj and user_obj.telegram_chat_id
-                else str(u_id)
-            )
+            if user_obj is None:
+                raise ValueError(f"User not found for notification: {notification.user_id}")
+            chat_id = user_obj.telegram_chat_id
             ctx = CommandContext(chat_id, u_id, "", session, self._bot)
             await ctx.send_notification(notification.content)

@@ -20,3 +20,6 @@ async def require_registered(users: UserRepository, user_id: uuid.UUID) -> None:
 async def require_not_banned(users: UserRepository, user_id: uuid.UUID) -> None:
     if await users.is_user_banned(user_id):
         raise UnauthorizedError(f"User {user_id} is banned")
+
+
+# TODO: add require_moderator() guard for moderator-only use cases

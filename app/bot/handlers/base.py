@@ -67,7 +67,7 @@ class StationSelectHandler(ICommandHandler):
             await self._router.route(self._next_command, ctx)
             return
 
-        candidates = await self._facade.get_station(ctx.chat_id, ctx.input)
+        candidates = await self._facade.get_station(ctx.user_id, ctx.input)
         if not candidates:
             await ctx.send_message(f"Станции не найдены. {self._prompt_text}")
             return

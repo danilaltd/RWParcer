@@ -28,7 +28,7 @@ class FavoritesSelectHandler(BaseTrainsHandler):
         await self.handle_train_selection(ctx)
 
     async def _init_favorites(self, ctx: CommandContext) -> None:
-        favorites = await self._facade.get_favorites(ctx.chat_id)
+        favorites = await self._facade.get_favorites(ctx.user_id)
         if not favorites:
             await ctx.reset_session("В избранном пусто", self._router)
             return
@@ -65,7 +65,7 @@ class AddToFavoritesHandler(_TrainMenuActionBase):
         if train is None:
             return
 
-        await self._facade.add_to_favorites(ctx.chat_id, train)
+        await self._facade.add_to_favorites(ctx.user_id, train)
         await ctx.send_message("Поезд добавлен в избранное!")
         await self._back_to_menu(ctx)
 
@@ -76,6 +76,6 @@ class RemoveFromFavoritesHandler(_TrainMenuActionBase):
         if train is None:
             return
 
-        await self._facade.remove_from_favorites(ctx.chat_id, train)
+        await self._facade.remove_from_favorites(ctx.user_id, train)
         await ctx.send_message("Поезд удален из избранного!")
         await self._back_to_menu(ctx)

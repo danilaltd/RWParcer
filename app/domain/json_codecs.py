@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import datetime
 import logging
+import uuid
 from typing import TYPE_CHECKING, Any
 
 from app.domain import times
@@ -215,7 +216,7 @@ def subscription_details_from_json_or_default(data: Any) -> SubscriptionDetails:
 
 def user_to_json(user: UserInfo) -> dict[str, Any]:
     return {
-        "id": user.id,
+        "id": str(user.id),
         "isModerator": user.is_moderator,
         "maxSubscriptions": user.max_subscriptions,
         "minSubscriptionsInterval": user.min_update_interval,
@@ -239,7 +240,7 @@ def user_from_json(data: Any) -> UserInfo:
         raise CodecError("Invalid user JSON (missing fields)")
     try:
         return UserInfo(
-            id=str(data["id"]),
+            id=uuid.UUID(data["id"]),
             is_moderator=bool(data["isModerator"]),
             max_subscriptions=int(data["maxSubscriptions"]),
             min_update_interval=int(data["minSubscriptionsInterval"]),

@@ -15,6 +15,7 @@ from app.domain import times
 
 if TYPE_CHECKING:
     import datetime
+    import uuid
 
 
 class CarType(enum.IntEnum):
@@ -152,7 +153,7 @@ class SubscriptionDetails:
 class UserInfo:
     """C# ``UserVO``."""
 
-    id: str
+    id: uuid.UUID
     is_moderator: bool
     max_subscriptions: int
     min_update_interval: int

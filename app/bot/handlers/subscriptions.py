@@ -34,7 +34,7 @@ class SubscriptionsSelectHandler:
         await self._handle_selection(ctx)
 
     async def _init_subscriptions(self, ctx: CommandContext) -> None:
-        subscriptions = await self._facade.get_subscriptions(ctx.chat_id, ctx.chat_id)
+        subscriptions = await self._facade.get_subscriptions(ctx.user_id, ctx.user_id)
         if not subscriptions:
             await ctx.reset_session("Нет подписок", self._router)
             return
@@ -84,7 +84,7 @@ class UnsubscribeSubscriptionHandler:
     async def handle(self, ctx: CommandContext) -> None:
         # C# ``Data.OfType<SubscriptionVO>().First()``.
         subscription = next(d for d in ctx.session.data if isinstance(d, SubscriptionDetails))
-        await self._facade.unsubscribe(ctx.chat_id, subscription)
+        await self._facade.unsubscribe(ctx.user_id, subscription)
         await ctx.send_message("Отписка выполнена")
         ctx.session.set_command(CommandNames.MAIN_MENU_SELECT)
         await self._router.route(CommandNames.MAIN_MENU_SELECT, ctx)
@@ -100,7 +100,7 @@ class ResetSubscriptionHandler:
     async def handle(self, ctx: CommandContext) -> None:
         # C# ``Data.OfType<SubscriptionVO>().First()``.
         subscription = next(d for d in ctx.session.data if isinstance(d, SubscriptionDetails))
-        await self._facade.reset_subscription(ctx.chat_id, subscription)
+        await self._facade.reset_subscription(ctx.user_id, subscription)
         await ctx.send_message("Сброс выполнен")
         ctx.session.set_command(CommandNames.MAIN_MENU_SELECT)
         await self._router.route(CommandNames.MAIN_MENU_SELECT, ctx)

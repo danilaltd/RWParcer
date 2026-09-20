@@ -56,7 +56,7 @@ class TrainSearchSelectHandler(BaseTrainsHandler):
             return
 
         trains = await self._facade.get_times_for_route(
-            ctx.chat_id, Route(stations[0], stations[1])
+            ctx.user_id, Route(stations[0], stations[1])
         )
         if not trains:
             await ctx.reset_session("Поезда не найдены", self._router)

@@ -23,7 +23,8 @@ class StartHandler:
         self._router = router
 
     async def handle(self, ctx: CommandContext) -> None:
-        await self._facade.authenticate_user(ctx.chat_id)
+        # TODO: use real tg user_id
+        await self._facade.authenticate_user(ctx.chat_id, ctx.chat_id)
         ctx.session.reset()
         ctx.session.set_command(CommandNames.MAIN_MENU_SELECT)
         await self._router.route(CommandNames.MAIN_MENU_SELECT, ctx)
@@ -66,7 +67,7 @@ class FeedbackHandler:
             await ctx.send_message("Введите сообщение:")
             return
 
-        await self._facade.send_feedback(ctx.chat_id, ctx.input)
+        await self._facade.send_feedback(ctx.user_id, ctx.input)
         await ctx.send_message("Сообщние отправлено")
         ctx.session.data.clear()
         ctx.session.set_command(CommandNames.MAIN_MENU_SELECT)
@@ -79,7 +80,7 @@ class GetStatusHandler:
         self._router = router
 
     async def handle(self, ctx: CommandContext) -> None:
-        user = await self._facade.get_user_by_id(ctx.chat_id, ctx.chat_id)
+        user = await self._facade.get_user_by_id(ctx.user_id, ctx.user_id)
         await ctx.send_message("Ваш статус: " + user_to_string(user))
         ctx.session.data.clear()
         ctx.session.set_command(CommandNames.MAIN_MENU_SELECT)
@@ -92,7 +93,7 @@ class ViewMessagesHandler:
         self._router = router
 
     async def handle(self, ctx: CommandContext) -> None:
-        messages = await self._facade.get_messages(ctx.chat_id)
+        messages = await self._facade.get_messages(ctx.user_id)
         if messages:
             text = "Все сообщения:\n\n"
             text += "\n\n".join(message_to_string(m) for m in messages)

@@ -24,7 +24,7 @@ class CommandContext:
 
     def __init__(
         self,
-        chat_id: str,
+        chat_id: int,
         user_id: uuid.UUID,
         input: str,
         session: BotSession,
@@ -39,7 +39,7 @@ class CommandContext:
         self._message = message
 
     @property
-    def chat_id(self) -> str:
+    def chat_id(self) -> int:
         return self._chat_id
 
     @property
