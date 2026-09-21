@@ -5,7 +5,6 @@ from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING
 
-from app.application.errors import KeyNotFoundError, UnauthorizedError
 from app.application.services.guards import require_not_banned, require_registered
 from app.domain.entities import Message, Notification
 from app.domain.value_objects import MessageInfo
@@ -49,9 +48,9 @@ async def send_message(
     await users.update_activity(user_id)
     await require_not_banned(users, user_id)
     if not await users.is_user_moderator(user_id):
-        raise UnauthorizedError(f"Only moderators can send messages {user_id}")
+        raise PermissionError(f"Only moderators can send messages {user_id}")
     if not await users.is_user_registered(target_id):
-        raise KeyNotFoundError(f"User with ID {target_id} not found")
+        raise KeyError(f"User with ID {target_id} not found")
     await messages.add_message(
         Message(id=uuid.uuid4(), sender_id=user_id, receiver_id=target_id, content=content)
     )
@@ -76,7 +75,7 @@ async def get_all_messages(
     await users.update_activity(user_id)
     await require_not_banned(users, user_id)
     if not await users.is_user_moderator(user_id):
-        raise UnauthorizedError(f"Only moderators can view all messages {user_id}")
+        raise PermissionError(f"Only moderators can view all messages {user_id}")
     return [_to_info(m) for m in await messages.get_all_messages()]
 
 

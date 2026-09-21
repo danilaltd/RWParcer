@@ -9,7 +9,6 @@ from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING
 
-from app.application.errors import InvalidOperationError
 from app.bot.command_names import CommandNames
 from app.bot.dates import add_months, parse_date_exact
 from app.domain.value_objects import SubscriptionDetails, Train
@@ -56,7 +55,7 @@ class SubscribeEnterDateHandler(_SubscribeBase):
         try:
             await self._facade.subscribe(ctx.user_id, SubscriptionDetails(train, date))
             await ctx.send_message(f"Подписка установлена на {date:%d.%m.%Y}")
-        except InvalidOperationError:
+        except RuntimeError:
             await ctx.send_message(f"Подписка на дату {date:%d.%m.%Y} уже существует")
         except OverflowError:
             await ctx.send_message("Вы достигли лимита подписок")
@@ -79,7 +78,7 @@ class SubscribeUseLastDateHandler(_SubscribeBase):
         try:
             await self._facade.subscribe(ctx.user_id, SubscriptionDetails(train, ctx.session.date))
             await ctx.send_message(f"Подписка установлена на {ctx.session.date:%d.%m.%Y}")
-        except InvalidOperationError:
+        except RuntimeError:
             await ctx.send_message(f"Подписка на дату {ctx.session.date:%d.%m.%Y} уже существует")
         except OverflowError:
             await ctx.send_message("Вы достигли лимита подписок")
@@ -117,7 +116,7 @@ class SubscribeEnterDateRangeHandler(_SubscribeBase):
         while date <= end_date:
             try:
                 await self._facade.subscribe(ctx.user_id, SubscriptionDetails(train, date))
-            except InvalidOperationError:
+            except RuntimeError:
                 ans += f"Подписка на дату {date:%d.%m.%Y} уже существует\n"
             except OverflowError:
                 ans += "Вы достигли лимита подписок"

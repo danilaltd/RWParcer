@@ -8,7 +8,6 @@ from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING
 
-from app.application.errors import InvalidOperationError
 from app.bot.command_names import CommandNames
 from app.bot.dates import add_months, parse_date_exact
 from app.domain.value_objects import SubscriptionDetails, Train
@@ -40,7 +39,7 @@ class UnsubscribeEnterDateHandler:
         try:
             await self._facade.unsubscribe(ctx.user_id, SubscriptionDetails(train, date))
             await ctx.send_message(f"Отписка выполнена на {date:%d.%m.%Y}")
-        except InvalidOperationError:
+        except RuntimeError:
             await ctx.send_message(f"Подписка на дату {date:%d.%m.%Y} не существует")
 
         ctx.session.set_command(CommandNames.MAIN_MENU_SELECT)
@@ -59,7 +58,7 @@ class UnsubscribeUseLastDateHandler:
                 ctx.user_id, SubscriptionDetails(train, ctx.session.date)
             )
             await ctx.send_message(f"Отписка выполнена на {ctx.session.date:%d.%m.%Y}")
-        except InvalidOperationError:
+        except RuntimeError:
             await ctx.send_message(f"Подписка на дату {ctx.session.date:%d.%m.%Y} не существует")
 
         ctx.session.set_command(CommandNames.MAIN_MENU_SELECT)
@@ -101,7 +100,7 @@ class UnsubscribeEnterDateRangeHandler:
         while date <= end_date:
             try:
                 await self._facade.unsubscribe(ctx.user_id, SubscriptionDetails(train, date))
-            except InvalidOperationError:
+            except RuntimeError:
                 ans += f"Подписка на дату {date:%d.%m.%Y} не существует\n"
             date += datetime.timedelta(days=1)
 

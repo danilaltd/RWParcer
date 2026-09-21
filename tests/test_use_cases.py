@@ -11,7 +11,6 @@ import datetime
 import uuid
 
 import pytest
-from app.application.errors import InvalidOperationError, KeyNotFoundError
 from app.application.facade import Facade
 from app.domain.entities import Favorite, Message, Notification, Subscription, User
 from app.domain.value_objects import (
@@ -246,7 +245,7 @@ async def test_subscribe_get_and_unsubscribe_flow(
     assert await fac.get_subscriptions(user_id, user_id) == []
     assert await subscriptions.get_user_subscriptions(user_id) == []
 
-    with pytest.raises(InvalidOperationError):
+    with pytest.raises(RuntimeError):
         await fac.unsubscribe(user_id, details)
 
 
@@ -277,7 +276,7 @@ async def test_favorites_add_and_remove_flow(
     await fac.remove_from_favorites(uid, train)
     assert await fac.is_in_favorites(uid, train) is False
 
-    with pytest.raises(KeyNotFoundError):
+    with pytest.raises(KeyError):
         await fac.remove_from_favorites(uid, train)
 
 
@@ -286,5 +285,5 @@ async def test_unknown_user_is_rejected(
 ) -> None:
     fac, _users, _subscriptions, _favorites = facade
     ghost_uuid = uuid.uuid4()
-    with pytest.raises(KeyNotFoundError):
+    with pytest.raises(KeyError):
         await fac.subscribe(ghost_uuid, make_subscription())

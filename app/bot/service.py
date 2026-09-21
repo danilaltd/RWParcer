@@ -8,7 +8,6 @@ import uuid
 from typing import TYPE_CHECKING
 
 from aiogram.enums import ContentType
-from app.application.errors import UnauthorizedError
 from app.bot.command_names import CommandNames
 from app.bot.context import CommandContext
 from app.bot.storage import BotSessionManager, SessionStorage
@@ -117,7 +116,7 @@ class BotService:
                     else CommandNames.UNKNOWN
                 )
                 await self._router.route(command, ctx)
-        except UnauthorizedError:
+        except PermissionError:
             raise
         except Exception as exc:
             await ctx.reset_session(BACKEND_ERROR_MESSAGE, self._router)

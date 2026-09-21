@@ -1,26 +1,13 @@
-"""Shared ``httpx`` client factory.
-
-Port of ``HttpClientFactoryWithProxyRotation``: one ``httpx.AsyncClient``
-issues requests directly (stations/trains) and, when a proxy-manager URL is
-configured, routes car_places requests through ``{url}/proxy?url=<encoded>``.
-
-Transport/timeout failures are wrapped in :class:`HttpRequestError`; every
-method returns the :class:`httpx.Response` so callers can inspect the status
-code exactly like the C# did with ``HttpResponseMessage``.
-"""
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 import httpx
 
-from app.application.errors import HttpRequestError
-
 if TYPE_CHECKING:
     from app.domain.protocols import Logger
 
-DEFAULT_TIMEOUT = 10.0  # C# ``HttpClient.Timeout``
+DEFAULT_TIMEOUT = 10.0
 
 
 class AsyncHttpClientFactory:
@@ -68,7 +55,7 @@ class AsyncHttpClientFactory:
         try:
             return await self._client.get(url)
         except (httpx.TimeoutException, httpx.TransportError) as exc:
-            raise HttpRequestError(str(exc)) from exc
+            raise httpx.HTTPError(str(exc)) from exc
 
     async def aclose(self) -> None:
         await self._client.aclose()

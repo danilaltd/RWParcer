@@ -6,7 +6,6 @@ import datetime
 import uuid
 from typing import TYPE_CHECKING
 
-from app.application.errors import InvalidOperationError, KeyNotFoundError
 from app.application.services.guards import require_not_banned, require_registered
 from app.domain.entities import Favorite
 from app.domain.value_objects import SubscriptionDetails, Train
@@ -29,7 +28,7 @@ async def add_to_favorites(
         SubscriptionDetails(train=train, date=datetime.date.today())
     )
     if await favorites.favorite_exists(user_id, service_route_id):
-        raise InvalidOperationError(f"Train {train} already in favorites")
+        raise RuntimeError(f"Train {train} already in favorites")
     await favorites.add_favorite(
         Favorite(
             id=uuid.uuid4(), user_id=user_id, service_route_id=service_route_id, train_info=train
@@ -72,5 +71,5 @@ async def remove_from_favorites(
     existing = await favorites.get_favorites(user_id)
     match = next((f for f in existing if f.train_info == train), None)
     if match is None:
-        raise KeyNotFoundError(f"{user_id} No such favorite")
+        raise KeyError(f"{user_id} No such favorite")
     await favorites.remove_favorite(match)

@@ -5,7 +5,6 @@ from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING
 
-from app.application.errors import KeyNotFoundError, UnauthorizedError
 from app.application.services.guards import require_registered
 from app.domain.value_objects import UserInfo
 
@@ -32,9 +31,9 @@ async def register_user(
 async def _ensure_access(users: UserRepository, user_id: uuid.UUID, target_id: uuid.UUID) -> None:
     await require_registered(users, user_id)
     if await users.is_user_banned(user_id):
-        raise UnauthorizedError(f"User {user_id} is banned")
+        raise PermissionError(f"User {user_id} is banned")
     if user_id != target_id and not await users.is_user_moderator(user_id):
-        raise UnauthorizedError(f"User with ID {user_id} not a moderator (can't get {target_id})")
+        raise PermissionError(f"User with ID {user_id} not a moderator (can't get {target_id})")
 
 
 async def _update_activity(users: UserRepository, user_id: uuid.UUID) -> None:
@@ -59,7 +58,7 @@ async def get_user_by_id(
         await _ensure_access(users, user_id, target_id)
         user = await users.get_user_by_id(target_id)
         if user is None:
-            raise KeyNotFoundError(f"User with ID {target_id} not found")
+            raise KeyError(f"User with ID {target_id} not found")
         return _to_user(user)
     except BaseException as exc:
         original_exception = exc

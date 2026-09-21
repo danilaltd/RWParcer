@@ -15,7 +15,6 @@ import asyncio
 import json
 from typing import TYPE_CHECKING
 
-from app.application.errors import MaxRetriesError
 from app.domain import times
 from app.domain.value_objects import Car, CarType, Route, Station, SubscriptionDetails, Train
 
@@ -80,25 +79,20 @@ class RwClient:
         return trains
 
     async def get_seats(self, details: SubscriptionDetails) -> list[Car]:
-        """``GetSeatsAsync`` — queries every ``car_type`` 1..6 via the proxy.
-
-        Unlike stations/trains, exhaustion throws ``MaxRetriesError`` and a
-        JSON parse failure re-raises (the C# ``throw`` after LogDebug).
-        """
         result: list[Car] = []
         for car_type in range(1, 7):
             url = self._build_seats_url(details, car_type)
             response = await self._fetch_with_retries(url, direct=False)
             if response is None:
                 self.logger.debug("Все попытки исчерпаны, throw new exception.")
-                raise MaxRetriesError("max_retries")
+                raise TimeoutError("max_retries")
             try:
                 root = json.loads(response.text)
             except json.JSONDecodeError as exc:
                 self.logger.debug(f"Ошибка десериализации JSON: {exc}")
                 raise
             if not isinstance(root, dict):
-                raise MaxRetriesError("max_retries")
+                raise TimeoutError("max_retries")
             tariffs = root.get("tariffs")
             if not isinstance(tariffs, list):
                 continue

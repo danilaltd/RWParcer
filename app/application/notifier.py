@@ -7,7 +7,8 @@ import datetime
 import uuid
 from typing import TYPE_CHECKING
 
-from app.application.errors import HttpRequestError
+import httpx
+
 from app.domain.entities import Notification, Subscription
 from app.domain.value_objects import Car, SubscriptionDetails, Train, car_type_label
 
@@ -91,7 +92,7 @@ class Notifier:
                     break
                 except TimeoutError:
                     self.logger.debug(f"Тайм-аут запроса для {subscription.id} (Попытка {attempt})")
-                except HttpRequestError as exc:
+                except httpx.HTTPError as exc:
                     self.logger.debug(f"Ошибка HTTP ({subscription.id}, Попытка {attempt}): {exc}")
                 except Exception as exc:
                     self.logger.debug(

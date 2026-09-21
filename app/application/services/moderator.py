@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from app.application.errors import UnauthorizedError
 from app.application.services.guards import require_not_banned, require_registered
 
 if TYPE_CHECKING:
@@ -53,4 +52,4 @@ async def _require_actor(users: UserRepository, user_id: uuid.UUID, action: str)
     await users.update_activity(user_id)
     await require_not_banned(users, user_id)
     if not await users.is_user_moderator(user_id):
-        raise UnauthorizedError(f"Only moderators can {action} users {user_id}")
+        raise PermissionError(f"Only moderators can {action} users {user_id}")

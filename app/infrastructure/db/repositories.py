@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import delete, func, select, update
 
-from app.application.errors import KeyNotFoundError
 from app.domain.entities import Favorite, Message, Notification, Subscription, User
 from app.domain.value_objects import Car, CarType, Station, SubscriptionDetails, Train
 from app.infrastructure.db.models import (
@@ -225,7 +224,7 @@ class UserPostgresRepository(_RepositoryBase):
     async def _user_or_raise(self, session: AsyncSession, user_id: uuid.UUID) -> UserRow:
         row = await session.scalar(select(UserRow).where(UserRow.id == user_id))
         if row is None:
-            raise KeyNotFoundError(f"User {user_id} not found")
+            raise KeyError(f"User {user_id} not found")
         return row
 
 
