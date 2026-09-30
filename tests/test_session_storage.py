@@ -20,7 +20,7 @@ from app.domain.value_objects import (
     Train,
     UserInfo,
 )
-from app.infrastructure.db.models import SessionRow
+from app.infrastructure.db.models import ConversationSessionRow
 
 
 def make_train() -> Train:
@@ -152,14 +152,14 @@ def test_session_from_row_round_trips_data_json() -> None:
         data=[make_train(), Station("Минск", "МСК")],
         date=datetime.date(2026, 8, 22),
     )
-    row = SessionRow(
-        chat_id="1",
-        current_command=(
+    row = ConversationSessionRow(
+        user_id=uuid.uuid4(),
+        current_command_code=(
             int(session.current_command) if session.current_command is not None else None
         ),
         init_state=True,
-        data=storage.serialize_session_data(session.data),
-        date=session.date,
+        context={"data": storage.serialize_session_data(session.data)},
+        last_input_date=session.date,
     )
     decoded = storage.SessionStorage(MagicMock())._session_from_row(row)
     assert decoded.current_command == CommandNames.TRAIN_SELECT

@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 import datetime
-import json
 import uuid
-from typing import Any
 
 from sqlalchemy import (
     BigInteger,
@@ -293,42 +291,6 @@ class ConversationSessionRow(Base):
         DateTime(timezone=True), default=lambda: datetime.datetime.now(datetime.UTC)
     )
     expires_at: Mapped[datetime.datetime | None] = mapped_column(DateTime(timezone=True))
-
-    # TODO: look there
-    def __init__(self, chat_id: str | uuid.UUID | None = None, **kwargs: Any) -> None:
-        if chat_id is not None:
-            if isinstance(chat_id, uuid.UUID):
-                kwargs["user_id"] = chat_id
-            else:
-                try:
-                    kwargs["user_id"] = uuid.UUID(chat_id)
-                except ValueError:
-                    kwargs["user_id"] = uuid.uuid5(uuid.NAMESPACE_DNS, str(chat_id))
-        if "current_command" in kwargs:
-            kwargs["current_command_code"] = kwargs.pop("current_command")
-        if "data" in kwargs:
-            d = kwargs.pop("data")
-            kwargs["context"] = {"data": json.loads(d) if isinstance(d, str) else d}
-        if "date" in kwargs:
-            kwargs["last_input_date"] = kwargs.pop("date")
-        super().__init__(**kwargs)
-
-    @property
-    def chat_id(self) -> str:
-        return str(self.user_id)
-
-    @chat_id.setter
-    def chat_id(self, value: str | uuid.UUID) -> None:
-        if isinstance(value, uuid.UUID):
-            self.user_id = value
-        else:
-            try:
-                self.user_id = uuid.UUID(value)
-            except ValueError:
-                self.user_id = uuid.uuid5(uuid.NAMESPACE_DNS, str(value))
-
-
-SessionRow = ConversationSessionRow
 
 
 # ---------------------------------------------------------------------------

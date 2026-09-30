@@ -157,10 +157,7 @@ class SessionStorage:
         return sessions
 
     def _session_from_row(self, row: ConversationSessionRow) -> BotSession:
-        context_data = row.context.get("data", []) if isinstance(row.context, dict) else []
-        decoded_data = self._deserialize_data(
-            json.dumps(context_data) if isinstance(context_data, list) else "[]"
-        )
+        decoded_data = self._deserialize_data(row.context.get("data", []))
         return BotSession(
             current_command=command_name_by_value(row.current_command_code),
             init_state=bool(row.init_state),
@@ -170,6 +167,7 @@ class SessionStorage:
 
     @staticmethod
     def _deserialize_data(raw: str) -> list[Any]:
+        print(raw)
         if not raw:
             return []
         items = json.loads(raw)
@@ -206,13 +204,13 @@ class SessionStorage:
                 else:
                     db_session.add(
                         ConversationSessionRow(
-                            chat_id=user_id,
+                            user_id=user_id,
                             current_command_code=(
                                 int(bot_session.current_command)
                                 if bot_session.current_command is not None
                                 else None
                             ),
-                            init_state=bool(bot_session._init_state),
+                            init_state=bot_session._init_state,
                             context=context_dict,
                             last_input_date=bot_session.date,
                         )
