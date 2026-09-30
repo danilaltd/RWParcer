@@ -23,8 +23,6 @@ class StartHandler:
         self._router = router
 
     async def handle(self, ctx: CommandContext) -> None:
-        # TODO: use real tg user_id
-        await self._facade.authenticate_user(ctx.chat_id, ctx.chat_id)
         ctx.session.reset()
         ctx.session.set_command(CommandNames.MAIN_MENU_SELECT)
         await self._router.route(CommandNames.MAIN_MENU_SELECT, ctx)

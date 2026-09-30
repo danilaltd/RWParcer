@@ -100,7 +100,10 @@ class BotService:
         user_input = message.text.strip()
         telegram_user_id = message.from_user.id
         telegram_chat_id = message.chat.id
-        user_id = await self._facade.authenticate_user(telegram_user_id, telegram_chat_id)
+        display_name = message.from_user.full_name
+        user_id = await self._facade.register_user(
+            telegram_user_id, telegram_chat_id, message.from_user.username, display_name
+        )
         session = self._sessions.get_session(user_id)
         ctx = CommandContext(
             chat_id=telegram_chat_id,

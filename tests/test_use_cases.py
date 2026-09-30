@@ -46,12 +46,20 @@ class InMemoryUsers:
     def __init__(self) -> None:
         self.users: dict[uuid.UUID, User] = {}
 
-    async def register_user(self, telegram_user_id: int, telegram_chat_id: int) -> User:
+    async def register_user(
+        self, telegram_user_id: int, telegram_chat_id: int, username: str | None, display_name: str
+    ) -> User:
         for u in self.users.values():
             if u.telegram_user_id == telegram_user_id:
                 return u
         uid = uuid.uuid4()
-        user = User(id=uid, telegram_user_id=telegram_user_id, telegram_chat_id=telegram_chat_id)
+        user = User(
+            id=uid,
+            telegram_user_id=telegram_user_id,
+            telegram_chat_id=telegram_chat_id,
+            username=username,
+            display_name=display_name,
+        )
         self.users[uid] = user
         return user
 
@@ -235,7 +243,7 @@ async def test_subscribe_get_and_unsubscribe_flow(
     facade: tuple[Facade, InMemoryUsers, InMemorySubscriptions, InMemoryFavorites],
 ) -> None:
     fac, _users, subscriptions, _favorites = facade
-    user_id = await fac.authenticate_user(1, 1)
+    user_id = await fac.register_user(1, 1, "testuser1", "Test User 1")
     details = make_subscription()
 
     await fac.subscribe(user_id, details)
@@ -253,7 +261,7 @@ async def test_subscription_limit_exceeded_raises_overflow(
     facade: tuple[Facade, InMemoryUsers, InMemorySubscriptions, InMemoryFavorites],
 ) -> None:
     fac, users, _subscriptions, _favorites = facade
-    uid = await fac.authenticate_user(2, 2)
+    uid = await fac.register_user(2, 2, "testuser2", "Test User 2")
     users.users[uid].change_subscriptions_limits(1)
 
     await fac.subscribe(uid, make_subscription(datetime.date(2026, 8, 22)))
@@ -265,7 +273,7 @@ async def test_favorites_add_and_remove_flow(
     facade: tuple[Facade, InMemoryUsers, InMemorySubscriptions, InMemoryFavorites],
 ) -> None:
     fac, _users, _subscriptions, _favorites = facade
-    uid = await fac.authenticate_user(3, 3)
+    uid = await fac.register_user(3, 3, "testuser", "Test User")
     train = make_train()
 
     assert await fac.is_in_favorites(uid, train) is False

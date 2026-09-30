@@ -15,17 +15,26 @@ if TYPE_CHECKING:
     from app.domain.protocols import UserRepository
 
 
-async def register_user(
-    users: UserRepository, telegram_user_id: int, telegram_chat_id: int
+async def authenticate_user(
+    users: UserRepository,
+    telegram_user_id: int,
+    telegram_chat_id: int,
 ) -> User:
-    return await users.register_user(telegram_user_id, telegram_chat_id)
+    # TODO: divide register_user and authenticate_user
+    return await users.register_user(telegram_user_id, telegram_chat_id, "", "")
 
 
-# TODO: use it in future
-# async def register_user(users: UserRepository, user_id: uuid.UUID)-> None:
-#     if await users.is_user_registered(user_id):
-#         return
-#     await users.add_user(User(id=user_id, telegram_user_id=0, telegram_chat_id=0))
+async def register_user(
+    users: UserRepository,
+    telegram_user_id: int,
+    telegram_chat_id: int,
+    username: str | None,
+    display_name: str,
+) -> User:
+    # if await users.is_user_registered(user_id):
+    # raise ValueError(f"User with ID {user_id} is already registered")
+    return await users.register_user(telegram_user_id, telegram_chat_id, username, display_name)
+    # await users.add_user(User(id=user_id, telegram_user_id=0, telegram_chat_id=0))
 
 
 async def _ensure_access(users: UserRepository, user_id: uuid.UUID, target_id: uuid.UUID) -> None:

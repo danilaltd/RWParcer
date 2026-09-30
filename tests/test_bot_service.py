@@ -120,7 +120,7 @@ async def test_start_command_routes_to_main_menu(
 ) -> None:
     svc, bot, _store = service
     uid = uuid.uuid4()
-    fake_facade.authenticate_user.return_value = uid
+    fake_facade.register_user.return_value = uid
     await svc.start()
     update = FakeBot.make_update(42, "/start")
     await svc._on_update(update)
@@ -169,7 +169,7 @@ async def test_session_is_saved_after_update(
 ) -> None:
     svc, _bot, store = service
     uid = uuid.uuid4()
-    fake_facade.authenticate_user.return_value = uid
+    fake_facade.register_user.return_value = uid
     await svc.start()
     assert store.saved is None
     await svc._on_update(FakeBot.make_update(1, "/start"))

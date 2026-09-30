@@ -76,7 +76,17 @@ class Facade:
         return self._users
 
     async def authenticate_user(self, telegram_user_id: int, telegram_chat_id: int) -> uuid.UUID:
-        user = await users_service.register_user(self._users, telegram_user_id, telegram_chat_id)
+        user = await users_service.authenticate_user(
+            self._users, telegram_user_id, telegram_chat_id
+        )
+        return user.id
+
+    async def register_user(
+        self, telegram_user_id: int, telegram_chat_id: int, username: str | None, display_name: str
+    ) -> uuid.UUID:
+        user = await users_service.register_user(
+            self._users, telegram_user_id, telegram_chat_id, username, display_name
+        )
         return user.id
 
     async def get_station(self, user_id: uuid.UUID, prefix: str) -> list[Station]:
