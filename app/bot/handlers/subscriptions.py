@@ -53,12 +53,12 @@ class SubscriptionsSelectHandler:
             await ctx.reset_session("Сессия устарела, начните заново", self._router)
             return
 
-        if not ctx.input.strip():
+        if not ctx.user_input.strip():
             await ctx.send_message("Выберите поезд из списка клавиатуры")
             return
 
         try:
-            index = int(ctx.input)
+            index = int(ctx.user_input)
         except ValueError:
             await ctx.send_message("Введите корректный индекс подписки")
             return

@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from aiogram.types import KeyboardButton, Message, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from app.bot.command_names import CommandNames
 
 if TYPE_CHECKING:
@@ -26,17 +26,15 @@ class CommandContext:
         self,
         chat_id: int,
         user_id: uuid.UUID,
-        input: str,
+        user_input: str,
         session: BotSession,
         bot: Bot,
-        message: Message | None = None,
     ) -> None:
         self._chat_id = chat_id
         self._user_id = user_id
-        self._input = input
+        self._user_input = user_input
         self._session = session
         self._bot = bot
-        self._message = message
 
     @property
     def chat_id(self) -> int:
@@ -47,8 +45,8 @@ class CommandContext:
         return self._user_id
 
     @property
-    def input(self) -> str:
-        return self._input
+    def user_input(self) -> str:
+        return self._user_input
 
     @property
     def session(self) -> BotSession:

@@ -57,8 +57,8 @@ class StationSelectHandler(ICommandHandler):
         existing = [d for d in ctx.session.data if isinstance(d, Station)]
         last_list = next((d for d in ctx.session.data if _is_station_list(d)), None)
 
-        if last_list is not None and any(s.label == ctx.input for s in last_list):
-            chosen = next(s for s in last_list if s.label == ctx.input)
+        if last_list is not None and any(s.label == ctx.user_input for s in last_list):
+            chosen = next(s for s in last_list if s.label == ctx.user_input)
             ctx.session.data.clear()
             ctx.session.data.extend(existing)
             ctx.session.data.append(chosen)
@@ -67,7 +67,7 @@ class StationSelectHandler(ICommandHandler):
             await self._router.route(self._next_command, ctx)
             return
 
-        candidates = await self._facade.get_station(ctx.user_id, ctx.input)
+        candidates = await self._facade.get_station(ctx.user_id, ctx.user_input)
         if not candidates:
             await ctx.send_message(f"Станции не найдены. {self._prompt_text}")
             return
@@ -96,12 +96,12 @@ class BaseTrainsHandler(ICommandHandler):
             await ctx.reset_session("Сессия устарела, начните заново", self._router)
             return
 
-        if not ctx.input.strip():
+        if not ctx.user_input.strip():
             await ctx.send_message("Выберите поезд из списка клавиатуры")
             return
 
         try:
-            index = int(ctx.input)
+            index = int(ctx.user_input)
         except ValueError:
             await ctx.send_message("Введите корректный индекс поезда")
             return

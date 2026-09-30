@@ -28,7 +28,7 @@ class UnsubscribeEnterDateHandler:
             await ctx.send_message("Введите дату в формате DD.MM.YYYY")
             return
 
-        date = parse_date_exact(ctx.input)
+        date = parse_date_exact(ctx.user_input)
         if date is None:
             await ctx.send_message("Неверный формат даты, используйте DD.MM.YYYY")
             return
@@ -75,7 +75,7 @@ class UnsubscribeEnterDateRangeHandler:
             await ctx.send_message("Введите диапазон в формате DD.MM.YYYY-DD.MM.YYYY")
             return
 
-        dates = ctx.input.split("-")
+        dates = ctx.user_input.split("-")
         start_date = parse_date_exact(dates[0].strip()) if len(dates) == 2 else None
         end_date = parse_date_exact(dates[1].strip()) if len(dates) == 2 else None
         if start_date is None or end_date is None or start_date > end_date:

@@ -48,9 +48,9 @@ class MenuSelectHandler:
             return
 
         options = await self._menu.get_options(ctx)
-        if ctx.input in options:
-            ctx.session.set_command(options[ctx.input])
-            await self._router.route(options[ctx.input], ctx)
+        if ctx.user_input in options:
+            ctx.session.set_command(options[ctx.user_input])
+            await self._router.route(options[ctx.user_input], ctx)
         else:
             await ctx.send_keyboard(
                 options.keys(), "Неверный ввод. Пожалуйста, выберите пункт из меню:"
@@ -67,7 +67,7 @@ class FeedbackHandler:
             await ctx.send_message("Введите сообщение:")
             return
 
-        await self._facade.send_feedback(ctx.user_id, ctx.input)
+        await self._facade.send_feedback(ctx.user_id, ctx.user_input)
         await ctx.send_message("Сообщние отправлено")
         ctx.session.data.clear()
         ctx.session.set_command(CommandNames.MAIN_MENU_SELECT)

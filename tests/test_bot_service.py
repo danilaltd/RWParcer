@@ -154,11 +154,11 @@ async def test_notifications_are_delivered(
     await svc.start()
     u_id = uuid.uuid4()
     fake_facade.pop_notifications.return_value = [
-        NotificationItem(user_id=str(u_id), content="Поезд прибыл")
+        NotificationItem(user_id=u_id, content="Поезд прибыл")
     ]
     await svc._process_notifications()
 
-    messages = [m for m in await svc._facade.pop_notifications() if m.user_id == str(u_id)]
+    messages = [m for m in await svc._facade.pop_notifications() if m.user_id == u_id]
     assert messages and messages[0].content == "Поезд прибыл"
 
 

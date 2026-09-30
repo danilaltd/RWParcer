@@ -175,5 +175,5 @@ class MessageInfo:
 class NotificationItem:
     """C# ``NotificationVO``."""
 
-    user_id: str
+    user_id: uuid.UUID
     content: str

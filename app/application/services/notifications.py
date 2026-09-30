@@ -22,6 +22,6 @@ async def pop_notifications(
         if await users.is_user_banned(n.user_id):
             await notifications.mark_failed(n.id, "User is banned")
             continue
-        results.append(NotificationItem(user_id=str(n.user_id), content=n.content))
+        results.append(NotificationItem(user_id=n.user_id, content=n.content))
         await notifications.mark_sent(n.id)
     return results

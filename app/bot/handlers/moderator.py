@@ -45,7 +45,7 @@ class ModeratorEnterSpanHandler:
             await ctx.send_message("Введите промежуток времени в формате d*.hh:mm:ss")
             return
 
-        ts = parse_timespan(ctx.input)
+        ts = parse_timespan(ctx.user_input)
         if ts is None or ts == datetime.timedelta(0):
             await ctx.send_message("Неверный формат времени, используйте d*.hh:mm:ss")
             return
@@ -101,12 +101,12 @@ class SelectUserHandler:
             await ctx.reset_session("Сессия устарела, начните заново", self._router)
             return
 
-        if not ctx.input.strip():
+        if not ctx.user_input.strip():
             await ctx.send_message("Выберите пользователя из списка клавиатуры")
             return
 
         try:
-            index = int(ctx.input)
+            index = int(ctx.user_input)
         except ValueError:
             await ctx.send_message("Введите корректный индекс пользователя")
             return
@@ -140,7 +140,7 @@ class SendMessageEnterMessageHandler:
             await ctx.send_message("Сессия устарела — начните заново")
             return
 
-        await self._facade.send_message(ctx.user_id, user.id, ctx.input)
+        await self._facade.send_message(ctx.user_id, user.id, ctx.user_input)
         await ctx.send_message("Сообщение отправлено")
 
         ctx.session.data.clear()
@@ -225,7 +225,7 @@ class ChangeUserMinIntervalLimitHandler:
             await ctx.send_message("Сессия устарела — начните заново")
             return
 
-        num = self._parse_uint(ctx.input)
+        num = self._parse_uint(ctx.user_input)
         if num is None or num < 1:
             await ctx.send_message("Неверный формат, введите целое положительное число")
             return
@@ -262,7 +262,7 @@ class ChangeUserMaxSubscribtionLimitHandler:
             await ctx.send_message("Сессия устарела — начните заново")
             return
 
-        num = self._parse_uint(ctx.input)
+        num = self._parse_uint(ctx.user_input)
         if num is None:
             await ctx.send_message("Неверный формат, введите целое неотрицательное число")
             return
