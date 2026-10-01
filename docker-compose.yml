@@ -29,8 +29,8 @@ services:
       - ${DATA_DIR:-/var/lib/rwparcer/data}:/app/data
     restart: ${PARSER_RESTART_POLICY:-unless-stopped}
     environment:
-      APPSETTINGS_JSON: ${APPSETTINGS_JSON}
-      BOT_TOKEN: ${BOT_TOKEN:-}
+      TG_BOT_TOKEN: ${TG_BOT_TOKEN:-}
+      TG_BOT_ALLOWED_UPDATES: ${TG_BOT_ALLOWED_UPDATES:-}
       PROXY_MANAGER_URL: ${PROXY_MANAGER_URL:-http://proxy-manager:8080}
       DATABASE_URL: "postgresql+asyncpg://${POSTGRES_USER:-rw_user}:${POSTGRES_PASSWORD:-test_password}@postgres_db:5432/${POSTGRES_DB:-core_db}"
     depends_on:
