@@ -20,4 +20,6 @@ async def require_not_banned(users: UserRepository, user_id: uuid.UUID) -> None:
         raise PermissionError(f"User {user_id} is banned")
 
 
-# TODO: add require_moderator() guard for moderator-only use cases
+async def require_moderator(users: UserRepository, user_id: uuid.UUID, action: str) -> None:
+    if not await users.is_user_moderator(user_id):
+        raise PermissionError(f"Only moderators can {action} users {user_id}")

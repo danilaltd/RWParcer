@@ -5,7 +5,11 @@ from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING
 
-from app.application.services.guards import require_registered
+from app.application.services.guards import (
+    require_moderator,
+    require_not_banned,
+    require_registered,
+)
 from app.domain.value_objects import UserInfo
 
 if TYPE_CHECKING:
@@ -37,12 +41,13 @@ async def register_user(
     # await users.add_user(User(id=user_id, telegram_user_id=0, telegram_chat_id=0))
 
 
-async def _ensure_access(users: UserRepository, user_id: uuid.UUID, target_id: uuid.UUID) -> None:
+async def _ensure_access(
+    users: UserRepository, user_id: uuid.UUID, target_id: uuid.UUID, action: str
+) -> None:
     await require_registered(users, user_id)
-    if await users.is_user_banned(user_id):
-        raise PermissionError(f"User {user_id} is banned")
-    if user_id != target_id and not await users.is_user_moderator(user_id):
-        raise PermissionError(f"User with ID {user_id} not a moderator (can't get {target_id})")
+    await require_not_banned(users, user_id)
+    if user_id != target_id:
+        await require_moderator(users, user_id, action)
 
 
 async def _update_activity(users: UserRepository, user_id: uuid.UUID) -> None:
@@ -64,7 +69,7 @@ async def get_user_by_id(
 ) -> UserInfo:
     original_exception: BaseException | None = None
     try:
-        await _ensure_access(users, user_id, target_id)
+        await _ensure_access(users, user_id, target_id, "get user info")
         user = await users.get_user_by_id(target_id)
         if user is None:
             raise KeyError(f"User with ID {target_id} not found")
@@ -81,7 +86,7 @@ async def is_user_moderator(
 ) -> bool:
     original_exception: BaseException | None = None
     try:
-        await _ensure_access(users, user_id, target_id)
+        await _ensure_access(users, user_id, target_id, "check moderator status")
         return await users.is_user_moderator(target_id)
     except BaseException as exc:
         original_exception = exc
@@ -93,7 +98,7 @@ async def is_user_moderator(
 async def is_user_banned(users: UserRepository, user_id: uuid.UUID, target_id: uuid.UUID) -> bool:
     original_exception: BaseException | None = None
     try:
-        await _ensure_access(users, user_id, target_id)
+        await _ensure_access(users, user_id, target_id, "check ban status")
         return await users.is_user_banned(target_id)
     except BaseException as exc:
         original_exception = exc
@@ -107,7 +112,7 @@ async def get_users(
 ) -> list[UserInfo]:
     original_exception: BaseException | None = None
     try:
-        await _ensure_access(users, user_id, user_id)
+        await _ensure_access(users, user_id, user_id, "view users")
         return [_to_user(user) for user in await users.get_last_users(time_span=time_span)]
     except BaseException as exc:
         original_exception = exc

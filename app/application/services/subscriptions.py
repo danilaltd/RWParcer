@@ -8,7 +8,11 @@ from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING
 
-from app.application.services.guards import require_not_banned, require_registered
+from app.application.services.guards import (
+    require_moderator,
+    require_not_banned,
+    require_registered,
+)
 from app.domain.entities import Subscription
 
 if TYPE_CHECKING:
@@ -89,6 +93,6 @@ async def get_subscriptions(
     await require_registered(users, user_id)
     await users.update_activity(user_id)
     await require_not_banned(users, user_id)
-    if user_id != target_id and not await users.is_user_moderator(user_id):
-        raise PermissionError(f"{user_id} tries get {target_id} subscriptions when not moder")
+    if user_id != target_id:
+        await require_moderator(users, user_id, "get subscriptions for other users")
     return [s.details for s in await subs.get_user_subscriptions(target_id)]
