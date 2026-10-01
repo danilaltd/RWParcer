@@ -35,12 +35,19 @@ def convert_train(train: Train) -> str:
 def user_to_string(user: UserInfo) -> str:
     """``UserVOToStringConverter.Convert``."""
     name = "Модератор" if user.is_moderator else "Пользователь"
-    user_id = f"Id: {user.id}"
-    link = f"link: tg://openmessage?user_id={user.id}"
+    user_id = f"Id: {user.telegram_user_id}"
+    link = "link: " + (
+        f"@{user.username}"
+        if user.username
+        else f'<a href="tg://openmessage?user_id={user.telegram_user_id}">{user.display_name}</a>'
+    )
     min_update_interval = f"Минимальный интервал обновления {user.min_update_interval}"
     max_subscriptions = f"Максимальное количество подписок {user.max_subscriptions}"
     is_blocked = "Заблокирован" if user.is_blocked else ""
-    last_activity = f"Последняя активность: {(user.last_activity + datetime.timedelta(hours=3))}"
+    last_activity_body = (user.last_activity + datetime.timedelta(hours=3)).strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+    last_activity = f"Последняя активность: {last_activity_body}"
     parts = [
         name,
         user_id,

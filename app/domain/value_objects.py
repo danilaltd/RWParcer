@@ -154,6 +154,9 @@ class UserInfo:
     """C# ``UserVO``."""
 
     id: uuid.UUID
+    telegram_user_id: int
+    username: str | None
+    display_name: str | None
     is_moderator: bool
     max_subscriptions: int
     min_update_interval: int

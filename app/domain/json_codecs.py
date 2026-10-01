@@ -217,6 +217,9 @@ def subscription_details_from_json_or_default(data: Any) -> SubscriptionDetails:
 def user_to_json(user: UserInfo) -> dict[str, Any]:
     return {
         "id": str(user.id),
+        "telegramUserId": user.telegram_user_id,
+        "username": user.username,
+        "displayName": user.display_name,
         "isModerator": user.is_moderator,
         "maxSubscriptions": user.max_subscriptions,
         "minSubscriptionsInterval": user.min_update_interval,
@@ -230,6 +233,9 @@ def user_from_json(data: Any) -> UserInfo:
         raise CodecError("Invalid user JSON")
     required = (
         "id",
+        "telegramUserId",
+        "username",
+        "displayName",
         "isModerator",
         "maxSubscriptions",
         "minSubscriptionsInterval",
@@ -241,6 +247,9 @@ def user_from_json(data: Any) -> UserInfo:
     try:
         return UserInfo(
             id=uuid.UUID(data["id"]),
+            telegram_user_id=int(data["telegramUserId"]),
+            username=data["username"],
+            display_name=data["displayName"],
             is_moderator=bool(data["isModerator"]),
             max_subscriptions=int(data["maxSubscriptions"]),
             min_update_interval=int(data["minSubscriptionsInterval"]),

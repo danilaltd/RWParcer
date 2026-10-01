@@ -46,6 +46,9 @@ def make_subscription() -> SubscriptionDetails:
 def make_user() -> UserInfo:
     return UserInfo(
         id=uuid.uuid4(),
+        telegram_user_id=123456789,
+        username="test_user",
+        display_name="Test User",
         is_moderator=False,
         max_subscriptions=5,
         min_update_interval=15,

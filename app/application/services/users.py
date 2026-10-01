@@ -124,6 +124,9 @@ async def get_users(
 def _to_user(user: User) -> UserInfo:
     return UserInfo(
         id=user.id,
+        telegram_user_id=user.telegram_user_id,
+        username=user.username,
+        display_name=user.display_name,
         is_moderator=user.is_moderator,
         max_subscriptions=user.max_subscriptions,
         min_update_interval=user.min_subscriptions_interval,

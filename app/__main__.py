@@ -12,6 +12,7 @@ import os
 import signal
 
 from aiogram import Bot
+from aiogram.client.default import DefaultBotProperties
 
 from app.application.facade import Facade
 from app.application.notifier import Notifier
@@ -62,7 +63,7 @@ def _build(settings: Settings) -> tuple[BotService, Bot, EngineHolder]:
     )
     notifier = Notifier(subscriptions, notifications, users, rw, logger)
     asyncio.create_task(notifier.run(asyncio.Event()))
-    bot = Bot(token=settings.bot.token)
+    bot = Bot(token=settings.bot.token, default=DefaultBotProperties(parse_mode="HTML"))
     router = CommandRouter(facade)
     store = SessionStorage(session_factory)
 
