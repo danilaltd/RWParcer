@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import datetime
+from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
 
 from app.domain.value_objects import Station, Train
@@ -17,7 +18,12 @@ templates = Jinja2Templates(directory="app/web/templates")
 
 
 def create_web_app(facade: Facade) -> FastAPI:
-    app = FastAPI(title="RWParcer Web")
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):  # noqa: ANN202
+        await facade.register_user(1, 1, "testuser", "Test User")
+        yield
+
+    app = FastAPI(title="RWParcer Web", lifespan=lifespan)
     app.state.facade = facade
 
     @app.get("/", response_class=HTMLResponse)

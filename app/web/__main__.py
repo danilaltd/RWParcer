@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import logging
 import os
 
@@ -58,7 +57,6 @@ def main() -> None:
         rw=rw,
     )
 
-    asyncio.run(facade.register_user(1, 1, "testuser", "Test User"))
     app = create_web_app(facade)
     uvicorn.run(app, host="0.0.0.0", port=8000)
 
