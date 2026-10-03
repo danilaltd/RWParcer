@@ -1,0 +1,22 @@
+info:
+  name: get-currency
+  type: http
+  seq: 14
+
+http:
+  method: GET
+  url: https://apicast.{{process.env.DOMAIN}}/{{process.env.API_VER}}/rasp/ru/index/dic/rates/?format=json&user_key={{process.env.API_KEY}}
+  params:
+    - name: format
+      value: json
+      type: query
+    - name: user_key
+      value: "{{process.env.API_KEY}}"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,18 @@
+info:
+  name: restore-psw
+  type: http
+
+http:
+  method: GET
+  url: https://apicast.{{process.env.DOMAIN}}/{{process.env.API_VER}}/users/pwd/restore/{{process.env.EMAIL}}?user_key={{process.env.API_KEY}}
+  params:
+    - name: user_key
+      value: "{{process.env.API_KEY}}"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

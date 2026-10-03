@@ -1,0 +1,47 @@
+info:
+  name: get-train
+  type: http
+  seq: 16
+
+http:
+  method: GET
+  url: https://apicast.{{process.env.DOMAIN}}/{{process.env.API_VER}}/rasp/ru/index/train?format=json&train=657Б&date=everyday&user_key={{process.env.API_KEY}}&note=from, to, etc. not affects result
+  params:
+    - name: format
+      value: json
+      type: query
+    - name: train
+      value: 657Б
+      type: query
+    - name: date
+      value: everyday
+      type: query
+    - name: user_key
+      value: "{{process.env.API_KEY}}"
+      type: query
+    - name: from
+      value: Минск-Пассажирский
+      type: query
+      disabled: true
+    - name: to
+      value: Брест-Центральный
+      type: query
+      disabled: true
+    - name: from_exp
+      value: "2100001"
+      type: query
+      disabled: true
+    - name: to_exp
+      value: "2100035"
+      type: query
+      disabled: true
+    - name: note
+      value: from, to, etc. not affects result
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

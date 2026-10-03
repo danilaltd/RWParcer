@@ -1,0 +1,27 @@
+info:
+  name: verify-token
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: https://apicast.{{process.env.DOMAIN}}/{{process.env.API_VER}}/rwauth/verifytoken?jwt={{process.env.JWT_TOKEN}}&user_key={{process.env.API_KEY}}&app_version=1.8.0
+  params:
+    - name: jwt
+      value: "{{process.env.JWT_TOKEN}}"
+      type: query
+    - name: user_key
+      value: "{{process.env.API_KEY}}"
+      type: query
+    - name: app_version
+      value: 1.8.0
+      type: query
+  auth:
+    type: bearer
+    token: "{{process.env.JWT_TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

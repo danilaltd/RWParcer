@@ -1,0 +1,70 @@
+info:
+  name: create-order
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: https://apicast.{{process.env.DOMAIN}}/{{process.env.API_VER}}/numbered/orders/auth?user_key={{process.env.API_KEY}}
+  params:
+    - name: user_key
+      value: "{{process.env.API_KEY}}"
+      type: query
+  body:
+    type: json
+    data: |-
+      {
+        "arrStationCode": "2100xxx",
+        "depStationCode": "2100xxx",
+        "departureDate": "yyyy-mm-dd",
+        "departureTime": "hh:mm",
+        "directionType": "TO",
+        "registrationAllowed": true,
+        "registrationNeeded": true,
+        "train": "xxx",
+        "trainLine": "L2",
+        "trainTitle": "from — to",
+        "tripCarriage": {
+          "addSigns": "",????????
+          "no": 2,
+          "owner": "БЧ",
+          "saleOnTwo": false,
+          "serviceClassCode": "3У",
+          "serviceClassIntCode": "",
+          "trainLetter": "Б",
+          "typeCode": "П",
+          "uz": false,
+          "withASMBP": true,
+          "withUKEB": false
+        },
+        "tripPassengers": [
+          {
+            "birthday": "yyyy-mm-dd",
+            "country": "BLR",
+            "coupe2MNumber": 0,
+            "documentNumber": "number",
+            "documentType": "УЛ",
+            "firstName": "name",
+            "id": 33xxxxx,
+            "lastName": "surname",
+            "passengerType": "ADULT",
+            "patronymic": "patronymic",
+            "placesCount": 1,
+            "sex": "M"
+          }
+        ],
+        "tripSeatDetail": {
+          "includedBedding": false,
+          "numFrom": 2,
+          "numTo": 2
+        }
+      }
+  auth:
+    type: bearer
+    token: "{{process.env.JWT_TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

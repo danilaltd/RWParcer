@@ -1,0 +1,24 @@
+info:
+  name: get-basket
+  type: http
+  seq: 7
+
+http:
+  method: GET
+  url: https://apicast.{{process.env.DOMAIN}}/{{process.env.API_VER}}/payment/basket?basketId=&user_key={{process.env.API_KEY}}
+  params:
+    - name: basketId
+      value: ""
+      type: query
+    - name: user_key
+      value: "{{process.env.API_KEY}}"
+      type: query
+  auth:
+    type: bearer
+    token: "{{process.env.JWT_TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,31 @@
+info:
+  name: get-route
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: https://apicast.{{process.env.DOMAIN}}/{{process.env.API_VER}}/rasp/ru/index/route?format=json&from_exp=2100185&to_exp=2100195&date=2026-10-03&user_key={{process.env.API_KEY}}
+  params:
+    - name: format
+      value: json
+      type: query
+    - name: from_exp
+      value: "2100xxx"
+      type: query
+    - name: to_exp
+      value: "2100xxx"
+      type: query
+    - name: date
+      value: yyyy-mm-dd
+      type: query
+    - name: user_key
+      value: "{{process.env.API_KEY}}"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

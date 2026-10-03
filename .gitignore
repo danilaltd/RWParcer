@@ -9,3 +9,5 @@
 **/DesignTimeDbContextFactory.cs
 **/.kilo/
 **/.venv/
+**/.env
+**/docs/api-test/

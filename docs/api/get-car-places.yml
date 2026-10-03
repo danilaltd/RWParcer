@@ -1,0 +1,36 @@
+info:
+  name: get-car-places
+  type: http
+
+http:
+  method: GET
+  url: https://apicast.{{process.env.DOMAIN}}/{{process.env.API_VER}}/rasp/ru/index/car_places/?format=json&from=2100001&to=2100005&date=2026-10-02&train_number=657Б&car_type=3&user_key={{process.env.API_KEY}}
+  params:
+    - name: format
+      value: json
+      type: query
+    - name: from
+      value: "2100xxx"
+      type: query
+    - name: to
+      value: "2100xxx"
+      type: query
+    - name: date
+      value: yyyy-mm-dd
+      type: query
+    - name: train_number
+      value: number
+      type: query
+    - name: car_type
+      value: "3"
+      type: query
+    - name: user_key
+      value: "{{process.env.API_KEY}}"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

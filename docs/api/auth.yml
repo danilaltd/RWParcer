@@ -1,0 +1,28 @@
+info:
+  name: auth
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: https://apicast.{{process.env.DOMAIN}}/{{process.env.API_VER}}/rwauth?login={{process.env.EMAIL}}&password={{process.env.PASSWORD}}&user_key={{process.env.API_KEY}}&refresh_token=true
+  params:
+    - name: login
+      value: "{{process.env.EMAIL}}"
+      type: query
+    - name: password
+      value: "{{process.env.PASSWORD}}"
+      type: query
+    - name: user_key
+      value: "{{process.env.API_KEY}}"
+      type: query
+    - name: refresh_token
+      value: "true"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

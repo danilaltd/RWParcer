@@ -1,0 +1,25 @@
+info:
+  name: get-board
+  type: http
+  seq: 19
+
+http:
+  method: GET
+  url: https://apicast.{{process.env.DOMAIN}}/{{process.env.API_VER}}/rasp/ru/index/tablo?format=json&st_exp=2100010&user_key={{process.env.API_KEY}}
+  params:
+    - name: format
+      value: json
+      type: query
+    - name: st_exp
+      value: "2100010"
+      type: query
+    - name: user_key
+      value: "{{process.env.API_KEY}}"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
