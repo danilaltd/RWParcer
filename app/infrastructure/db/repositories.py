@@ -19,6 +19,7 @@ from app.infrastructure.db.models import (
     NotificationRow,
     ProviderRow,
     RoleRow,
+    RouteRow,
     ServiceRouteRow,
     ServiceRow,
     StopRow,
@@ -46,6 +47,8 @@ class _RepositoryBase:
 
 
 def user_row_to_entity(row: UserRow) -> User:
+    if not row.id:
+        raise RuntimeError("workaround: id is never None")
     return User(
         id=row.id,
         telegram_user_id=row.telegram_user_id,
@@ -107,6 +110,8 @@ class UserPostgresRepository(_RepositoryBase):
                     )
                 )
                 if not existing_ur:
+                    if not row.id:
+                        raise RuntimeError("workaround: id is never None")
                     session.add(UserRoleRow(user_id=row.id, role_id=mod_role.id))
 
             await session.commit()
@@ -124,6 +129,8 @@ class UserPostgresRepository(_RepositoryBase):
                 id=user.id,
                 telegram_user_id=user.telegram_user_id,
                 telegram_chat_id=user.telegram_chat_id,
+                username=user.username,
+                display_name=user.display_name,
                 status=user.status,
                 max_subscriptions=user.max_subscriptions,
                 min_subscription_interval_seconds=user.min_subscriptions_interval,
@@ -248,6 +255,7 @@ class TransportPostgresRepository(_RepositoryBase):
                     code="RW_BY",
                     name="Белорусская железная дорога",
                     adapter_code="rw_by",
+                    base_url="https://www.rw.by",
                     is_active=True,
                 )
                 session.add(provider)
@@ -260,11 +268,16 @@ class TransportPostgresRepository(_RepositoryBase):
                 )
             )
             if not from_stop:
+                if not provider.id:
+                    raise RuntimeError("workaround: id is never None")
                 from_stop = StopRow(
                     id=uuid.uuid4(),
                     provider_id=provider.id,
                     external_code=train.station_from.label,
                     name=train.title_station_from,
+                    # TODO: Add latitude and longitude if available
+                    latitude=None,
+                    longitude=None,
                 )
                 session.add(from_stop)
                 await session.flush()
@@ -276,13 +289,35 @@ class TransportPostgresRepository(_RepositoryBase):
                 )
             )
             if not to_stop:
+                if not provider.id:
+                    raise RuntimeError("workaround: id is never None")
                 to_stop = StopRow(
                     id=uuid.uuid4(),
                     provider_id=provider.id,
                     external_code=train.station_to.label,
                     name=train.title_station_to,
+                    # TODO: Add latitude and longitude if available
+                    latitude=None,
+                    longitude=None,
                 )
                 session.add(to_stop)
+                await session.flush()
+
+            route = await session.scalar(
+                select(RouteRow).where(
+                    RouteRow.from_stop_id == from_stop.id,
+                    RouteRow.to_stop_id == to_stop.id,
+                )
+            )
+            if not route:
+                if not from_stop.id or not to_stop.id:
+                    raise RuntimeError("workaround: id is never None")
+                route = RouteRow(
+                    id=uuid.uuid4(),
+                    from_stop_id=from_stop.id,
+                    to_stop_id=to_stop.id,
+                )
+                session.add(route)
                 await session.flush()
 
             service = await session.scalar(
@@ -293,47 +328,52 @@ class TransportPostgresRepository(_RepositoryBase):
                 )
             )
             if not service:
+                if not provider.id or not route.id:
+                    raise RuntimeError("workaround: id is never None")
                 service = ServiceRow(
                     id=uuid.uuid4(),
                     provider_id=provider.id,
+                    route_id=route.id,
                     transport_mode="TRAIN",
                     external_number=train.train_number,
                     service_type=train.train_type,
-                    display_name=train.train_number,
-                )
-                session.add(service)
-                await session.flush()
-
-            route = await session.scalar(
-                select(ServiceRouteRow).where(
-                    ServiceRouteRow.service_id == service.id,
-                    ServiceRouteRow.from_stop_id == from_stop.id,
-                    ServiceRouteRow.to_stop_id == to_stop.id,
-                )
-            )
-            if not route:
-                route = ServiceRouteRow(
-                    id=uuid.uuid4(),
-                    service_id=service.id,
-                    from_stop_id=from_stop.id,
-                    to_stop_id=to_stop.id,
-                    departure_time=train.from_time,
-                    arrival_time=train.to_time,
-                    duration_minutes=train.duration_minutes,
                     days_rule=train.train_days,
                     days_exceptions=train.train_days_except,
                 )
-                session.add(route)
+                session.add(service)
+                await session.flush()
+            else:
+                service.days_rule = train.train_days
+                service.days_exceptions = train.train_days_except
+
+            service_route = await session.scalar(
+                select(ServiceRouteRow).where(
+                    ServiceRouteRow.service_id == service.id,
+                    ServiceRouteRow.route_id == route.id,
+                )
+            )
+            if not service_route:
+                if not service.id or not route.id:
+                    raise RuntimeError("workaround: id is never None")
+                service_route = ServiceRouteRow(
+                    id=uuid.uuid4(),
+                    service_id=service.id,
+                    route_id=route.id,
+                    departure_time=train.from_time,
+                    arrival_time=train.to_time,
+                    duration_minutes=train.duration_minutes,
+                )
+                session.add(service_route)
                 await session.commit()
             else:
-                route.departure_time = train.from_time
-                route.arrival_time = train.to_time
-                route.duration_minutes = train.duration_minutes
-                route.days_rule = train.train_days
-                route.days_exceptions = train.train_days_except
+                service_route.departure_time = train.from_time
+                service_route.arrival_time = train.to_time
+                service_route.duration_minutes = train.duration_minutes
                 await session.commit()
 
-            return route.id
+            if not service_route.id:
+                raise RuntimeError("workaround: id is never None")
+            return service_route.id
 
 
 # ---------------------------------------------------------------------------
@@ -491,8 +531,8 @@ class SubscriptionPostgresRepository(_RepositoryBase):
                     session.add(
                         AvailabilitySnapshotSeatRow(
                             snapshot_id=snapshot_id,
-                            unit_type=car.car_type,
-                            unit_number=car.number,
+                            unit_type=str(car.car_type),
+                            unit_number=str(car.number),
                             place_code=str(seat),
                         )
                     )
@@ -506,8 +546,10 @@ class SubscriptionPostgresRepository(_RepositoryBase):
         train_info = None
         if sr:
             service = await session.get(ServiceRow, sr.service_id)
-            from_stop = await session.get(StopRow, sr.from_stop_id)
-            to_stop = await session.get(StopRow, sr.to_stop_id)
+            route = await session.get(RouteRow, sr.route_id)
+            if route:
+                from_stop = await session.get(StopRow, route.from_stop_id)
+                to_stop = await session.get(StopRow, route.to_stop_id)
             if service and from_stop and to_stop:
                 train_info = Train(
                     train_type=service.service_type or "p",
@@ -518,8 +560,8 @@ class SubscriptionPostgresRepository(_RepositoryBase):
                     station_to=Station(to_stop.name, to_stop.external_code),
                     from_time=sr.departure_time,
                     to_time=sr.arrival_time,
-                    train_days=sr.days_rule or "",
-                    train_days_except=sr.days_exceptions or "",
+                    train_days=service.days_rule or "",
+                    train_days_except=service.days_exceptions or "",
                     duration_minutes=sr.duration_minutes,
                 )
         details = SubscriptionDetails(
@@ -570,7 +612,8 @@ class SubscriptionPostgresRepository(_RepositoryBase):
                         free_seats=tuple(sorted(seats)),
                     )
                 )
-
+        if not row.id:
+            raise RuntimeError("workaround: id is never None")
         return Subscription(
             id=row.id,
             user_id=row.user_id,
@@ -609,8 +652,10 @@ class FavoritesPostgresRepository(_RepositoryBase):
                 if not sr:
                     raise ValueError("Invalid service_route data")
                 service = await session.get(ServiceRow, sr.service_id)
-                from_stop = await session.get(StopRow, sr.from_stop_id)
-                to_stop = await session.get(StopRow, sr.to_stop_id)
+                route = await session.get(RouteRow, sr.route_id)
+                if route:
+                    from_stop = await session.get(StopRow, route.from_stop_id)
+                    to_stop = await session.get(StopRow, route.to_stop_id)
                 if not (service and from_stop and to_stop):
                     raise ValueError("Invalid favorite data")
                 train_info = Train(
@@ -622,10 +667,12 @@ class FavoritesPostgresRepository(_RepositoryBase):
                     station_to=Station(to_stop.name, to_stop.external_code),
                     from_time=sr.departure_time,
                     to_time=sr.arrival_time,
-                    train_days=sr.days_rule or "",
-                    train_days_except=sr.days_exceptions or "",
+                    train_days=service.days_rule or "",
+                    train_days_except=service.days_exceptions or "",
                     duration_minutes=sr.duration_minutes,
                 )
+                if not row.id:
+                    raise RuntimeError("workaround: id is never None")
                 favorites.append(
                     Favorite(
                         id=row.id,
@@ -714,11 +761,16 @@ class NotificationPostgresRepository(_RepositoryBase):
                 )
             )
             await session.commit()
-
         async with self._session_factory() as session:
-            rows = await session.scalars(
-                select(NotificationRow).where(NotificationRow.id.in_(claimed_ids))
+            res = await session.scalars(
+                select(NotificationRow).where(
+                    NotificationRow.id.in_([i for i in claimed_ids if i is not None])
+                )
             )
+            rows = res.all()
+            for r in rows:
+                if not r.id:
+                    raise RuntimeError("workaround: id is never None")
             return [
                 Notification(
                     id=r.id,
@@ -730,6 +782,7 @@ class NotificationPostgresRepository(_RepositoryBase):
                     attempts=r.attempts,
                 )
                 for r in rows
+                if r.id is not None  # workaround: id is never None
             ]
 
     async def mark_sent(self, notification_id: uuid.UUID) -> None:
@@ -761,7 +814,11 @@ class NotificationPostgresRepository(_RepositoryBase):
                     notification_type=notification.notification_type,
                     content=notification.content,
                     status=notification.status,
-                    available_at=notification.available_at or datetime.datetime.now(UTC),
+                    available_at=func.now()
+                    - (
+                        datetime.datetime.now(UTC)
+                        - (notification.available_at or datetime.datetime.now(UTC))
+                    ),
                 )
             )
             await session.commit()
@@ -781,7 +838,6 @@ class MessagePostgresRepository(_RepositoryBase):
                     sender_user_id=message.sender_id,
                     receiver_user_id=message.receiver_id,
                     content=message.content,
-                    sent_at=message.sent_date,
                 )
             )
             await session.commit()
@@ -796,6 +852,9 @@ class MessagePostgresRepository(_RepositoryBase):
                 )
                 .order_by(MessageRow.sent_at)
             )
+            for r in rows:
+                if not r.id:
+                    raise RuntimeError("workaround: id is never None")
             return [
                 Message(
                     id=r.id,
@@ -805,11 +864,15 @@ class MessagePostgresRepository(_RepositoryBase):
                     sent_date=r.sent_at,
                 )
                 for r in rows
+                if r.id is not None  # workaround: id is never None
             ]
 
     async def get_all_messages(self) -> list[Message]:
         async with self._session_factory() as session:
             rows = await session.scalars(select(MessageRow))
+            for r in rows:
+                if not r.id:
+                    raise RuntimeError("workaround: id is never None")
             return [
                 Message(
                     id=r.id,
@@ -819,4 +882,5 @@ class MessagePostgresRepository(_RepositoryBase):
                     sent_date=r.sent_at,
                 )
                 for r in rows
+                if r.id is not None  # workaround: id is never None
             ]

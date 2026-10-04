@@ -144,13 +144,41 @@ CREATE UNIQUE INDEX stops_provider_external_code_uq
 CREATE INDEX stops_provider_name_idx
     ON transport.stops (provider_id, name);
 
+CREATE TABLE transport.routes (
+    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    from_stop_id    uuid NOT NULL,
+    to_stop_id      uuid NOT NULL,
+    created_at      timestamptz NOT NULL DEFAULT now(),
+    updated_at      timestamptz NOT NULL DEFAULT now(),
+
+    CONSTRAINT routes_from_stop_fk
+        FOREIGN KEY (from_stop_id)
+        REFERENCES transport.stops (id)
+        ON DELETE RESTRICT,
+
+    CONSTRAINT routes_to_stop_fk
+        FOREIGN KEY (to_stop_id)
+        REFERENCES transport.stops (id)
+        ON DELETE RESTRICT,
+
+    CONSTRAINT routes_different_stops_chk
+        CHECK (from_stop_id <> to_stop_id)
+);
+
+CREATE UNIQUE INDEX routes_from_to_uq
+    ON transport.routes (from_stop_id, to_stop_id);
+
 CREATE TABLE transport.services (
     id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     provider_id     uuid NOT NULL,
+    route_id        uuid NOT NULL,
     transport_mode  text NOT NULL,
     external_number text NOT NULL,
     service_type    text,
-    display_name    text,
+    days_rule           text,
+    days_exceptions     text,
+    valid_from          date,
+    valid_to            date,
     created_at      timestamptz NOT NULL DEFAULT now(),
     updated_at      timestamptz NOT NULL DEFAULT now(),
 
@@ -159,29 +187,33 @@ CREATE TABLE transport.services (
         REFERENCES transport.providers (id)
         ON DELETE RESTRICT,
 
+    CONSTRAINT services_route_fk
+        FOREIGN KEY (route_id)
+        REFERENCES transport.routes (id)
+        ON DELETE RESTRICT,
+
     CONSTRAINT services_transport_mode_chk
         CHECK (length(trim(transport_mode)) > 0),
     CONSTRAINT services_external_number_chk
-        CHECK (length(trim(external_number)) > 0)
+        CHECK (length(trim(external_number)) > 0),
+    CONSTRAINT service_routes_validity_chk
+        CHECK (valid_from IS NULL OR valid_to IS NULL OR valid_to >= valid_from)
 );
 
-CREATE UNIQUE INDEX services_provider_mode_number_uq
-    ON transport.services (provider_id, transport_mode, external_number);
+CREATE UNIQUE INDEX services_provider_mode_number_route_uq
+    ON transport.services (provider_id, transport_mode, external_number, route_id);
 CREATE INDEX services_provider_mode_idx
     ON transport.services (provider_id, transport_mode);
+CREATE INDEX services_route_idx
+    ON transport.services (route_id);
 
 CREATE TABLE transport.service_routes (
     id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     service_id          uuid NOT NULL,
-    from_stop_id        uuid NOT NULL,
-    to_stop_id          uuid NOT NULL,
+    route_id            uuid NOT NULL,
     departure_time      time NOT NULL,
     arrival_time        time NOT NULL,
     duration_minutes    integer NOT NULL,
-    days_rule           text,
-    days_exceptions     text,
-    valid_from          date,
-    valid_to            date,
     created_at          timestamptz NOT NULL DEFAULT now(),
     updated_at          timestamptz NOT NULL DEFAULT now(),
 
@@ -190,33 +222,21 @@ CREATE TABLE transport.service_routes (
         REFERENCES transport.services (id)
         ON DELETE RESTRICT,
 
-    CONSTRAINT service_routes_from_stop_fk
-        FOREIGN KEY (from_stop_id)
-        REFERENCES transport.stops (id)
+    CONSTRAINT service_routes_route_fk
+        FOREIGN KEY (route_id)
+        REFERENCES transport.routes (id)
         ON DELETE RESTRICT,
 
-    CONSTRAINT service_routes_to_stop_fk
-        FOREIGN KEY (to_stop_id)
-        REFERENCES transport.stops (id)
-        ON DELETE RESTRICT,
-
-    CONSTRAINT service_routes_different_stops_chk
-        CHECK (from_stop_id <> to_stop_id),
     CONSTRAINT service_routes_duration_chk
-        CHECK (duration_minutes > 0),
-    CONSTRAINT service_routes_validity_chk
-        CHECK (valid_from IS NULL OR valid_to IS NULL OR valid_to >= valid_from)
+        CHECK (duration_minutes > 0)
 );
+
 CREATE UNIQUE INDEX service_routes_business_uq
-    ON transport.service_routes (
-        service_id,
-        from_stop_id,
-        to_stop_id
-    );
+    ON transport.service_routes (service_id, route_id);
 CREATE INDEX service_routes_service_idx
     ON transport.service_routes (service_id);
-CREATE INDEX service_routes_stops_idx
-    ON transport.service_routes (from_stop_id, to_stop_id);
+CREATE INDEX service_routes_route_idx
+    ON transport.service_routes (route_id);
 
 CREATE TRIGGER providers_set_updated_at
 BEFORE UPDATE ON transport.providers
@@ -225,6 +245,11 @@ EXECUTE FUNCTION public.set_updated_at();
 
 CREATE TRIGGER stops_set_updated_at
 BEFORE UPDATE ON transport.stops
+FOR EACH ROW
+EXECUTE FUNCTION public.set_updated_at();
+
+CREATE TRIGGER routes_set_updated_at
+BEFORE UPDATE ON transport.routes
 FOR EACH ROW
 EXECUTE FUNCTION public.set_updated_at();
 
@@ -265,6 +290,9 @@ CREATE TABLE monitoring.subscriptions (
 
     CONSTRAINT subscriptions_status_chk
         CHECK (status IN ('ACTIVE', 'PAUSED', 'CANCELLED'))
+
+    -- TODO: Add constraint to ensure that next_check_at is always greater than last_checked_at, if both are not null. 
+    -- TODO: Add constraint to ensure that next_check_at not null only if status is 'ACTIVE' or 'PAUSED'. 
 );
 
 CREATE UNIQUE INDEX subscriptions_active_paused_uq

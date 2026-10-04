@@ -68,15 +68,6 @@ def route_from_json(data: Any) -> Route:
 # Train
 # ---------------------------------------------------------------------------
 
-_TRAIN_STRING_FIELDS = (
-    "trainType",
-    "trainNumber",
-    "titleStationFrom",
-    "titleStationTo",
-    "trainDays",
-    "trainDaysExcept",
-)
-
 
 def train_to_json(train: Train) -> dict[str, Any]:
     """Serialize in the same order as ``TrainVOConverter.Write``."""

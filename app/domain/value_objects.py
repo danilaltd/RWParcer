@@ -8,6 +8,7 @@ like ``CarVO.GetEqualityComponents``.
 from __future__ import annotations
 
 import enum
+import json
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -139,6 +140,14 @@ class Car:
 
     def __hash__(self) -> int:
         return hash((self.car_type, self.number, tuple(sorted(self.free_seats))))
+
+    def __str__(self) -> str:
+        return json.dumps(
+            {
+                "car_type": self.car_type.name_key,
+                "number": self.number,
+            }
+        )
 
 
 @dataclass(frozen=True)

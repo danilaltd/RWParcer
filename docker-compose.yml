@@ -1,6 +1,7 @@
 services:
   proxy-manager:
     image: ${PROXY_MANAGER_IMAGE:-rwparcer-proxy-manager}
+    init: true
     build:
       context: ./proxy-manager
       dockerfile: Dockerfile
@@ -20,6 +21,7 @@ services:
 
   parcer:
     image: ${PARSER_IMAGE:-rwparcer}
+    init: true
     build:
       context: .
       dockerfile: Dockerfile
