@@ -21,12 +21,15 @@ from app.bot.service import BotService
 from app.bot.storage import SessionStorage
 from app.config import Settings, load_settings
 from app.infrastructure.db.repositories import (
-    FavoritesPostgresRepository,
+    AvailabilitySnapshotPostgresRepository,
+    FavoritePostgresRepository,
     MessagePostgresRepository,
     NotificationPostgresRepository,
+    RolePostgresRepository,
+    ServiceRoutePostgresRepository,
     SubscriptionPostgresRepository,
-    TransportPostgresRepository,
     UserPostgresRepository,
+    UserRolePostgresRepository,
 )
 from app.infrastructure.db.session import EngineHolder
 from app.infrastructure.http_client_factory import AsyncHttpClientFactory
@@ -39,10 +42,13 @@ def _build(settings: Settings) -> tuple[BotService, Bot, EngineHolder]:
     engine_holder = EngineHolder(settings.database)
     session_factory = engine_holder.session_factory
 
-    users = UserPostgresRepository(session_factory)
-    transport = TransportPostgresRepository(session_factory)
-    subscriptions = SubscriptionPostgresRepository(session_factory, transport, logger)
-    favorites = FavoritesPostgresRepository(session_factory, transport, logger)
+    role = RolePostgresRepository(session_factory)
+    user_role = UserRolePostgresRepository(session_factory, role)
+    users = UserPostgresRepository(session_factory, user_role)
+    service_route = ServiceRoutePostgresRepository(session_factory)
+    snapshot = AvailabilitySnapshotPostgresRepository(session_factory)
+    subscriptions = SubscriptionPostgresRepository(session_factory, service_route, snapshot)
+    favorites = FavoritePostgresRepository(session_factory, service_route)
     notifications = NotificationPostgresRepository(session_factory)
     messages = MessagePostgresRepository(session_factory)
 
@@ -54,7 +60,7 @@ def _build(settings: Settings) -> tuple[BotService, Bot, EngineHolder]:
 
     facade = Facade(
         users=users,
-        transport=transport,
+        transport=service_route,
         subscriptions=subscriptions,
         favorites=favorites,
         notifications=notifications,

@@ -62,8 +62,8 @@ def create_web_app(facade: Facade) -> FastAPI:
         train = Train(
             train_type=train_type,
             train_number=train_number,
-            title_station_from=station_from,
-            title_station_to=station_to,
+            main_station_from=Station(station_from, station_from),
+            main_station_to=Station(station_to, station_to),
             station_from=Station(station_from, station_from),
             station_to=Station(station_to, station_to),
             from_time=from_time,

@@ -87,8 +87,8 @@ class Train:
 
     train_type: str
     train_number: str
-    title_station_from: str
-    title_station_to: str
+    main_station_from: Station
+    main_station_to: Station
     station_from: Station
     station_to: Station
     from_time: datetime.time
@@ -106,8 +106,8 @@ class Train:
         return cls(
             train_type="default",
             train_number="0",
-            title_station_from="",
-            title_station_to="",
+            main_station_from=Station("", ""),
+            main_station_to=Station("", ""),
             station_from=Station("", ""),
             station_to=Station("", ""),
             from_time=times.unix_seconds_to_local_time(0),

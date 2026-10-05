@@ -16,13 +16,13 @@ from app.application.services.guards import (
 from app.domain.entities import Subscription
 
 if TYPE_CHECKING:
-    from app.domain.protocols import SubscriptionRepository, TransportRepository, UserRepository
+    from app.domain.protocols import ServiceRouteRepository, SubscriptionRepository, UserRepository
     from app.domain.value_objects import SubscriptionDetails
 
 
 async def subscribe(
     users: UserRepository,
-    transport: TransportRepository,
+    transport: ServiceRouteRepository,
     subs: SubscriptionRepository,
     user_id: uuid.UUID,
     subscription: SubscriptionDetails,

@@ -27,8 +27,8 @@ def make_train() -> Train:
     return Train(
         train_type="p",
         train_number="123",
-        title_station_from="Минск",
-        title_station_to="Гомель",
+        main_station_from=Station("Минск", "МСК"),
+        main_station_to=Station("Гомель", "ГМ"),
         station_from=Station("Минск", "МСК"),
         station_to=Station("Гомель", "ГМ"),
         from_time=datetime.time(8, 0),

@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import random
 from typing import TYPE_CHECKING
 
 from app.domain import times
@@ -175,8 +176,14 @@ class RwClient:
         return Train(
             train_type=item.get("train_type") or "",
             train_number=item.get("train_number") or "",
-            title_station_from=item.get("title_station_from") or "",
-            title_station_to=item.get("title_station_to") or "",
+            main_station_from=Station(
+                item.get("title_station_from") or "",
+                item.get("main_station_from_exp") or str(random.randint(1, 1000000)),
+            ),
+            main_station_to=Station(
+                item.get("title_station_to") or "",
+                item.get("main_station_to_exp") or str(random.randint(1, 1000000)),
+            ),
             station_from=Station(
                 item.get("from_station_db") or "",
                 item.get("from_station_exp") or "",

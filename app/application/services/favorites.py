@@ -11,13 +11,17 @@ from app.domain.entities import Favorite
 from app.domain.value_objects import SubscriptionDetails, Train
 
 if TYPE_CHECKING:
-    from app.domain.protocols import FavoritesRepository, TransportRepository, UserRepository
+    from app.domain.protocols import (
+        FavoriteRepository,
+        ServiceRouteRepository,
+        UserRepository,
+    )
 
 
 async def add_to_favorites(
     users: UserRepository,
-    transport: TransportRepository,
-    favorites: FavoritesRepository,
+    transport: ServiceRouteRepository,
+    favorites: FavoriteRepository,
     user_id: uuid.UUID,
     train: Train,
 ) -> None:
@@ -29,15 +33,11 @@ async def add_to_favorites(
     )
     if await favorites.favorite_exists(user_id, service_route_id):
         raise RuntimeError(f"Train {train} already in favorites")
-    await favorites.add_favorite(
-        Favorite(
-            id=uuid.uuid4(), user_id=user_id, service_route_id=service_route_id, train_info=train
-        )
-    )
+    await favorites.add_favorite(Favorite(id=uuid.uuid4(), user_id=user_id, train_info=train))
 
 
 async def get_favorites(
-    users: UserRepository, favorites: FavoritesRepository, user_id: uuid.UUID
+    users: UserRepository, favorites: FavoriteRepository, user_id: uuid.UUID
 ) -> list[Train]:
     await require_registered(users, user_id)
     await users.update_activity(user_id)
@@ -48,8 +48,8 @@ async def get_favorites(
 
 async def is_in_favorites(
     users: UserRepository,
-    transport: TransportRepository,
-    favorites: FavoritesRepository,
+    transport: ServiceRouteRepository,
+    favorites: FavoriteRepository,
     user_id: uuid.UUID,
     train: Train,
 ) -> bool:
@@ -63,7 +63,7 @@ async def is_in_favorites(
 
 
 async def remove_from_favorites(
-    users: UserRepository, favorites: FavoritesRepository, user_id: uuid.UUID, train: Train
+    users: UserRepository, favorites: FavoriteRepository, user_id: uuid.UUID, train: Train
 ) -> None:
     await require_not_banned(users, user_id)
     await users.update_activity(user_id)

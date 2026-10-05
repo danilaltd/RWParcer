@@ -183,18 +183,18 @@ class ServiceRow(Base):
     service_type: Mapped[str | None] = mapped_column(Text)
     days_rule: Mapped[str | None] = mapped_column(Text)
     days_exceptions: Mapped[str | None] = mapped_column(Text)
+    valid_from: Mapped[datetime.date | None] = mapped_column(
+        Date, server_default=func.current_date(), init=False
+    )
+    valid_to: Mapped[datetime.date | None] = mapped_column(
+        Date, server_default=text("(CURRENT_DATE + INTERVAL '365 days')"), init=False
+    )
 
     id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True),
         primary_key=True,
         server_default=text("gen_random_uuid()"),
         default=None,
-    )
-    valid_from: Mapped[datetime.date | None] = mapped_column(
-        Date, default=datetime.datetime.now(datetime.UTC).date()
-    )
-    valid_to: Mapped[datetime.date | None] = mapped_column(
-        Date, default=(datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=365)).date()
     )
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), init=False

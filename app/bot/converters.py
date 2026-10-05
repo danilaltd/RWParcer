@@ -24,7 +24,7 @@ def convert_train(train: Train) -> str:
     duration_minutes = max(train.duration_minutes, 0)
     formatted_duration = f"{duration_minutes // 60:02d}:{duration_minutes % 60:02d}"
     number = f"№{train.train_number}"
-    name = f"{train.title_station_from} - {train.title_station_to}"
+    name = f"{train.main_station_from} - {train.main_station_to}"
     train_type = _TRAIN_TYPE_RU.get(train.train_type, train.train_type)
     train_days = f"Дни курсирования: {train.train_days}"
     if train.train_days_except:

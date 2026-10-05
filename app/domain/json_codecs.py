@@ -74,13 +74,13 @@ def train_to_json(train: Train) -> dict[str, Any]:
     return {
         "trainType": train.train_type,
         "trainNumber": train.train_number,
-        "titleStationFrom": train.title_station_from,
-        "titleStationTo": train.title_station_to,
         "trainDays": train.train_days,
         "trainDaysExcept": train.train_days_except,
         "fromTime": times.local_time_to_storage(train.from_time),
         "toTime": times.local_time_to_storage(train.to_time),
         "durationMinutes": train.duration_minutes,
+        "main_station_from": station_to_json(train.main_station_from),
+        "main_station_to": station_to_json(train.main_station_to),
         "stationFrom": station_to_json(train.station_from),
         "stationTo": station_to_json(train.station_to),
     }
@@ -93,13 +93,13 @@ def train_from_json(data: Any) -> Train:
         return Train(
             train_type=str(data["trainType"]),
             train_number=str(data["trainNumber"]),
-            title_station_from=str(data["titleStationFrom"]),
-            title_station_to=str(data["titleStationTo"]),
             train_days=str(data["trainDays"]),
             train_days_except=str(data["trainDaysExcept"]),
             from_time=times.storage_string_to_local_time(str(data["fromTime"])),
             to_time=times.storage_string_to_local_time(str(data["toTime"])),
             duration_minutes=int(data["durationMinutes"]),
+            main_station_from=station_from_json(data["main_station_from"]),
+            main_station_to=station_from_json(data["main_station_to"]),
             station_from=station_from_json(data["stationFrom"]),
             station_to=station_from_json(data["stationTo"]),
         )

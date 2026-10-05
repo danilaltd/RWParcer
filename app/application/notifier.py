@@ -69,9 +69,9 @@ class Notifier:
                         self.logger.debug(f"Изменение данных для {subscription.id}\n")
                         changes = self._find_seat_changes(actual.last_state, response)
                         if changes:
-                            await self._subscriptions.save_availability_snapshot(
-                                subscription.id, response
-                            )
+                            # await self._subscriptions.save_availability_snapshot( # TODO
+                            #     subscription.id, response
+                            # )
                             await self._notifications.add_notification(
                                 Notification(
                                     id=uuid.uuid4(),

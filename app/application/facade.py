@@ -42,12 +42,12 @@ if TYPE_CHECKING:
     import uuid
 
     from app.domain.protocols import (
-        FavoritesRepository,
+        FavoriteRepository,
         MessageRepository,
         NotificationRepository,
         RwRepository,
+        ServiceRouteRepository,
         SubscriptionRepository,
-        TransportRepository,
         UserRepository,
     )
 
@@ -56,9 +56,9 @@ class Facade:
     def __init__(
         self,
         users: UserRepository,
-        transport: TransportRepository,
+        transport: ServiceRouteRepository,
         subscriptions: SubscriptionRepository,
-        favorites: FavoritesRepository,
+        favorites: FavoriteRepository,
         notifications: NotificationRepository,
         messages: MessageRepository,
         rw: RwRepository,

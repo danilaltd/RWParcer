@@ -69,10 +69,6 @@ class Subscription:
     last_state: list[Car] | None = None
 
 
-def generate_notification_id() -> uuid.UUID:
-    return uuid.uuid4()
-
-
 @dataclass(frozen=True)
 class Notification:
     """Messaging notification entity."""
@@ -106,5 +102,4 @@ class Favorite:
 
     id: uuid.UUID
     user_id: uuid.UUID
-    service_route_id: uuid.UUID
     train_info: Train

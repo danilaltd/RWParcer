@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     import datetime
@@ -18,6 +18,25 @@ class Logger(Protocol):
     def info(self, message: str) -> None: ...
     def warning(self, message: str) -> None: ...
     def error(self, message: str) -> None: ...
+
+
+# ---------------------------------------------------------------------------
+# Identity
+# ---------------------------------------------------------------------------
+
+
+@runtime_checkable
+class RoleRepository(Protocol):
+    async def get_role_id(self, role_code: str) -> int | None: ...
+    async def ensure_default_roles(self) -> None: ...
+
+
+@runtime_checkable
+class UserRoleRepository(Protocol):
+    async def has_role(self, user_id: uuid.UUID, role_code: str) -> bool: ...
+    async def grant_role(self, user_id: uuid.UUID, role_code: str) -> None: ...
+    async def revoke_role(self, user_id: uuid.UUID, role_code: str) -> None: ...
+    async def get_user_ids_with_role(self, role_code: str) -> list[uuid.UUID]: ...
 
 
 @runtime_checkable
@@ -45,9 +64,20 @@ class UserRepository(Protocol):
     async def get_moderators(self) -> list[User]: ...
 
 
+# ---------------------------------------------------------------------------
+# Transport catalog
+# ---------------------------------------------------------------------------
+
+
 @runtime_checkable
-class TransportRepository(Protocol):
+class ServiceRouteRepository(Protocol):
     async def get_or_create_service_route(self, details: SubscriptionDetails) -> uuid.UUID: ...
+    async def get_train(self, service_route_id: uuid.UUID) -> Train | None: ...
+
+
+# ---------------------------------------------------------------------------
+# Monitoring
+# ---------------------------------------------------------------------------
 
 
 @runtime_checkable
@@ -64,17 +94,25 @@ class SubscriptionRepository(Protocol):
     async def update_subscription(self, subscription: Subscription) -> None: ...
     async def reset_subscription(self, subscription: Subscription) -> None: ...
     async def claim_due_subscriptions(self, limit: int = 10) -> list[Subscription]: ...
-    async def save_availability_snapshot(
-        self, subscription_id: uuid.UUID, cars: list[Car]
-    ) -> bool: ...
 
 
 @runtime_checkable
-class FavoritesRepository(Protocol):
+class FavoriteRepository(Protocol):
     async def get_favorites(self, user_id: uuid.UUID) -> list[Favorite]: ...
     async def add_favorite(self, favorite: Favorite) -> None: ...
     async def remove_favorite(self, favorite: Favorite) -> None: ...
     async def favorite_exists(self, user_id: uuid.UUID, service_route_id: uuid.UUID) -> bool: ...
+
+
+@runtime_checkable
+class AvailabilitySnapshotRepository(Protocol):
+    async def save_snapshot(self, subscription_id: uuid.UUID, cars: list[Car]) -> bool: ...
+    async def get_latest_snapshot(self, subscription_id: uuid.UUID) -> list[Car]: ...
+
+
+# ---------------------------------------------------------------------------
+# Messaging
+# ---------------------------------------------------------------------------
 
 
 @runtime_checkable
@@ -90,6 +128,51 @@ class MessageRepository(Protocol):
     async def add_message(self, message: Message) -> None: ...
     async def get_user_messages(self, user_id: uuid.UUID) -> list[Message]: ...
     async def get_all_messages(self) -> list[Message]: ...
+
+
+# ---------------------------------------------------------------------------
+# Bot / audit
+# ---------------------------------------------------------------------------
+
+
+@runtime_checkable
+class ConversationSessionRepository(Protocol):
+    async def get(self, user_id: uuid.UUID) -> dict[str, Any] | None: ...
+
+    async def save(
+        self,
+        *,
+        user_id: uuid.UUID,
+        current_command_code: int | None,
+        last_input_date: datetime.date | None,
+        init_state: bool,
+        context: dict[str, Any],
+        expires_at: datetime.datetime | None,
+    ) -> None: ...
+
+    async def delete(self, user_id: uuid.UUID) -> None: ...
+
+
+@runtime_checkable
+class AuditLogRepository(Protocol):
+    async def add(
+        self,
+        *,
+        actor_user_id: uuid.UUID | None,
+        action_code: str,
+        entity_schema: str | None = None,
+        entity_table: str | None = None,
+        entity_id: str | None = None,
+        old_values: dict[str, Any] | None = None,
+        new_values: dict[str, Any] | None = None,
+        correlation_id: uuid.UUID | None = None,
+        source: str = "BOT",
+    ) -> None: ...
+
+
+# ---------------------------------------------------------------------------
+# External railway provider
+# ---------------------------------------------------------------------------
 
 
 @runtime_checkable

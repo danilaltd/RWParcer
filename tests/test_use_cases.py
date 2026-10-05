@@ -26,8 +26,8 @@ def make_train() -> Train:
     return Train(
         train_type="p",
         train_number="123",
-        title_station_from="Минск",
-        title_station_to="Гомель",
+        main_station_from=Station("Минск", "МСК"),
+        main_station_to=Station("Гомель", "ГМ"),
         station_from=Station("Минск", "МСК"),
         station_to=Station("Гомель", "ГМ"),
         from_time=datetime.time(8, 0),
@@ -116,6 +116,9 @@ class InMemoryUsers:
 class InMemoryTransport:
     async def get_or_create_service_route(self, details: SubscriptionDetails) -> uuid.UUID:
         return uuid.uuid4()
+
+    async def get_train(self, service_route_id: uuid.UUID) -> Train | None:
+        pass
 
 
 class InMemorySubscriptions:

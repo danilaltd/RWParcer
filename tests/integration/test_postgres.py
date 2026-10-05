@@ -14,9 +14,11 @@ from app.domain.entities import User
 from app.domain.value_objects import Station, Train
 from app.infrastructure.db.models import Base
 from app.infrastructure.db.repositories import (
-    FavoritesPostgresRepository,
-    TransportPostgresRepository,
+    FavoritePostgresRepository,
+    RolePostgresRepository,
+    ServiceRoutePostgresRepository,
     UserPostgresRepository,
+    UserRolePostgresRepository,
 )
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from testcontainers.community.postgres import PostgresContainer
@@ -84,9 +86,11 @@ def logger() -> Logger:
 async def test_integration_user_and_favorites(
     db_session_factory: async_sessionmaker[AsyncSession], logger: Logger
 ) -> None:
-    users_repo = UserPostgresRepository(db_session_factory)
-    transport_repo = TransportPostgresRepository(db_session_factory)
-    fav_repo = FavoritesPostgresRepository(db_session_factory, transport_repo, logger)
+    role = RolePostgresRepository(db_session_factory)
+    user_role = UserRolePostgresRepository(db_session_factory, role)
+    users_repo = UserPostgresRepository(db_session_factory, user_role)
+    transport_repo = ServiceRoutePostgresRepository(db_session_factory)
+    fav_repo = FavoritePostgresRepository(db_session_factory, transport_repo)
 
     uid = uuid.uuid4()
     await users_repo.add_user(User(id=uid, telegram_user_id=123, telegram_chat_id=123))
@@ -94,8 +98,8 @@ async def test_integration_user_and_favorites(
     train = Train(
         train_type="p",
         train_number="701",
-        title_station_from="Минск",
-        title_station_to="Брест",
+        main_station_from=Station("Минск", "MSK"),
+        main_station_to=Station("Брест", "BRS"),
         station_from=Station("Минск", "MSK"),
         station_to=Station("Брест", "BRS"),
         from_time=datetime.time(7, 0),
