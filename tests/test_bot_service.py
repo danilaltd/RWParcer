@@ -85,7 +85,7 @@ class RecordingStore(SessionStorage):
     """In-memory store that also records the snapshots it was asked to save."""
 
     def __init__(self) -> None:
-        super().__init__(session_factory=MagicMock())
+        super().__init__(pool=MagicMock())
         self.saved: dict[uuid.UUID, object] | None = None
 
     async def load(self) -> dict[uuid.UUID, BotSession]:
@@ -98,7 +98,7 @@ class RecordingStore(SessionStorage):
 @pytest.fixture
 async def service(
     fake_facade: MagicMock,
-) -> AsyncGenerator[tuple[BotService, FakeBot, RecordingStore], None]:
+) -> AsyncGenerator[tuple[BotService, FakeBot, RecordingStore]]:
     bot = FakeBot()
     store = RecordingStore()
     router = CommandRouter(fake_facade)

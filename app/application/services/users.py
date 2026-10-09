@@ -38,8 +38,10 @@ async def register_user(
     # if await users.is_user_registered(user_id):
     # raise ValueError(f"User with ID {user_id} is already registered")
     # return await users.register_user(telegram_user_id, telegram_chat_id, username, display_name)
+    system_is_empty = await users.system_is_empty()
     u = await users.register_user(telegram_user_id, telegram_chat_id, username, display_name)
-    await users.promote_user(u.id)  # TODO: remove this line after testing
+    if system_is_empty:
+        await users.promote_user(u.id)
     return u
     # await users.add_user(User(id=user_id, telegram_user_id=0, telegram_chat_id=0))
 

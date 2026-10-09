@@ -18,13 +18,13 @@ class User:
     id: uuid.UUID
     telegram_user_id: int
     telegram_chat_id: int
+    display_name: str
     username: str | None = None
-    display_name: str | None = None
     is_moderator: bool = False
     max_subscriptions: int = 5
     min_subscriptions_interval: int = 15
     status: str = "ACTIVE"
-    last_activity: datetime.datetime | None = field(
+    last_activity: datetime.datetime = field(
         default_factory=lambda: datetime.datetime.now(datetime.UTC)
     )
 

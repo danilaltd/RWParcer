@@ -112,6 +112,9 @@ class InMemoryUsers:
     async def get_moderators(self) -> list[User]:
         return [u for u in self.users.values() if u.is_moderator]
 
+    async def system_is_empty(self) -> bool:
+        return len(self.users) == 0
+
 
 class InMemoryTransport:
     async def get_or_create_service_route(self, details: SubscriptionDetails) -> uuid.UUID:

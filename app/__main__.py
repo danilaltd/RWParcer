@@ -20,6 +20,7 @@ from app.bot.router import CommandRouter
 from app.bot.service import BotService
 from app.bot.storage import SessionStorage
 from app.config import Settings, load_settings
+from app.infrastructure.db.pool import ConnectionPool
 from app.infrastructure.db.repositories import (
     AvailabilitySnapshotPostgresRepository,
     FavoritePostgresRepository,
@@ -31,26 +32,24 @@ from app.infrastructure.db.repositories import (
     UserPostgresRepository,
     UserRolePostgresRepository,
 )
-from app.infrastructure.db.session import EngineHolder
 from app.infrastructure.http_client_factory import AsyncHttpClientFactory
 from app.infrastructure.logging import PythonLogger
 from app.infrastructure.rw_client import RwClient
 
 
-def _build(settings: Settings) -> tuple[BotService, Bot, EngineHolder]:
+async def _build(settings: Settings) -> tuple[BotService, Bot, ConnectionPool]:
     logger = PythonLogger("rwparcer")
-    engine_holder = EngineHolder(settings.database)
-    session_factory = engine_holder.session_factory
+    connection_pool = await ConnectionPool.create(settings.database)
 
-    role = RolePostgresRepository(session_factory)
-    user_role = UserRolePostgresRepository(session_factory, role)
-    users = UserPostgresRepository(session_factory, user_role)
-    service_route = ServiceRoutePostgresRepository(session_factory)
-    snapshot = AvailabilitySnapshotPostgresRepository(session_factory)
-    subscriptions = SubscriptionPostgresRepository(session_factory, service_route, snapshot)
-    favorites = FavoritePostgresRepository(session_factory, service_route)
-    notifications = NotificationPostgresRepository(session_factory)
-    messages = MessagePostgresRepository(session_factory)
+    role = RolePostgresRepository(connection_pool)
+    user_role = UserRolePostgresRepository(connection_pool, role)
+    users = UserPostgresRepository(connection_pool, user_role)
+    service_route = ServiceRoutePostgresRepository(connection_pool)
+    snapshot = AvailabilitySnapshotPostgresRepository(connection_pool)
+    subscriptions = SubscriptionPostgresRepository(connection_pool, service_route, snapshot)
+    favorites = FavoritePostgresRepository(connection_pool, service_route)
+    notifications = NotificationPostgresRepository(connection_pool)
+    messages = MessagePostgresRepository(connection_pool)
 
     http = AsyncHttpClientFactory(
         proxy_manager_url=settings.proxy.proxy_manager_url,
@@ -71,7 +70,7 @@ def _build(settings: Settings) -> tuple[BotService, Bot, EngineHolder]:
     asyncio.create_task(notifier.run(asyncio.Event()))
     bot = Bot(token=settings.bot.token, default=DefaultBotProperties(parse_mode="HTML"))
     router = CommandRouter(facade)
-    store = SessionStorage(session_factory)
+    store = SessionStorage(connection_pool)
 
     service = BotService(
         bot=bot,
@@ -81,7 +80,7 @@ def _build(settings: Settings) -> tuple[BotService, Bot, EngineHolder]:
         allowed_updates=settings.bot.allowed_updates,
         poll_interval=settings.notifier.poll_interval,
     )
-    return service, bot, engine_holder
+    return service, bot, connection_pool
 
 
 async def _amain() -> None:
@@ -90,11 +89,13 @@ async def _amain() -> None:
         raise SystemExit("BOT_TOKEN is not configured")
 
     logging.basicConfig(
-        level=os.environ.get("LOG_LEVEL", "INFO").upper(),
+        level=os.environ.get("LOG_LEVEL", "DEBUG").upper(),
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
+    logging.getLogger("httpx").setLevel(logging.INFO)
+    logging.getLogger("httpcore").setLevel(logging.INFO)
 
-    service, bot, engine_holder = _build(settings)
+    service, bot, connection_pool = await _build(settings)
     loop = asyncio.get_running_loop()
     for sig in (signal.SIGINT, signal.SIGTERM):
         loop.add_signal_handler(sig, lambda: asyncio.create_task(service.stop()))
@@ -103,13 +104,13 @@ async def _amain() -> None:
         await service.start()
         logging.getLogger("rwparcer").info("Bot started")
         await service.wait()
-    except (KeyboardInterrupt, SystemExit):
+    except KeyboardInterrupt, SystemExit:
         pass
     finally:
         await service.stop()
         if bot.session is not None:
             await bot.session.close()
-        await engine_holder.dispose()
+        await connection_pool.close()
 
 
 def main() -> None:

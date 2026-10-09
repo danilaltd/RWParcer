@@ -1,4 +1,4 @@
-"""Session persistence against ``bot.conversation_sessions`` table using SQLAlchemy."""
+"""Session persistence against ``bot.conversation_sessions`` table using asyncpg."""
 
 from __future__ import annotations
 
@@ -8,17 +8,19 @@ import json
 import logging
 from typing import TYPE_CHECKING, Any
 
+if TYPE_CHECKING:
+    import uuid
+    from collections.abc import Mapping
+
+    from app.infrastructure.db.pool import ConnectionPool
+
+import aiosql
+import aiosql.adapters.asyncpg
+import aiosql.queries
 from app.bot.command_names import command_name_by_value
 from app.bot.session import BotSession
 from app.domain import json_codecs
 from app.domain.value_objects import Station, SubscriptionDetails, Train, UserInfo
-from app.infrastructure.db.models import ConversationSessionRow
-from sqlalchemy import select
-
-if TYPE_CHECKING:
-    import uuid
-
-    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -135,42 +137,64 @@ def serialize_session_data(data: list[Any]) -> str:
     )
 
 
+def _load_queries(filename: str) -> aiosql.queries.Queries:
+    import importlib.resources
+
+    sql_text = (
+        importlib.resources.files("app.infrastructure.db.queries").joinpath(filename).read_text()
+    )
+    return aiosql.from_str(sql_text, driver_adapter="asyncpg")
+
+
 class SessionStorage:
     def __init__(
         self,
-        session_factory: async_sessionmaker[AsyncSession],
+        pool: ConnectionPool,
     ) -> None:
-        self._session_factory = session_factory
+        self._pool = pool
         self._save_lock = asyncio.Lock()
 
     async def load(self) -> dict[uuid.UUID, BotSession]:
         sessions: dict[uuid.UUID, BotSession] = {}
         try:
-            async with self._session_factory() as db_session:
-                rows = (await db_session.execute(select(ConversationSessionRow))).scalars().all()
+            async with self._pool.acquire() as conn:  # ty: ignore[invalid-context-manager]
+                query = (
+                    "SELECT user_id, current_command_code, init_state, context, last_input_date "
+                    "FROM bot.conversation_sessions"
+                )
+                rows = await conn.fetch(query)
         except Exception as exc:
             logger.warning("Failed to load sessions, using empty store: %s", exc)
             return sessions
 
         for row in rows:
-            sessions[row.user_id] = self._session_from_row(row)
+            sessions[row["user_id"]] = self._session_from_row(row)
         return sessions
 
-    def _session_from_row(self, row: ConversationSessionRow) -> BotSession:
-        decoded_data = self._deserialize_data(row.context.get("data", []))
+    def _session_from_row(self, row: Mapping[str, Any]) -> BotSession:
+        decoded_data = self._deserialize_data(
+            row["context"].get("data", []) if isinstance(row["context"], dict) else []
+        )
         return BotSession(
-            current_command=command_name_by_value(row.current_command_code),
-            init_state=bool(row.init_state),
+            current_command=command_name_by_value(row["current_command_code"]),
+            init_state=bool(row["init_state"]),
             data=decoded_data,
-            date=row.last_input_date or datetime.date.today(),
+            date=row["last_input_date"] or datetime.date.today(),
         )
 
     @staticmethod
-    def _deserialize_data(raw: str) -> list[Any]:
-        print(raw)
+    def _deserialize_data(raw: Any) -> list[Any]:
         if not raw:
             return []
-        items = json.loads(raw)
+        if isinstance(raw, str):
+            try:
+                items = json.loads(raw)
+            except json.JSONDecodeError:
+                return []
+        elif isinstance(raw, list):
+            items = raw
+        else:
+            return []
         if not isinstance(items, list):
             return []
         data: list[Any] = []
@@ -181,42 +205,45 @@ class SessionStorage:
         return data
 
     async def save_all(self, sessions: dict[uuid.UUID, BotSession]) -> None:
-        async with self._save_lock, self._session_factory() as db_session:
-            existing_rows = {
-                row.user_id: row
-                for row in (
-                    (await db_session.execute(select(ConversationSessionRow))).scalars().all()
-                )
-            }
+        async with self._save_lock, self._pool.acquire() as conn:  # ty: ignore[invalid-context-manager]
+            queries = _load_queries("bot_sessions.sql")
+            existing_query = "SELECT user_id FROM bot.conversation_sessions"
+            existing_rows = await conn.fetch(existing_query)
+            existing_ids = {row["user_id"] for row in existing_rows}
+
             for user_id, bot_session in sessions.items():
                 items_json = [to_json_data_item(item) for item in bot_session.data]
                 context_dict = {"data": items_json}
-                if user_id in existing_rows:
-                    existing = existing_rows[user_id]
-                    existing.current_command_code = (
-                        int(bot_session.current_command)
-                        if bot_session.current_command is not None
-                        else None
+                expires_at = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=3650)
+
+                if user_id in existing_ids:
+                    await queries.update_conversation_session(  # ty: ignore[unresolved-attribute]
+                        conn,
+                        user_id=user_id,
+                        current_command_code=(
+                            int(bot_session.current_command)
+                            if bot_session.current_command is not None
+                            else None
+                        ),
+                        last_input_date=bot_session.date,
+                        init_state=bool(bot_session._init_state),
+                        context=json.dumps(context_dict),
+                        expires_at=expires_at,
                     )
-                    existing.init_state = bool(bot_session._init_state)
-                    existing.context = context_dict
-                    existing.last_input_date = bot_session.date
                 else:
-                    db_session.add(
-                        ConversationSessionRow(
-                            user_id=user_id,
-                            current_command_code=(
-                                int(bot_session.current_command)
-                                if bot_session.current_command is not None
-                                else None
-                            ),
-                            init_state=bot_session._init_state,
-                            context=context_dict,
-                            last_input_date=bot_session.date,
-                        )
+                    await queries.insert_conversation_session(  # ty: ignore[unresolved-attribute]
+                        conn,
+                        user_id=user_id,
+                        current_command_code=(
+                            int(bot_session.current_command)
+                            if bot_session.current_command is not None
+                            else None
+                        ),
+                        last_input_date=bot_session.date,
+                        init_state=bot_session._init_state,
+                        context=json.dumps(context_dict),
+                        expires_at=expires_at,
                     )
-                    # raise ValueError("seems this never happens.")
-            await db_session.commit()
 
 
 class BotSessionManager:
@@ -275,6 +302,6 @@ def _json_object(json_data: Any) -> dict | None:
         return None
     try:
         parsed = json.loads(json_data)
-    except (json.JSONDecodeError, TypeError):
+    except json.JSONDecodeError, TypeError:
         return None
     return parsed if isinstance(parsed, dict) else None

@@ -94,6 +94,9 @@ class FakeUsers:
     async def get_moderators(self) -> list:
         raise NotImplementedError
 
+    async def system_is_empty(self) -> bool:
+        raise NotImplementedError
+
 
 class FakeSubscriptions:
     def __init__(self, actual: Subscription) -> None:

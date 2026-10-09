@@ -34,7 +34,7 @@ services:
       TG_BOT_TOKEN: ${TG_BOT_TOKEN:-}
       TG_BOT_ALLOWED_UPDATES: ${TG_BOT_ALLOWED_UPDATES:-}
       PROXY_MANAGER_URL: ${PROXY_MANAGER_URL:-http://proxy-manager:8080}
-      DATABASE_URL: "postgresql+asyncpg://${POSTGRES_USER:-rw_user}:${POSTGRES_PASSWORD:-test_password}@postgres_db:5432/${POSTGRES_DB:-core_db}"
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-rw_user}:${POSTGRES_PASSWORD:-test_password}@postgres_db:5432/${POSTGRES_DB:-core_db}"
     depends_on:
       postgres_db:
         condition: service_healthy

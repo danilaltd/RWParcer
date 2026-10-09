@@ -1,7 +1,7 @@
 """Round-trip tests for the session storage codecs (``app/bot/storage.py``).
 
-No DB and no network: ``SessionRow`` is a lightweight fake and the SQLAlchemy
-imports are exercised only through the pure codec functions.
+No DB and no network: record is a lightweight fake and the asyncpg imports
+are exercised only through the pure codec functions.
 """
 
 from __future__ import annotations
@@ -20,7 +20,6 @@ from app.domain.value_objects import (
     Train,
     UserInfo,
 )
-from app.infrastructure.db.models import ConversationSessionRow
 
 
 def make_train() -> Train:
@@ -155,15 +154,15 @@ def test_session_from_row_round_trips_data_json() -> None:
         data=[make_train(), Station("Минск", "МСК")],
         date=datetime.date(2026, 8, 22),
     )
-    row = ConversationSessionRow(
-        user_id=uuid.uuid4(),
-        current_command_code=(
+    row = {
+        "user_id": uuid.uuid4(),
+        "current_command_code": (
             int(session.current_command) if session.current_command is not None else None
         ),
-        init_state=True,
-        context={"data": storage.serialize_session_data(session.data)},
-        last_input_date=session.date,
-    )
+        "init_state": True,
+        "context": {"data": storage.serialize_session_data(session.data)},
+        "last_input_date": session.date,
+    }
     decoded = storage.SessionStorage(MagicMock())._session_from_row(row)
     assert decoded.current_command == CommandNames.TRAIN_SELECT
     assert decoded.init_state is True
